@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="/theme.css">
 <style>
 main{padding-bottom:64px}
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:16px;align-items:start;margin-top:18px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(480px,100%),1fr));gap:16px;align-items:start;margin-top:18px}
 .sec{padding:20px;display:grid;gap:12px;min-width:0}
 .sec h2{margin:0;font-size:18px;display:flex;align-items:center;gap:8px}
 .sec h2 svg{width:20px;height:20px;color:var(--accent)}
@@ -28,8 +28,8 @@ textarea.in{min-height:170px}
 .full{grid-column:1/-1}
 .q{font:12.5px/1.5 ui-monospace,Consolas,monospace;background:var(--sunken);border-radius:var(--r-sm);padding:6px 8px;color:var(--mute);word-break:break-word}
 .switch{display:flex;gap:10px;align-items:center;font-weight:600;font-size:14px;cursor:pointer}
-details summary{cursor:pointer;font-weight:600;font-size:14px}
-details[open] summary{margin-bottom:10px}
+.sec details.sect{border-top:1px solid var(--line)}.sec details.sect>summary{padding:10px 0}
+.sec details.sect+details.sect{margin-top:-12px}
 @media (max-width:640px){.tbl .hide-s{display:none}}
 </style>
 </head>
@@ -45,7 +45,7 @@ details[open] summary{margin-bottom:10px}
   <div class="grid2">
     <section class="panel sec" aria-labelledby="h-paste">
       <h2 id="h-paste"><span id="i1"></span>Add jobs from a LinkedIn post</h2>
-      <p>Copy a post's text (a list of job links, or a recruiter's "we're hiring") and paste it here. Jobber follows each link to the real job page, keeps the roles that match your search and remembers who posted it.</p>
+      <p>Paste a "we're hiring" post or a list of job links. Jobber opens each link, keeps roles that match your search and remembers who posted it.</p>
       <textarea class="in" id="text" placeholder="Paste the whole post here, links included…"></textarea>
       <input class="in" id="url" type="url" placeholder="Post link (optional): https://www.linkedin.com/posts/…">
       <div class="row"><button class="btn primary" id="go">Find jobs in this post</button><label class="switch small"><input type="checkbox" id="star" checked> Save them to my shortlist</label></div>
@@ -54,12 +54,12 @@ details[open] summary{margin-bottom:10px}
 
     <section class="panel sec" aria-labelledby="h-auto">
       <h2 id="h-auto"><span id="i2"></span>Find hiring posts automatically</h2>
-      <p>Every time you press Find new jobs, Jobber runs a few web searches for public LinkedIn posts that mention your roles and cities, then reads the jobs in them. It only sees posts that are public on the web.</p>
+      <p>Each time you press Find new jobs, Jobber also searches the web for public LinkedIn posts about your roles and cities.</p>
       <label class="switch"><input type="checkbox" id="on"> Search LinkedIn hiring posts on every job search</label>
       <div class="small muted" id="eng"></div>
-      <details><summary>Searches Jobber will run</summary><div id="queries" style="display:grid;gap:6px"></div>
+      <details class="sect"><summary>Searches Jobber will run</summary><div id="queries" style="display:grid;gap:6px"></div>
         <p class="small" style="margin-top:8px">Built from your roles and cities in <a href="/setup">Setup</a>. Fine-tune the words in config.json → network.</p></details>
-      <details><summary>Better results: add a free search key (optional)</summary>
+      <details class="sect"><summary>Better results: add a free search key<span class="hint">Optional</span></summary>
         <p class="small">Without a key Jobber uses DuckDuckGo, which works but sometimes limits automated searches. A free <a href="https://api-dashboard.search.brave.com/" target="_blank" rel="noopener">Brave Search API</a> key (about 2,000 searches a month) is more reliable. A Google Programmable Search key and engine ID also work.</p>
         <div style="display:grid;gap:8px;margin-top:8px">
           <input class="in" id="brave" placeholder="Brave Search API key" autocomplete="off">
@@ -69,23 +69,21 @@ details[open] summary{margin-bottom:10px}
         </div></details>
     </section>
 
-    <section class="panel sec" aria-labelledby="h-ref">
-      <h2 id="h-ref"><span id="i3"></span>How referrals work in Jobber</h2>
+    <section class="panel sec full" aria-labelledby="h-ref">
+      <h2 id="h-ref"><span id="i3"></span>How it works</h2>
+      <details class="sect"><summary>Getting a referral for a job<span class="hint">3 steps</span></summary><div class="sect-body">
       <ol class="steps-ol">
         <li><b>Every job has a "Get a referral" box.</b> Open a job on the Jobs page: one click opens LinkedIn people search for that company, filtered to your 1st and 2nd-degree connections, plus alumni and ex-colleague searches when your school and last company are in <a href="/setup">Setup</a>.</li>
         <li><b>A referral message is drafted for you.</b> Copy it, add their name, and send it yourself on LinkedIn.</li>
         <li><b>Jobs where you know someone move up.</b> Tick "I know someone here" on a job, or let the Chrome extension notice LinkedIn's own "N connections work here" line when you open a LinkedIn job page.</li>
       </ol>
-      <div class="small muted">Track who you asked in <a href="/copilot#outreach">Copilot → Outreach</a>.</div>
-    </section>
-
-    <section class="panel sec" aria-labelledby="h-ext">
-      <h2 id="h-ext"><span id="i4"></span>With the Chrome extension</h2>
+      <div class="small muted">Track who you asked in <a href="/copilot#outreach">Copilot → Outreach</a>.</div></div></details>
+      <details class="sect"><summary>Using the Chrome extension on LinkedIn<span class="hint">Optional</span></summary><div class="sect-body">
       <ol class="steps-ol">
         <li><b>Save jobs from a post:</b> while reading LinkedIn, scroll a hiring post to the middle of your screen (or select its text), click the Jobber extension icon and press <b>Save jobs from this post</b>.</li>
         <li><b>Connection boost:</b> when you open any LinkedIn job page, the extension reads the "connections work here" note LinkedIn already shows you and tells Jobber. It never clicks, scrolls or visits anything on its own.</li>
       </ol>
-      <div class="small muted">Install or update it: chrome://extensions → Developer mode → Load unpacked → the chrome-extension folder (or press reload on its card).</div>
+      <div class="small muted">Install or update it: chrome://extensions → Developer mode → Load unpacked → the chrome-extension folder (or press reload on its card).</div></div></details>
     </section>
 
     <section class="panel sec full" aria-labelledby="h-leads">
@@ -102,7 +100,7 @@ details[open] summary{margin-bottom:10px}
 <script>
 const $=id=>document.getElementById(id);
 const {esc,ICONS,empty,toast}=Jobber;
-[["i1","file"],["i2","search"],["i3","network"],["i4","plug"],["i5","inbox"],["i6","user"]].forEach(([id,k])=>$(id).outerHTML=ICONS[k]||"");
+[["i1","file"],["i2","search"],["i3","network"],["i5","inbox"],["i6","user"]].forEach(([id,k])=>$(id).outerHTML=ICONS[k]||"");
 const post=(u,b)=>fetch(u,{method:"POST",body:JSON.stringify(b)}).then(async r=>{const j=await r.json();if(!r.ok||j.error)throw new Error(j.error||r.statusText);return j});
 const say=m=>toast?toast(m):alert(m);
 let D=null;
