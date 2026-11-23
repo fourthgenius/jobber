@@ -16,7 +16,7 @@ main{padding-bottom:130px}
 .rail .opt{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--faint)}
 .rail button.done .n{background:var(--accent-soft);border-color:var(--accent-soft);color:var(--accent-ink)}
 .rail button.on{background:var(--surface);color:var(--fg);box-shadow:var(--shadow);outline:1px solid var(--line)}
-.rail button.on .n{background:var(--fg);border-color:var(--fg);color:#fff}
+.rail button.on .n{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);box-shadow:0 0 14px rgba(46,230,255,.45)}
 .meter{height:6px;background:var(--sunken);border-radius:99px;overflow:hidden;margin:14px 10px 0}
 .meter i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s var(--ease)}
 .meter-l{font-size:12.5px;color:var(--faint);margin:6px 10px 0}
@@ -62,7 +62,7 @@ details.fine[open]{padding-bottom:6px}
 #cv{min-height:340px;font:13.5px/1.6 var(--f-code)}
 #raw{min-height:300px;font:12.5px/1.5 var(--f-code)}
 .drop{display:flex;gap:14px;align-items:center;border:1.5px dashed var(--line-strong);border-radius:var(--r-lg);padding:16px;margin-top:16px;background:var(--bg)}
-.drop .ei{width:44px;height:44px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.drop .ei{width:44px;height:44px;border-radius:var(--r);background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
 .drop .ei svg{width:22px;height:22px}
 .drop input{font-size:14px}
 .sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:4px 0 20px}
@@ -72,12 +72,12 @@ details.fine[open]{padding-bottom:6px}
 .sum .v{font-weight:700;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sum .v.miss{color:var(--warn)}
 .done-card{text-align:center;padding:40px 24px}
-.done-card .big{width:72px;height:72px;border-radius:22px;background:var(--accent);color:#fff;display:grid;place-items:center;margin:0 auto 14px}
+.done-card .big{width:72px;height:72px;border-radius:var(--r-lg);background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;margin:0 auto 14px}
 .done-card .big svg{width:36px;height:36px}
 .done-card h2{font-size:26px;margin:0}
 .done-card p{color:var(--mute);max-width:52ch;margin:8px auto 20px}
 
-.bar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);z-index:30}
+.bar{position:fixed;left:var(--side,0);right:0;bottom:0;background:rgba(7,9,13,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);z-index:30}
 .bar .wrap{display:flex;gap:10px;align-items:center;min-height:68px}
 .bar .count{font-size:13.5px;color:var(--mute);font-weight:600}
 @media (max-width:900px){
@@ -98,6 +98,14 @@ details.fine[open]{padding-bottom:6px}
   .presets{grid-template-columns:1fr 1fr}.preset{padding:12px}
   .srcs{grid-template-columns:1fr}
 }
+.xcard{border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:8px;margin-top:14px;background:var(--bg)}
+.xcard p{margin:0}
+.xh{display:flex;align-items:center;gap:10px}.xh b{font-size:15px}
+.xrow{display:flex;gap:8px}.xrow .in{flex:1}
+body.onboarding .bar{left:0}
+.obar{display:flex;align-items:center;gap:12px;padding-top:22px;padding-bottom:4px}
+.obar .brand .mark svg{width:20px;height:20px}
+#first{display:none}
 </style>
 </head>
 <body>
@@ -203,13 +211,30 @@ details.fine[open]{padding-bottom:6px}
           <div style="margin-top:6px"><input type="file" id="resume" accept="application/pdf"></div><div class="small muted" id="resumeHint" style="margin-top:4px"></div></div></div>
       </section>
 
+      <section class="panel step" data-step="extras" data-title="AI and alerts" data-optional="1">
+        <h2>Optional extras</h2>
+        <p class="lead">Jobber works fully without these. Add them now or any time later in Settings. Keys are saved only in secrets.json on this computer.</p>
+        <div class="xcard">
+          <div class="xh"><b>Claude AI</b><span class="pill" id="aiState">Off</span></div>
+          <p class="small muted">Writes tailored cover letters and CVs, scores fit with a second opinion, and gives feedback in mock interviews. Get a key at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a> (pay as you go, usually a few rupees a day).</p>
+          <label class="label" for="ak">Claude API key</label>
+          <input class="in" id="ak" type="password" autocomplete="off" placeholder="sk-ant-…" spellcheck="false">
+        </div>
+        <div class="xcard">
+          <div class="xh"><b>Telegram daily alert</b><span class="pill" id="tgState">Off</span></div>
+          <p class="small muted">New jobs on your phone every morning. In Telegram, message <b>@BotFather</b>, send <b>/newbot</b>, pick a name, and paste the token it gives you here. Then send "hi" to your new bot and press Connect.</p>
+          <label class="label" for="tg">Bot token</label>
+          <div class="xrow"><input class="in" id="tg" type="password" autocomplete="off" placeholder="123456789:AA…" spellcheck="false"><button type="button" class="btn" id="tgConnect">Connect</button></div>
+          <div class="small" id="tgMsg" role="status"></div>
+        </div>
+      </section>
+
       <section class="panel step" data-step="finish" data-title="Finish">
         <div id="finishBody">
           <h2>Review and save</h2>
           <p class="lead">Here's what you told Jobber. Click any card to go back and change it.</p>
           <div class="sum" id="sum"></div>
-          <div class="guide" style="margin-bottom:16px"><span class="gi" id="aiIcon"></span><div><b>Optional extras, any time later</b>
-            <p>Everything works without AI. Add a Claude API key for written cover letters, tailored CVs and mock-interview feedback, or connect Telegram for a daily job digest, in <a href="/copilot#setup">Copilot → Setup</a>.</p></div></div>
+
           <details class="fine"><summary>Advanced: edit config.json directly <span>for power users</span></summary>
             <p class="small muted" style="margin:0 0 10px">Company career portals, funding news feeds, CV angles and tuning. Saved together with the form (the form wins where both set the same field).</p>
             <textarea class="in" id="raw" spellcheck="false"></textarea>
@@ -231,7 +256,7 @@ details.fine[open]{padding-bottom:6px}
   <span class="count" id="count"></span>
   <span class="grow"></span>
   <span class="small muted" id="status" role="status"></span>
-  <button class="btn ghost" id="saveNow" onclick="save()">Save</button>
+  <button class="btn" id="saveNow" onclick="save()">Save</button>
   <button class="btn primary" id="next" onclick="next()">Next</button>
 </div></div>
 <script>
@@ -239,7 +264,7 @@ const $ = id => document.getElementById(id);
 const {esc, toast, ICONS} = Jobber;
 const list = s => s.split(/\n|,/).map(x => x.trim()).filter(Boolean);
 const show = a => (a || []).join("\n");
-$("firstIcon").innerHTML = ICONS.bulb; $("whyIcon").outerHTML = ICONS.bulb; $("dropIcon").innerHTML = ICONS.file; $("aiIcon").innerHTML = ICONS.copilot; $("doneIcon").innerHTML = ICONS.check;
+$("firstIcon").innerHTML = ICONS.bulb; $("whyIcon").outerHTML = ICONS.bulb; $("dropIcon").innerHTML = ICONS.file; $("doneIcon").innerHTML = ICONS.check;
 
 const PRESETS = {
   "Product management": {search_terms: ["product manager", "associate product manager", "senior product manager"], core: ["product manager", "associate product manager", "apm"], strong: ["product owner", "technical product manager", "growth product manager", "ai product manager"], related: ["product analyst", "product operations", "product strategy"], stretch: ["business operations", "chief of staff"], exclude: ["intern", "internship", "project manager", "program manager", "director", "vp ", "head of"], skills: ["roadmap", "prioritization", "a/b testing", "sql", "user research", "analytics", "stakeholder", "go-to-market"]},
@@ -285,6 +310,41 @@ const FIELD_GROUPS = [
 
 let S = null, RESUME = null, cur = 0, seen = new Set([0]);
 const STEPS = [...document.querySelectorAll(".step")];
+const ONB = document.body.classList.contains("onboarding");
+if (ONB) {
+  document.querySelector(".pagehead h1").textContent = "Welcome to Jobber";
+  document.querySelector(".pagehead p").textContent = "A few quick questions so Jobber knows what to look for. About 10 minutes. Your answers and CV stay on this computer.";
+  document.querySelector("main").insertAdjacentHTML("beforebegin", `<div class="obar wrap"><span class="brand"><span class="mark">${document.querySelector(".mbrand .mark")?.innerHTML || ""}</span><span>job<i>ber</i></span></span><span class="grow"></span><span class="pill">Setup · nothing is uploaded</span></div>`);
+} else {
+  document.title = "Settings · Jobber";
+  document.querySelector(".pagehead h1").textContent = "Settings";
+  document.querySelector(".pagehead p").textContent = "Change what Jobber searches for, your pay floor, CV, application details and extras. Changes apply from the next search.";
+}
+/* extras: Claude key + Telegram */
+async function extrasState() {
+  try { const d = await fetch("/api/copilot").then(r => r.json()); const s = d.settings || {};
+    $("aiState").className = "pill " + (s.ai ? "good" : ""); $("aiState").textContent = s.ai ? "Connected" : "Off";
+    $("tgState").className = "pill " + (s.telegram ? "good" : ""); $("tgState").textContent = s.telegram ? "Connected" : "Off";
+  } catch (e) {}
+}
+async function saveSecrets() {
+  const b = {}; if ($("ak").value.trim()) b.anthropic_api_key = $("ak").value.trim(); if ($("tg").value.trim()) b.telegram_bot_token = $("tg").value.trim();
+  if (!Object.keys(b).length) return;
+  await fetch("/api/copilot/secrets", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(b)});
+  $("ak").value = ""; extrasState();
+}
+$("tgConnect").onclick = async () => {
+  if (!$("tg").value.trim() && $("tgState").textContent !== "Connected") { $("tgMsg").textContent = "Paste your bot token first."; return; }
+  $("tgMsg").textContent = "Connecting…"; await saveSecrets();
+  try {
+    const r = await fetch("/api/copilot/telegram/chatid", {method: "POST", headers: {"Content-Type": "application/json"}, body: "{}"}); const d = await r.json();
+    if (!r.ok || !d.ok) throw new Error(d.error || "Send \"hi\" to your bot in Telegram, then press Connect again.");
+    await fetch("/api/copilot/secrets", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({telegram_chat_id: String(d.chat_id)})});
+    await fetch("/api/copilot/telegram/test", {method: "POST", headers: {"Content-Type": "application/json"}, body: "{}"});
+    $("tgMsg").textContent = `Connected${d.name ? " to " + d.name : ""}. A test message is on its way.`; $("tg").value = ""; extrasState();
+  } catch (e) { $("tgMsg").textContent = e.message; }
+};
+extrasState();
 
 function renderRail() {
   $("rail").innerHTML = STEPS.map((s, i) => `<li><button class="${i === cur ? "on" : seen.has(i) && i < cur ? "done" : ""}" onclick="go(${i})" ${i === cur ? 'aria-current="step"' : ""}>
@@ -292,11 +352,11 @@ function renderRail() {
   const pct = Math.round(100 * cur / (STEPS.length - 1));
   $("meter").style.width = pct + "%"; $("meterL").textContent = `${pct}% done`;
   $("count").textContent = `Step ${cur + 1} of ${STEPS.length}`;
-  $("eyebrow").textContent = `Step ${cur + 1} of ${STEPS.length} · ${STEPS[cur].dataset.title}`;
+  $("eyebrow").textContent = ONB ? `Step ${cur + 1} of ${STEPS.length} · ${STEPS[cur].dataset.title}` : `Settings · ${STEPS[cur].dataset.title}`;
   $("back").disabled = cur === 0;
   const last = cur === STEPS.length - 1;
-  $("next").textContent = last ? "Save and finish" : "Next";
-  $("saveNow").hidden = last;
+  $("next").textContent = last ? (ONB ? "Finish and open Jobber" : "Save changes") : "Next";
+  $("saveNow").hidden = last || ONB; /* during onboarding, saving early would unlock the app half set up */
 }
 function go(i) {
   i = Math.max(0, Math.min(STEPS.length - 1, i));
@@ -402,9 +462,11 @@ async function save(finish) {
   const r = await fetch("/api/setup", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
   const d = await r.json();
   if (!r.ok) { $("status").textContent = ""; toast(d.error || "Couldn't save", true); return; }
+  await saveSecrets();
   RESUME = null; $("status").textContent = "Saved"; setTimeout(() => $("status").textContent = "", 2500);
   await load();
-  if (finish) { go(STEPS.length - 1); $("finishBody").hidden = true; $("doneBody").hidden = false; } else toast("Saved. Carry on whenever you like.");
+  if (finish && ONB) { document.body.classList.remove("onboarding"); go(STEPS.length - 1); $("finishBody").hidden = true; $("doneBody").hidden = false; }
+  else toast(ONB ? "Saved. Carry on whenever you like." : "Saved. Changes apply from the next search.");
 }
 load();
 </script>

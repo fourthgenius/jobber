@@ -76,6 +76,27 @@ class H(BaseHTTPRequestHandler):
             self._send(500, {"error": f"{type(e).__name__}: {e}"})
 
     def _get(self):
+        page = self.path.split("?")[0].rstrip("/") or "/"
+        # Onboarding gate: until setup is finished, every app page sends people to the onboarding journey.
+        if page in ("/", "/index.html", "/apply", "/copilot", "/prep", "/network"):
+            try:
+                done = fetch.load_cfg().get("setup_complete", False)
+            except Exception:
+                done = True
+            if not done:
+                self.send_response(302)
+                self.send_header("Location", "/setup")
+                self.end_headers()
+                return
+        if page in ("/setup", "/settings"):
+            html = SETUP.read_bytes()
+            try:
+                done = fetch.load_cfg().get("setup_complete", False)
+            except Exception:
+                done = True
+            if not done:  # first visit: full-screen onboarding, no app navigation yet
+                html = html.replace(b"<body>", b'<body class="onboarding">', 1)
+            return self._send(200, html, "text/html; charset=utf-8")
         if autofill and self.path.startswith(("/apply", "/api/apply")):
             return autofill.handle(self, "GET")
         if copilot and self.path.startswith(("/copilot", "/api/copilot")):
@@ -84,8 +105,6 @@ class H(BaseHTTPRequestHandler):
             return prep.handle(self, "GET")
         if self.path.startswith(("/network", "/api/network")):
             return network.handle(self, "GET")
-        if self.path.split("?")[0] in ("/setup", "/setup/"):
-            return self._send(200, SETUP.read_bytes(), "text/html; charset=utf-8")
         if self.path == "/api/setup":
             return self._send(200, settings.state())
         if self.path.split("?")[0] in ("/", "/index.html"):

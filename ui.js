@@ -30,13 +30,14 @@
     radar: svg('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 19 5"/>'),
     x: svg('<path d="M6 6l12 12M18 6 6 18"/>'),
     network: svg('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9.5" r="2.5"/><path d="M16 14.6a5 5 0 0 1 6 4.9"/>'),
+    collapse: svg('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15.5 10l-2 2 2 2"/>'),
     gear: svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
     more: svg('<circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/>'),
     filter: svg('<path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/>'),
     chev: svg('<path d="m6 9 6 6 6-6"/>'),
     arrow: svg('<path d="M5 12h14M13 6l6 6-6 6"/>'),
   };
-  const MARK = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.5 4v9.5a4.5 4.5 0 0 1-8.6 1.9" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="18.5" cy="6.5" r="2.5" fill="#5fe0bd"/></svg>`;
+  const MARK = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.5 4v9.5a4.5 4.5 0 0 1-8.6 1.9" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/><rect x="16.5" y="4.5" width="4" height="4" fill="var(--accent)"/></svg>`;
   const NAV = [["jobs", "/", "Jobs"], ["apply", "/apply", "Batch apply"], ["copilot", "/copilot", "Copilot"], ["prep", "/prep", "Interview prep"], ["network", "/network", "Referrals"]];
   const SHORT = {apply: "Apply", prep: "Prep", network: "Referrals"};
 
@@ -79,14 +80,46 @@
   };
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
 
-  /* ---------- App bar + tab bar ---------- */
+  /* ---------- App shell: collapsible left sidebar (desktop), top bar + bottom tabs (phone) ----------
+     The page's own <header class="appbar"> keeps its page actions (e.g. Find new jobs). */
   const bar = document.querySelector("header.appbar[data-page]");
   if (bar) {
     const page = bar.dataset.page, w = bar.querySelector(".wrap") || bar;
-    const links = (short) => NAV.map(([k, href, l]) => `<a href="${href}" class="${k === page ? "on" : ""}" ${k === page ? 'aria-current="page"' : ""}>${ICONS[k]}<span>${short && SHORT[k] || l}</span></a>`).join("");
-    w.insertAdjacentHTML("afterbegin", `<a class="brand" href="/" aria-label="Jobber home"><span class="mark">${MARK}</span><span>Job<i>ber</i></span></a><nav class="nav" aria-label="Main">${links()}</nav>`);
-    w.insertAdjacentHTML("beforeend", `<a class="helpbtn${page === "setup" ? " on" : ""}" href="/setup" id="jb-setup" aria-label="Setup: your search, pay and CV" data-tip="Setup: your search, pay and CV"${page === "setup" ? ' aria-current="page"' : ""}>${ICONS.gear}</a><button type="button" class="helpbtn" id="jb-help" aria-label="Help and glossary" data-tip="Help: how Jobber works, and what the words mean">${ICONS.help}</button>`);
-    document.addEventListener("DOMContentLoaded", () => document.body.insertAdjacentHTML("beforeend", `<nav class="tabbar" aria-label="Main">${links(true)}</nav>`));
+    if (!w.querySelector(":scope > :not(.grow)")) bar.classList.add("bare");
+    const cur = k => k === page ? ' class="on" aria-current="page"' : "";
+    const links = (short) => NAV.map(([k, href, l]) => `<a href="${href}"${cur(k)} data-tip-side="${esc(l)}">${ICONS[k]}<span>${short && SHORT[k] || l}</span></a>`).join("");
+    let collapsed = false; try { collapsed = localStorage.getItem("jb_side") === "min"; } catch (e) {}
+    const side = document.createElement("aside");
+    side.className = "sidenav"; side.setAttribute("aria-label", "Jobber");
+    side.innerHTML = `<div class="side-top"><a class="brand" href="/" aria-label="Jobber home"><span class="mark">${MARK}</span><span class="word">job<i>ber</i></span></a>
+      <button type="button" class="side-toggle" id="jb-collapse" aria-label="Collapse sidebar" aria-expanded="true">${ICONS.collapse}</button></div>
+      <div class="side-label">Workspace</div>
+      <nav class="side-links" aria-label="Main">${links()}</nav>
+      <div class="side-foot">
+        <a href="/setup"${cur("setup")} data-tip-side="Settings">${ICONS.gear}<span>Settings</span></a>
+        <button type="button" id="jb-help" data-tip-side="Help">${ICONS.help}<span>Help &amp; glossary</span></button>
+        <div class="side-note"><span class="dot"></span><span>Runs on this computer</span></div>
+      </div>`;
+    const setCollapsed = v => {
+      collapsed = v; document.documentElement.classList.toggle("side-min", v);
+      const t = side.querySelector("#jb-collapse"); t.setAttribute("aria-expanded", String(!v)); t.setAttribute("aria-label", v ? "Expand sidebar" : "Collapse sidebar");
+      if (!v) side.querySelectorAll("[data-tip-side]").forEach(a => a.removeAttribute("data-tip"));
+      try { localStorage.setItem("jb_side", v ? "min" : ""); } catch (e) {}
+    };
+    document.documentElement.classList.add("has-side"); if (collapsed) document.documentElement.classList.add("side-min");
+    const mount = () => {
+      if (document.body.classList.contains("onboarding")) { document.documentElement.classList.remove("has-side"); return; }
+      document.body.prepend(side); setCollapsed(collapsed);
+      side.querySelector("#jb-collapse").onclick = () => setCollapsed(!collapsed);
+      const tabs = () => document.body.insertAdjacentHTML("beforeend", `<nav class="tabbar" aria-label="Main">${links(true)}</nav>`);
+      document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", tabs) : tabs();
+    };
+    document.body ? mount() : document.addEventListener("DOMContentLoaded", mount);
+    /* phone top bar: brand + settings + help (the sidebar is hidden there) */
+    w.insertAdjacentHTML("afterbegin", `<a class="brand mbrand" href="/" aria-label="Jobber home"><span class="mark">${MARK}</span></a>`);
+    w.insertAdjacentHTML("beforeend", `<a class="helpbtn mbtn${page === "setup" ? " on" : ""}" href="/setup" aria-label="Settings">${ICONS.gear}</a><button type="button" class="helpbtn mbtn" data-help aria-label="Help and glossary">${ICONS.help}</button>`);
+    /* collapsed sidebar: show the label as a tooltip */
+    document.addEventListener("pointerover", e => { const a = e.target.closest && e.target.closest(".side-min .sidenav [data-tip-side]"); if (a && a !== tipFor) { a.dataset.tip = a.dataset.tipSide; showTip(a); } });
   }
 
   /* ---------- Tooltips ---------- */
@@ -174,7 +207,7 @@
     helpEl.querySelector("[data-close]").focus();
   }
   function closeHelp() { if (helpEl) { helpEl.remove(); helpEl = null; const b = document.getElementById("jb-help"); b && b.focus(); } }
-  document.addEventListener("click", e => { if (e.target.closest && e.target.closest("#jb-help")) openHelp(); });
+  document.addEventListener("click", e => { if (e.target.closest && e.target.closest("#jb-help,[data-help]")) openHelp(); });
 
   /* ---------- Toast ---------- */
   let toastT = null;
