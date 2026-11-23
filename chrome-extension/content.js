@@ -1,4 +1,4 @@
-// Job Hunter Autofill v2 (Chrome extension content script).
+// Jobber Autofill v2 (Chrome extension content script).
 // Fills fields, attaches the CV, highlights what's left. NEVER clicks Submit.
 (() => {
   if (window.__jh) { if (window.__jhForce && window.__jh.fill) window.__jh.fill(true); return; }
@@ -205,7 +205,7 @@ function main(P) {
       learned: mem.learned || S.last, title: document.title, host }, r => { S.warn = r && r.warn; badge(); });
     try { sessionStorage.removeItem("jh_form"); } catch (e) {}
   }
-  // Cover letter: from the Job Hunter app (role template for this job), or offline templates
+  // Cover letter: from the Jobber app (role template for this job), or offline templates
   function jobInfo() {
     const seg = location.pathname.split("/").filter(Boolean);
     const slug = /greenhouse|lever|ashbyhq|workable|smartrecruiters|recruitee/.test(host) ? (seg[0] === "embed" ? "" : seg[0]) : "";
@@ -239,12 +239,12 @@ function main(P) {
       root = h.attachShadow({ mode: "open" });
       document.documentElement.appendChild(h);
     }
-    const msg = S.submitted ? "Submitted. Logged as applied in Job Hunter." + (S.warn ? `<br><b>${S.warn}</b>` : "")
+    const msg = S.submitted ? "Submitted. Logged as applied in Jobber." + (S.warn ? `<br><b>${S.warn}</b>` : "")
       : !AUTO && !S.filled ? "Unknown site. Click Fill to autofill."
       : `${S.filled} filled · ${S.missing ? `<b>${S.missing} need you</b> (orange)` : "nothing missing"}${S.coverNote ? " · cover letter: " + S.coverNote : ""}${S.captcha ? " · CAPTCHA may appear" : ""}`;
     root.innerHTML = `<style>div{font:13px/1.4 system-ui,sans-serif;background:#1c1c1a;color:#fff;border-radius:10px;padding:10px 12px;box-shadow:0 4px 16px rgba(0,0,0,.3);max-width:300px}
       b{color:#f0c062}button{margin-left:8px;border:0;border-radius:6px;padding:3px 9px;background:#7d9cff;color:#0d1530;font-weight:600;cursor:pointer}small{display:block;opacity:.7;margin-top:4px}</style>
-      <div>Job Hunter: ${msg}${S.submitted ? "" : `<button id=f>Fill</button><small>Review, then press the site's Submit yourself.</small>`}</div>`;
+      <div>Jobber: ${msg}${S.submitted ? "" : `<button id=f>Fill</button><small>Review, then press the site's Submit yourself.</small>`}</div>`;
     const f = root.getElementById("f"); if (f) f.onclick = () => fillOnce(true);
   }
   if (!AUTO && !window.__jhForce) return;  // unknown site: only fill when you click the toolbar icon

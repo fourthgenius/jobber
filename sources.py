@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 
 import requests
 
-UA = {"User-Agent": "Mozilla/5.0 (personal job-hunter; low volume)"}
+UA = {"User-Agent": "Mozilla/5.0 (personal jobber; low volume)"}
 
 
 def _first_word(cfg) -> str:

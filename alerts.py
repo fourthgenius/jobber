@@ -65,7 +65,7 @@ def send(text: str) -> None:
 
 
 def test() -> dict:
-    send("✅ Job Hunter is connected. Your daily job digest will arrive here.")
+    send("✅ Jobber is connected. Your daily job digest will arrive here.")
     return {"ok": True}
 
 
@@ -76,7 +76,7 @@ def digest(c, cfg) -> str:
     fu = copilot.followups(jobs, cfg)
     fund = [f for f in copilot.funding_list(c) if f["seen"][:10] == copilot._now()[:10]][:3]
     e = html.escape
-    lines = [f"<b>Job Hunter · {len(q)} to apply today</b>"]
+    lines = [f"<b>Jobber · {len(q)} to apply today</b>"]
     for j in q:
         tag = "⭐ " if j["watch"] else ""
         pay = f" · {money(j['sal_max_lpa'], cfg)}" if j.get("sal_max_lpa") else ""

@@ -1,4 +1,4 @@
-"""Job Hunter Copilot: the "after a job is found" layer.
+"""Jobber Copilot: the "after a job is found" layer.
 
 Apply-today queue, follow-ups, fuzzy dedupe + repost flags, AI fit / cover note / tailored CV / outreach /
 interview prep (llm.py), funnel analytics, company watchlist, funding radar, and a "save any job" bookmarklet.
@@ -597,9 +597,9 @@ def _save_form(q: dict, msg: str = "") -> bytes:
         title, company = m.group(1), m.group(2)
     e = lambda s: html.escape(s or "", quote=True)  # noqa: E731
     body = f"""<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,
-initial-scale=1"><title>Save to Job Hunter</title><link rel="stylesheet" href="/theme.css"></head>
-<body><div class="wrap" style="max-width:520px;padding-top:24px"><h2 style="font-family:var(--f-display)">Save to Job
-Hunter</h2>{f'<p class="pill good">{e(msg)}</p>' if msg else ''}
+initial-scale=1"><title>Save to Jobber</title><link rel="stylesheet" href="/theme.css"></head>
+<body><div class="wrap" style="max-width:520px;padding-top:24px"><h2 style="font-family:var(--f-display)">Save to
+Jobber</h2>{f'<p class="pill good">{e(msg)}</p>' if msg else ''}
 <form method="post" action="/copilot/save" class="panel" style="padding:16px;display:grid;gap:10px">
 <label class="label">Role title<input name="title" value="{e(title)}" required style="width:100%;padding:8px"></label>
 <label class="label">Company<input name="company" value="{e(company)}" required style="width:100%;padding:8px"></label>
@@ -751,7 +751,7 @@ def install_schedule(time_hhmm="08:30") -> dict:
     if sys.platform != "win32":
         raise RuntimeError("Daily schedule setup is for Windows; on Mac/Linux add `python alerts.py --fetch` to cron.")
     bat = HERE / "daily.bat"
-    r = subprocess.run(["schtasks", "/Create", "/F", "/SC", "DAILY", "/ST", time_hhmm, "/TN", "JobHunterDaily",
+    r = subprocess.run(["schtasks", "/Create", "/F", "/SC", "DAILY", "/ST", time_hhmm, "/TN", "JobberDaily",
                         "/TR", f'"{bat}"'], capture_output=True, text=True)
     if r.returncode:
         raise RuntimeError((r.stderr or r.stdout).strip()[:300])

@@ -1,5 +1,5 @@
-// Job Hunter Autofill: background worker.
-// Profile source, in order: the Job Hunter app (http://127.0.0.1:8765) when it's running,
+// Jobber Autofill: background worker.
+// Profile source, in order: the Jobber app (http://127.0.0.1:8765) when it's running,
 // else the last copy saved in Chrome, else snapshot.json shipped inside this folder.
 const APP = "http://127.0.0.1:8765";
 const API = APP + "/api/apply/ext";
@@ -40,7 +40,7 @@ async function applied(msg) {
     const { pending = [] } = await chrome.storage.local.get("pending");
     pending.push(msg);
     await chrome.storage.local.set({ pending });
-    return { warn: "Job Hunter app is closed, it will be logged when the app is open." };
+    return { warn: "Jobber app is closed, it will be logged when the app is open." };
   }
 }
 

@@ -3,7 +3,7 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "
 const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? "just now" : m < 60 ? `${m} min ago` : `${Math.round(m / 60)} h ago`; };
 
 chrome.runtime.sendMessage({ type: "profile", force: true }, P => {
-  if (!P || !P.fields) { $("who").textContent = "No profile found. Open the Job Hunter app once."; return; }
+  if (!P || !P.fields) { $("who").textContent = "No profile found. Open the Jobber app once."; return; }
   const f = P.fields, app = P.source === "app";
   $("who").innerHTML = `<b>${esc(f.full_name || `${f.first_name} ${f.last_name}`)}</b>
     <div class="sub">${esc(f.email)} · ${esc(f.phone)}</div>

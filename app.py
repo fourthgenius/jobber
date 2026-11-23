@@ -151,6 +151,6 @@ if __name__ == "__main__":
         store.repair(c)
     srv = ThreadingHTTPServer(("127.0.0.1", PORT), H)
     url = f"http://127.0.0.1:{PORT}"
-    print(f"Job Hunter running at {url}  (Ctrl+C to stop)")
+    print(f"Jobber running at {url}  (Ctrl+C to stop)")
     threading.Timer(0.8, lambda: _open(url)).start()
     srv.serve_forever()

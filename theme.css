@@ -1,4 +1,4 @@
-/* Job Hunter shared theme (light only). Served by app.py at /theme.css; used by every page.
+/* Jobber shared theme (light only). Served by app.py at /theme.css; used by every page.
    Direction: a working ledger, not a SaaS dashboard. Warm paper, ink type, hairline rules instead of floating cards,
    a serif for headings, one vermilion accent for the action that matters. Token names are stable: pages rely on them. */
 @import url("https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap");

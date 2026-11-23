@@ -1,6 +1,6 @@
 """Batch apply, Chrome-extension edition.
 
-Your own Chrome does the applying: the "Job Hunter Autofill" extension (chrome-extension/ folder,
+Your own Chrome does the applying: the "Jobber Autofill" extension (chrome-extension/ folder,
 loaded unpacked) fills each form from profile.json + your CV. You review and press Submit yourself;
 the extension sees the confirmation page and reports it here, so the job is logged as applied and
 any new question you answered is learned. No browser automation, so nothing for sites to flag.

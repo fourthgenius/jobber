@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Job Hunter Copilot</title>
+<title>Jobber Copilot</title>
 <link rel="stylesheet" href="/theme.css">
 <style>
 main{padding:20px 0 60px}
@@ -50,7 +50,7 @@ input.in,select.in,textarea.in{border:1px solid var(--line-strong);background:va
 </head>
 <body>
 <header class="appbar"><div class="wrap">
-  <a class="brand" href="/">Job <i>Hunter</i></a>
+  <a class="brand" href="/">Job<i>ber</i></a>
   <nav class="nav"><a href="/">Jobs</a><a href="/apply">Batch apply</a><a class="on" href="/copilot">Copilot</a><a href="/prep">Interview prep</a><a href="/setup">Setup</a></nav>
   <div class="grow"></div>
   <span id="aiPill" class="pill"></span>
@@ -250,12 +250,12 @@ function setup() {
      ${s.ai ? `<button class="btn sm" onclick="act('/api/copilot/score',this)">AI-score new jobs</button>` : ""}</div></div>
    <div class="panel sec"><h3>Chrome extension (autofill)</h3>
      <div class="small muted" style="margin-bottom:8px">Fills application forms with your details, attaches your CV and pastes the right cover letter. It never presses Submit.</div>
-     <ol class="small" style="padding-left:18px;margin:0 0 10px"><li>In Chrome, open <b>chrome://extensions</b> (paste it in the address bar).</li><li>Turn on <b>Developer mode</b> (top right).</li><li>Click <b>Load unpacked</b> and choose the folder that opens with the button below.</li><li>Pin "Job Hunter Autofill" from the puzzle icon. On any job form press its icon or Alt+Shift+F.</li></ol>
+     <ol class="small" style="padding-left:18px;margin:0 0 10px"><li>In Chrome, open <b>chrome://extensions</b> (paste it in the address bar).</li><li>Turn on <b>Developer mode</b> (top right).</li><li>Click <b>Load unpacked</b> and choose the folder that opens with the button below.</li><li>Pin "Jobber Autofill" from the puzzle icon. On any job form press its icon or Alt+Shift+F.</li></ol>
      <button class="btn sm primary" onclick="act('/api/copilot/open-extension',this)">Open extension folder</button>
      <button class="btn sm ghost" onclick="navigator.clipboard.writeText('chrome://extensions').then(()=>toast('Copied: paste it in Chrome'))">Copy chrome://extensions</button></div>
    <div class="panel sec"><h3>Save any job (bookmarklet)</h3>
      <div class="small muted" style="margin-bottom:8px">For sites the app can't fetch (Wellfound, iimjobs, Instahyre, Cutshort, YC Work at a Startup, company sites): drag this button to your bookmarks bar. On any job page, click it to save the job into your tracker. Select the job description text first for the best result.</div>
-     <a class="btn primary" id="bm" href="#">＋ Save to Job Hunter</a></div>
+     <a class="btn primary" id="bm" href="#">＋ Save to Jobber</a></div>
    <div class="panel sec"><h3>Tuning</h3><div class="small muted">Edit config.json → "copilot" to change: queue_min_fit (${s.queue_min_fit}), queue_max_age_days (${s.queue_max_age_days}), followup_after_days (${s.followup_after_days}), alert_top_n (${s.alert_top_n}), alert_min_fit (${s.alert_min_fit}), llm_max_per_run (${s.llm_max_per_run}).</div></div>
   </div>`;
   $("#bm").setAttribute("href", s.bookmarklet);

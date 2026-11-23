@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Job Hunter Autofill",
+  "name": "Jobber Autofill",
   "version": "2.0.0",
-  "description": "Fills job applications and cover letters from your Job Hunter profile and CV, even with the app closed. Never presses Submit.",
+  "description": "Fills job applications and cover letters from your Jobber profile and CV, even with the app closed. Never presses Submit.",
   "permissions": [
     "storage",
     "activeTab",
@@ -16,7 +16,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Job Hunter Autofill",
+    "default_title": "Jobber Autofill",
     "default_popup": "popup.html"
   },
   "commands": {

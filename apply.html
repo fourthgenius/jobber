@@ -39,7 +39,7 @@ details summary{cursor:pointer;font-weight:600}
 </head>
 <body>
 <header class="appbar"><div class="wrap">
-  <a class="brand" href="/">Job <i>Hunter</i></a>
+  <a class="brand" href="/">Job<i>ber</i></a>
   <nav class="nav"><a href="/">Jobs</a><a class="on" href="/apply">Batch apply</a><a href="/copilot">Copilot</a><a href="/prep">Interview prep</a><a href="/setup">Setup</a></nav>
   <span class="grow"></span>
   <span class="muted small" id="bstat"></span>
@@ -68,7 +68,7 @@ details summary{cursor:pointer;font-weight:600}
         <div class="bar"><span class="big" id="nsel">0</span><span class="sub">selected</span><span class="grow"></span>
           <label class="sub">Tabs at a time <input id="bs" type="number" min="1" max="15" value="5" ></label></div>
         <button class="btn primary" id="go" style="width:100%;justify-content:center">Open &amp; prefill</button>
-        <p class="sub" style="margin:8px 0 0">Jobs open as background tabs in this Chrome window. The Job Hunter extension fills each form and attaches your CV. In each tab: check the orange fields, press the site's <b>Submit</b>. The extension logs it as applied and the next job opens. Lever and SmartRecruiters are paced (3 per 30 min) so they don't block you.</p>
+        <p class="sub" style="margin:8px 0 0">Jobs open as background tabs in this Chrome window. The Jobber extension fills each form and attaches your CV. In each tab: check the orange fields, press the site's <b>Submit</b>. The extension logs it as applied and the next job opens. Lever and SmartRecruiters are paced (3 per 30 min) so they don't block you.</p>
       </div>
       <h2>Queue <span class="sub" id="qsum"></span></h2>
       <div class="card" id="queue"><span class="sub">Nothing queued yet.</span></div>
@@ -118,7 +118,7 @@ async function poll(){
   const s=await fetch("/api/apply/state").then(r=>r.json()).catch(()=>null);if(!s)return;
   $("bstat").textContent=EXT?"Chrome extension connected":"";
   const a=$("alert");const msgs=[];
-  if(!EXT&&(s.items||[]).length)msgs.push(`Chrome extension not detected. Open this page in Chrome with the Job Hunter Autofill extension loaded (see README), then refresh.`);
+  if(!EXT&&(s.items||[]).length)msgs.push(`Chrome extension not detected. Open this page in Chrome with the Jobber Autofill extension loaded (see README), then refresh.`);
   for(const m of Object.values(s.paused||{}))msgs.push("⏸ "+esc(m));
   if(s.missing&&s.missing.length)msgs.push(`Fill in once: <b>${s.missing.map(k=>LBL[k]).join(", ")}</b> <button class="btn sm" onclick="$('prof').open=true;$('prof').scrollIntoView()">Add answers</button>`);
   a.hidden=!msgs.length;a.innerHTML=msgs.join("<br>");

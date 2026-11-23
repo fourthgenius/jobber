@@ -1,4 +1,4 @@
-"""Claude helpers for Job Hunter: fit scoring, cover notes, CV tailoring, outreach, follow-ups, interview prep.
+"""Claude helpers for Jobber: fit scoring, cover notes, CV tailoring, outreach, follow-ups, interview prep.
 
 Key: secrets.json -> "anthropic_api_key" (or the ANTHROPIC_API_KEY env var). Without a key every
 function raises NoKey and the app falls back to templates, so nothing breaks.

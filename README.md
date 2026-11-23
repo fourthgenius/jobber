@@ -1,10 +1,10 @@
 # Jobber
 
-Jobber (the app calls itself Job Hunter) is a free, open-source job search assistant that runs on your own computer. It finds jobs that match **your** roles, locations and pay floor across job boards and company career pages, shows them in one clean dashboard with a CV fit score, tracks your applications, helps you fill application forms faster, and gets you ready for interviews.
+Jobber is a free, open-source job search assistant that runs on your own computer. It finds jobs that match **your** roles, locations and pay floor across job boards and company career pages, shows them in one clean dashboard with a CV fit score, tracks your applications, helps you fill application forms faster, and gets you ready for interviews.
 
 Works for any field: product, engineering, data, design, marketing, sales, operations, finance, or your own custom list of titles. Works in any country and currency.
 
-> **It never applies for you.** Job Hunter fills forms and drafts text, but you review and press Submit yourself, every time. It never sends messages to recruiters on your behalf.
+> **It never applies for you.** Jobber fills forms and drafts text, but you review and press Submit yourself, every time. It never sends messages to recruiters on your behalf.
 
 ## What you get
 
@@ -50,7 +50,7 @@ LinkedIn is read from its public job pages in a real, **logged-out** browser win
 ### Chrome extension (for faster applying)
 1. Open `chrome://extensions` and turn on **Developer mode**.
 2. Click **Load unpacked** and choose the `chrome-extension` folder in this project.
-3. Pin "Job Hunter Autofill". On Greenhouse, Lever, Ashby, Workday, SmartRecruiters, Workable and most forms it fills your details from Setup and attaches your resume. Press Alt+Shift+F on any other site. It never presses Submit.
+3. Pin "Jobber Autofill". On Greenhouse, Lever, Ashby, Workday, SmartRecruiters, Workable and most forms it fills your details from Setup and attaches your resume. Press Alt+Shift+F on any other site. It never presses Submit.
 
 ### Daily search + Telegram digest (optional)
 - **Telegram:** create a bot with @BotFather, paste the token in Copilot → Setup, send "hi" to your bot, press **Find my chat** then **Send test**.
@@ -65,7 +65,7 @@ LinkedIn is read from its public job pages in a real, **logged-out** browser win
 | Remotive, Remote OK, Himalayas, Jobicy, We Work Remotely | Official public APIs / RSS (remote jobs). |
 | LinkedIn | Public job pages, logged-out browser, slow pacing. |
 | Indeed, Naukri, Glassdoor | [python-jobspy](https://github.com/speedyapply/JobSpy), public listings, no login. Naukri is India-only. |
-| Anything else (Wellfound, YC, company sites…) | Use the **Save to Job Hunter** bookmarklet on Copilot → Setup to add any job page to your tracker. |
+| Anything else (Wellfound, YC, company sites…) | Use the **Save to Jobber** bookmarklet on Copilot → Setup to add any job page to your tracker. |
 
 Please respect each site's terms of use. The app keeps volumes low, uses your own internet connection, and never logs in anywhere.
 
