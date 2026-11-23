@@ -177,3 +177,48 @@ input[type=checkbox],input[type=radio]{accent-color:var(--accent);width:18px;hei
 }
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* ---------- Progressive disclosure: overflow menus, popovers, collapsible sections ---------- */
+.btn.icon{padding:0;width:36px;min-height:36px}
+.btn.icon.sm{width:34px;min-height:34px}
+.helpbtn{text-decoration:none}
+.helpbtn.on{color:var(--accent-ink);border-color:var(--accent);background:var(--accent-soft)}
+details.mnu,details.pop{position:relative;display:inline-block}
+details.mnu:not([open])>.mnu-list,details.pop:not([open])>.pop-body,details.sect:not([open])>.sect-body{display:none}
+details.mnu>summary,details.pop>summary{list-style:none;cursor:pointer}
+details.mnu>summary::-webkit-details-marker,details.pop>summary::-webkit-details-marker{display:none}
+details.mnu[open]>summary,details.pop[open]>summary{background:var(--sunken);color:var(--fg)}
+.mnu-list,.pop-body{position:absolute;right:0;top:calc(100% + 6px);z-index:50;min-width:220px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-pop);padding:6px;animation:jb-pop .14s var(--ease)}
+.mnu.left .mnu-list,.pop.left .pop-body{right:auto;left:0}
+.mnu-list button,.mnu-list a{display:flex;width:100%;align-items:center;gap:10px;padding:9px 10px;border:0;background:none;border-radius:8px;text-align:left;cursor:pointer;font-size:14px;font-weight:500;color:var(--fg);text-decoration:none;white-space:nowrap}
+.mnu-list button:hover,.mnu-list a:hover,.mnu-list button:focus-visible,.mnu-list a:focus-visible{background:var(--sunken)}
+.mnu-list svg{width:16px;height:16px;color:var(--mute);flex:none}
+.mnu-list .danger{color:var(--bad)}
+.mnu-list .danger svg{color:var(--bad)}
+.mnu-list hr{border:0;border-top:1px solid var(--line);margin:5px 4px}
+.mnu-list .on{color:var(--accent-ink);font-weight:700}
+.pop-body{min-width:300px;max-width:min(420px,calc(100vw - 32px));padding:16px;display:grid;gap:14px}
+.pop-body h4{margin:0 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.pop-body .row{display:flex;flex-wrap:wrap;gap:6px}
+.badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--accent);color:#fff;font-size:11.5px;font-weight:700}
+@keyframes jb-pop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+/* collapsible section with a quiet header */
+details.sect{border-top:1px solid var(--line);padding:2px 0}
+details.sect>summary{display:flex;align-items:center;gap:8px;padding:12px 0;cursor:pointer;list-style:none;font-weight:700;font-size:14.5px}
+details.sect>summary::-webkit-details-marker{display:none}
+details.sect>summary .hint{font-weight:500;color:var(--faint);font-size:13px;margin-left:auto}
+details.sect>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--faint);border-bottom:2px solid var(--faint);transform:rotate(45deg);margin:0 4px 4px 8px;transition:transform .15s}
+details.sect[open]>summary::after{transform:rotate(-135deg);margin-bottom:-2px}
+details.sect>.sect-body{padding:0 0 14px}
+/* terms you can hover/tap for a definition, instead of an extra (i) button */
+.term{border-bottom:1px dotted currentColor;cursor:help}
+@media (max-width:760px){
+  .pop-body{position:fixed;left:12px;right:12px;top:auto;bottom:calc(72px + env(safe-area-inset-bottom,0px));max-width:none;min-width:0}
+  .mnu-list{min-width:200px}
+}
+.pop-body .chip{min-height:32px;padding:4px 12px;font-size:13px}
+@media (max-width:760px){
+  .appbar .wrap{gap:8px}
+  .appbar .helpbtn{width:36px;height:36px}
+  .appbar .brand>span:not(.mark){display:none}
+}

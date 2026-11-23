@@ -14,7 +14,8 @@
 .flow .steps li span{display:block;font-weight:500;color:var(--faint);font-size:12.5px}
 .flow .steps li+li{padding-left:12px;border-left:1px solid var(--line)}
 #extGuide,#alert{margin-top:14px}
-#extGuide ol{margin:6px 0 0;padding-left:18px}
+#extGuide ol{margin:0;padding-left:18px}
+#extGuide details.sect{border:0;padding:0}#extGuide details.sect>summary{padding:6px 0 0;font-size:13.5px;color:var(--info)}#extGuide details.sect>summary::after{border-color:var(--info)}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:24px;align-items:start;padding:18px 0 56px}
 .colh{display:flex;align-items:center;gap:8px;margin:0 0 12px}
 .colh h2{font-size:18px;margin:0}
@@ -74,35 +75,33 @@ details summary{cursor:pointer;font-weight:700}
 <main class="wrap">
   <section class="pagehead"><div class="grow">
     <h1>Batch apply</h1>
-    <p>Apply to several jobs in one sitting. Jobber opens them a few at a time with the forms already filled in. <button class="tipbtn" data-term="batch"></button></p>
-  </div><span class="promise" id="promise"><span id="shieldIcon"></span>You always press Submit <button class="tipbtn" data-term="never"></button></span></section>
+    <p>Apply to several jobs in one sitting. Jobber opens them a few at a time with the forms already <span class="term" data-term="prefill" tabindex="0">filled in</span>.</p>
+  </div><span class="promise" id="promise" data-term="never" tabindex="0"><span id="shieldIcon"></span>You always press Submit</span></section>
 
   <div class="panel flow"><ol class="steps" id="flowSteps">
     <li class="now"><div>Pick jobs<span>Tick the ones you want below</span></div></li>
     <li><div>Open &amp; prefill<span>The extension fills each form</span></div></li>
     <li><div>Check &amp; submit<span>Review orange fields, press Submit</span></div></li>
   </ol></div>
-  <div class="guide" id="extGuide" hidden><span class="gi" id="plugIcon"></span><div><b>One-time setup: add the Jobber extension to Chrome</b>
-    <p>It's what fills in the forms. Takes about 2 minutes:</p>
-    <ol><li>Open <b>chrome://extensions</b> in Chrome and switch on <b>Developer mode</b> (top right).</li>
+  <div class="guide" id="extGuide" hidden><span class="gi" id="plugIcon"></span><div class="grow"><b>Connect the Jobber <span class="term" data-term="extension" tabindex="0">Chrome extension</span> once</b> <span class="muted">· it fills in the forms · about 2 minutes</span>
+    <details class="sect inline"><summary>Show me how</summary><div class="sect-body"><ol><li>Open <b>chrome://extensions</b> in Chrome and switch on <b>Developer mode</b> (top right).</li>
       <li>Click <b>Load unpacked</b> and choose the <b>chrome-extension</b> folder inside Jobber.</li>
       <li>Come back here and refresh. This box disappears once it's connected.</li></ol>
-    <div class="acts"><a class="btn sm" href="/copilot#setup">Step-by-step help</a></div></div></div>
+    <div class="acts"><a class="btn sm" href="/copilot#setup">Step-by-step help</a></div></div></details></div></div>
   <div class="notice" id="alert" hidden></div>
 
   <div class="layout">
     <section>
       <div class="colh"><h2>Pick jobs</h2><span class="sub">Best fit first</span></div>
       <div class="bar">
-        <button class="chip on" data-f="fast">Quick forms</button><button class="tipbtn" data-term="quick"></button>
+        <button class="chip on" data-f="fast" data-term="quick">Quick forms</button>
         <button class="chip" data-f="maybe">Company sites</button>
         <button class="chip" data-f="redirect">LinkedIn/Indeed</button>
-        <button class="chip" data-f="slow">Workday</button><button class="tipbtn" data-term="workday"></button>
+        <button class="chip" data-f="slow" data-term="workday">Workday</button>
         <span class="grow"></span>
-        <button class="btn sm" id="top">Select top 50</button>
-        <button class="btn sm ghost" id="none">Clear</button>
+        <details class="mnu"><summary class="btn sm">Select…</summary><div class="mnu-list" role="menu"><button type="button" id="top">Select the top 50 shown</button><button type="button" id="none">Clear selection</button></div></details>
       </div>
-      <div class="tablewrap"><table><thead><tr><th style="width:44px"><input type="checkbox" id="all" aria-label="Select all shown"></th><th>Job</th><th>Fit <button class="tipbtn" data-term="fit"></button></th><th>Portal <button class="tipbtn" data-term="ats"></button></th><th>Posted</th></tr></thead>
+      <div class="tablewrap"><table><thead><tr><th style="width:44px"><input type="checkbox" id="all" aria-label="Select all shown"></th><th>Job</th><th><span class="term" data-term="fit" tabindex="0">Fit</span></th><th><span class="term" data-term="ats" tabindex="0">Portal</span></th><th>Posted</th></tr></thead>
       <tbody id="rows"></tbody></table></div>
     </section>
     <aside class="side">
@@ -110,13 +109,13 @@ details summary{cursor:pointer;font-weight:700}
         <div class="selbox"><span class="big" id="nsel">0</span><span class="sub">jobs selected</span><span class="grow"></span>
           <label class="sub">Tabs at a time <input id="bs" type="number" min="1" max="15" value="5"></label></div>
         <button class="btn primary lg" id="go" style="width:100%">Open &amp; prefill</button>
-        <p class="sub" style="margin:12px 0 0">Jobs open as tabs in this Chrome window, filled in with your details and CV. In each tab, check the orange fields and press the site's own <b>Submit</b>. The next job then opens. Some portals are paced so they don't block you. <button class="tipbtn" data-term="pacing"></button></p>
+        <p class="sub" style="margin:12px 0 0">Jobs open as tabs in this Chrome window, filled in with your details and CV. In each tab, check the orange fields and press the site's own <b>Submit</b>. The next job then opens. Some portals are <span class="term" data-term="pacing" tabindex="0">paced</span> so they don't block you.</p>
       </div>
       <h3>Queue <span class="sub" id="qsum"></span></h3>
       <div class="card" id="queue"></div>
-      <h3>Your answers <button class="tipbtn" data-tip="What Jobber types into forms. Edit them in Setup → Your details, or here."></button></h3>
+      <h3><span class="term" data-tip="What Jobber types into forms. Edit them in Setup → Your details, or here." tabindex="0">Your answers</span></h3>
       <div class="card">
-        <details id="prof"><summary>Details used on every form</summary><div class="form" id="form" style="margin-top:14px"></div>
+        <details id="prof" class="sect" style="border:0"><summary>Details used on every form<span class="hint" id="profHint"></span></summary><div class="form" id="form" style="margin-top:14px"></div>
           <h3>Learned answers</h3><div id="learned" class="sub"></div>
           <button class="btn primary sm" id="save" style="margin-top:12px">Save answers</button></details>
       </div>
@@ -193,7 +192,7 @@ async function loadProfile(){
   const L=Object.entries(PROF.answers||{});
   $("learned").innerHTML=L.length?L.map(([q,a])=>`<div class="form" style="grid-template-columns:1fr 1fr auto;margin-bottom:6px"><input data-q value="${esc(q)}"><input data-a value="${esc(a)}"><button class="btn sm" onclick="this.parentElement.remove()">✕</button></div>`).join("")
     :"Questions you answer yourself in a form are saved here after you submit, and filled automatically next time.";
-  if(PROF.missing.length)$("prof").open=true;
+  $("profHint").textContent=PROF.missing.length?PROF.missing.length+" to fill in":"All set";
 }
 $("save").onclick=async()=>{
   const fields={};document.querySelectorAll("[data-k]").forEach(i=>fields[i.dataset.k]=i.value.trim());

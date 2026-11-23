@@ -25,7 +25,12 @@ main{padding-bottom:64px}
 .fit small{display:block;font:600 11.5px/1.5 var(--f-body);color:var(--faint);margin-top:2px}
 .fit.hi{color:var(--good)}.fit.mid{color:var(--warn)}.fit.lo{color:var(--mute)}
 .t{font-weight:700;font-size:16px;line-height:1.3}.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center}
-.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.tlink{all:unset;cursor:pointer;font:inherit}.tlink:hover{color:var(--accent-ink);text-decoration:underline;text-underline-offset:3px}.tlink:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tipline{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:14px;color:var(--mute)}
+.tabs .mnu-list small{display:block;font-size:12px;color:var(--faint);font-weight:500}
+.tabs .mnu-list button{align-items:flex-start}.tabs .mnu-list svg{margin-top:3px}
+.tabs summary.chip svg:last-child{width:14px;height:14px}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:14px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
 .kpi{padding:16px}.kpi .v{font:800 30px/1.1 var(--f-display);font-variant-numeric:tabular-nums;margin-top:4px}
@@ -78,6 +83,7 @@ let D = null, tab = (location.hash.slice(1) || "today");
 if (!location.hash) { try { tab = localStorage.getItem("cp_tab") || "today"; } catch (e) {} }
 const TABS = [["today","Apply today","queue","send"],["follow","Follow-ups","followups","clock"],["outreach","Outreach","outreach","user"],
   ["interviews","Interviews","interviews","calendar"],["letters","Cover letters",null,"file"],["insights","Insights",null,"chart"],["radar","Radar",null,"radar"],["setup","Setup",null,"setup"]];
+const MORE_HINT = {letters: "Reusable letters per role type", insights: "What's working in your search", radar: "Dream companies and fresh funding", setup: "Telegram alerts, AI key, extension"};
 const intro = (ic, title, body) => `<div class="intro"><span class="ii">${ICONS[ic]}</span><div><b>${title}</b>${body}</div></div>`;
 
 async function api(path, body) {
@@ -100,44 +106,48 @@ function pills(j) {
   if (j.exp_min != null) p.push(`<span class="pill">${j.exp_min}${j.exp_max ? "-" + j.exp_max : "+"} yrs</span>`);
   if (j.evergreen) p.push(`<span class="pill warn" data-term="evergreen">Long-running post</span>`);
   if (j.ats) p.push(`<span class="pill" data-term="ats">${esc(j.ats[0].toUpperCase() + j.ats.slice(1))}</span>`);
-  return p.join("");
+  return p.slice(0, 3).join("");
 }
-function row(j, acts) {
-  return `<div class="panel row">${fitCell(j)}<div><div class="t">${esc(j.title)}</div>
+function row(j, acts, kitId) {
+  return `<div class="panel row">${fitCell(j)}<div><div class="t">${kitId ? `<button class="tlink" onclick="kit('${kitId}','kit')" data-tip="Open the Apply kit">${esc(j.title)}</button>` : esc(j.title)}</div>
     <div class="meta"><span class="muted">${esc(j.company)}${j.location ? " · " + esc(j.location) : ""}</span>${pills(j)}</div>
     ${j.ai ? `<div class="small muted" style="margin-top:4px">${esc(j.ai.verdict)}</div>` : ""}</div>
     <div class="acts">${acts}</div></div>`;
 }
 const openBtn = j => `<a class="btn sm primary" target="_blank" rel="noopener" href="${esc(j.apply_url || j.url)}" onclick="markApplied('${j.id}')">Apply ↗</a>`;
-const kitBtn = (j, t="kit") => `<button class="btn sm" onclick="kit('${j.id}','${t}')">${t === "prep" ? "Prep pack" : "Apply kit"}</button>`;
 
 function render() {
   const s = D.settings;
   $("#aiPill").className = "pill " + (s.ai ? "good" : "");
   $("#aiPill").textContent = s.ai ? "AI on" : "AI off (templates)";
   const notes = [];
-  if (!s.telegram && tab !== "setup") notes.push(`<span>Want new jobs on your phone every morning? Connect Telegram in a few minutes.</span><button class="btn sm" onclick="go('setup')">Set up alerts</button>`);
-  $("#setupNote").innerHTML = notes.map(n => `<div class="notice info" style="margin-top:14px">${n}</div>`).join("");
-  $("#tabs").innerHTML = TABS.map(([k, label, key, ic]) =>
-    `<button class="chip ${tab === k ? "on" : ""}" role="tab" aria-selected="${tab === k}" onclick="go('${k}')">${ICONS[ic]}${label}${key && D[key].length ? ` <b>${D[key].length}</b>` : ""}</button>`).join("");
+  let tgHide = false; try { tgHide = localStorage.getItem("cp_tg_hide") === "1"; } catch (e) {}
+  if (!s.telegram && tab !== "setup" && !tgHide) notes.push(`<span>Tip: get new jobs on your phone each morning. <a href="#setup" onclick="go('setup');return false">Set up Telegram alerts</a></span><button class="btn ghost icon sm" aria-label="Dismiss tip" onclick="try{localStorage.setItem('cp_tg_hide','1')}catch(e){};render()">${ICONS.x}</button>`);
+  $("#setupNote").innerHTML = notes.map(n => `<div class="tipline">${n}</div>`).join("");
+  const MAIN = TABS.slice(0, 4), MORE = TABS.slice(4), inMore = MORE.find(t => t[0] === tab);
+  $("#tabs").innerHTML = MAIN.map(([k, label, key, ic]) =>
+    `<button class="chip ${tab === k ? "on" : ""}" role="tab" aria-selected="${tab === k}" onclick="go('${k}')">${ICONS[ic]}${label}${key && D[key].length ? ` <b>${D[key].length}</b>` : ""}</button>`).join("") +
+    `<details class="mnu left"><summary class="chip ${inMore ? "on" : ""}" aria-label="More Copilot tools">${inMore ? ICONS[inMore[3]] + inMore[1] : "More tools"} ${ICONS.chev}</summary><div class="mnu-list" role="menu">` +
+    MORE.map(([k, label, , ic]) => `<button type="button" class="${tab === k ? "on" : ""}" onclick="go('${k}')">${ICONS[ic]}<span>${label}<small>${MORE_HINT[k]}</small></span></button>`).join("") + `</div></details>`;
   ({today, follow, outreach, interviews, letters, insights, radar, setup})[tab]();
 }
 function go(t) { tab = t; try { localStorage.setItem("cp_tab", t); } catch (e) {} history.replaceState(null, "", "#" + t); render(); }
 
 function today() {
   const q = D.queue;
-  $("#view").innerHTML = intro("send", `Apply today ${tip("queue")}`, `Fresh jobs from the last ${D.settings.queue_max_age_days} days with ${D.settings.queue_min_fit}%+ fit that you haven't applied to (${D.duplicates} duplicates hidden). Open the Apply kit for a cover letter and tailored CV.`) + `
-   <div class="list">${q.length ? q.map(j => row(j, kitBtn(j) + openBtn(j) +
-     `<button class="btn sm ghost" onclick="setStatus('${j.id}','hidden')">Skip</button>`)).join("")
+  $("#view").innerHTML = intro("send", `Apply today ${tip("queue")}`, `Fresh jobs from the last ${D.settings.queue_max_age_days} days with ${D.settings.queue_min_fit}%+ fit that you haven't applied to (${D.duplicates} duplicates hidden). Click a job for its Apply kit: a cover letter and tailored CV.`) + `
+   <div class="list">${q.length ? q.map(j => row(j, openBtn(j) + Jobber.menu([
+       {label: "Apply kit: cover letter + tailored CV", icon: "file", attrs: `onclick="kit('${j.id}','kit')"`},
+       {label: "Skip this job", icon: "x", attrs: `onclick="setStatus('${j.id}','hidden')"`}], {label: "More for " + j.title}), j.id)).join("")
      : empty({icon: "inbox", title: "You're all caught up", body: `Nothing new above ${D.settings.queue_min_fit}% fit right now. Run a fresh search on the Jobs page, or check back tomorrow.`, actions: `<a class="btn primary" href="/">Go to Jobs</a>`})}</div>`;
 }
 function follow() {
   const f = D.followups;
   $("#view").innerHTML = intro("clock", `Follow-ups ${tip("followup")}`, `Jobs you applied to ${D.settings.followup_after_days}+ days ago with no reply yet. A short, polite note often gets things moving. Draft one, send it yourself, then press Done.`) + `
-   <div class="list">${f.length ? f.map(j => row(j, `<span class="pill warn">${j.applied_days}d</span>
-     <button class="btn sm" onclick="kit('${j.id}','followup')">Draft follow-up</button>
-     <button class="btn sm ghost" onclick="followed('${j.id}')">Done</button>
-     <button class="btn sm ghost" onclick="setStatus('${j.id}','interviewing')">Got a reply</button>`)).join("")
+   <div class="list">${f.length ? f.map(j => row(j, `<span class="pill warn" data-tip="Days since you applied">${j.applied_days}d</span>
+     <button class="btn sm primary" onclick="kit('${j.id}','followup')">Draft follow-up</button>` + Jobber.menu([
+       {label: "I followed up: mark done", icon: "check", attrs: `onclick="followed('${j.id}')"`},
+       {label: "They replied: move to Interviews", icon: "chat", attrs: `onclick="setStatus('${j.id}','interviewing')"`}], {label: "More for " + j.title}))).join("")
      : empty({icon: "check", title: "No follow-ups due", body: `When an application has had no reply for ${D.settings.followup_after_days} days, it shows up here with a drafted note.`})}</div>`;
 }
 function outreach() {
@@ -154,7 +164,7 @@ function outreach() {
 }
 function interviews() {
   const l = D.interviews;
-  $("#view").innerHTML = intro("calendar", "Interviews", "Jobs you've marked as Interviewing, each with a prep pack and a link to full interview practice.") + `<div class="list">${l.length ? l.map(j => row(j, kitBtn(j, "prep") + ` <a class="btn sm primary" href="/prep?job=${j.id}">Prepare</a>`)).join("")
+  $("#view").innerHTML = intro("calendar", "Interviews", "Jobs you've marked as Interviewing, each with a prep pack and a link to full interview practice.") + `<div class="list">${l.length ? l.map(j => row(j, `<a class="btn sm primary" href="/prep?job=${j.id}">Prepare</a>` + Jobber.menu([{label: "Quick prep pack", icon: "book", attrs: `onclick="kit('${j.id}','prep')"`}], {label: "More for " + j.title}))).join("")
     : empty({icon: "calendar", title: "No interviews yet, but they're coming", body: "When someone invites you, open the job on the Jobs page and set its status to Interviewing. It shows up here with a prep pack.", actions: `<a class="btn" href="/prep">Practise anyway</a>`})}</div>`;
 }
 function ftable(title, rows) {

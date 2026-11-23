@@ -111,8 +111,6 @@ kbd{font:600 12px var(--f-body);border:1px solid var(--line-strong);border-botto
 .why li::before{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;transform:translateY(3px)}
 .why li.p::before{content:"✓";background:var(--good-bg);color:var(--good)}
 .why li.g::before{content:"!";background:var(--warn-bg);color:var(--warn)}
-.pipe{display:flex;gap:6px;flex-wrap:wrap}
-.pipe .chip{min-height:32px;padding:4px 12px;font-size:13px}
 .nexthint{margin-top:10px;font-size:13.5px;color:var(--mute);display:flex;gap:8px;align-items:flex-start}
 .nexthint svg{width:16px;height:16px;flex:none;color:var(--accent);margin-top:2px}
 textarea{width:100%;min-height:80px;border:1px solid var(--line-strong);background:var(--surface);border-radius:var(--r);padding:10px 12px;resize:vertical}
@@ -128,9 +126,30 @@ textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(
 .refbox .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .refbox label.know{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:600;cursor:pointer}
 .pill svg{width:13px;height:13px;flex:none}
-.lead{border:1px solid var(--line);border-radius:var(--r);padding:12px;display:grid;gap:8px;background:var(--sunken)}
+.postlead{border:1px solid var(--line);border-radius:var(--r);padding:12px;display:grid;gap:8px;background:var(--sunken)}
 .desc{white-space:pre-wrap;font-size:14px;line-height:1.7;color:var(--fg);border-top:1px solid var(--line);margin-top:20px;padding-top:16px;max-width:68ch}
 .close{display:none}
+.fbtn{min-height:46px;border-radius:12px}
+.fbtn .badge{margin-left:2px}
+#active .chip{min-height:30px;padding:3px 8px 3px 12px;font-size:13px;background:var(--accent-soft);border-color:transparent;color:var(--accent-ink)}
+#active .chip svg{width:14px;height:14px}
+#active .clear{font-size:13px;font-weight:600;color:var(--mute);background:none;border:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.startline{margin-top:14px;padding:12px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.startline summary{display:flex;align-items:center;gap:12px;cursor:pointer;list-style:none;flex:1;min-width:0;font-size:14px}
+.startline summary::-webkit-details-marker{display:none}
+.startline .meter{flex:none;width:90px;height:6px;border-radius:99px;background:var(--sunken);overflow:hidden}
+.startline .meter i{display:block;height:100%;background:var(--accent)}
+.startline summary b,.startline summary .num{white-space:nowrap}
+.startline .nx{color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.startline details{flex:1;min-width:0}
+.startline details[open]{flex-basis:100%}
+.startline .checks{margin-top:12px}
+.more-src{color:var(--faint)}
+.dstatus{display:flex;gap:10px;align-items:center;margin:4px 0 0}
+.dstatus select{flex:1}
+.detail details.sect:first-of-type{margin-top:18px}
+.detail .desc{border:0;margin:0;padding:0}
+.dlinks{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 
 body.nojobs .stats,body.nojobs .toolbar,body.nojobs .detail{display:none}
 body.nojobs .layout{grid-template-columns:1fr;padding-top:20px}
@@ -149,7 +168,10 @@ body.nojobs .layout{grid-template-columns:1fr;padding-top:20px}
   .job{grid-template-columns:44px minmax(0,1fr);padding:14px;gap:12px}
   .acts{grid-column:1/-1;justify-content:flex-end}
   .ring{width:42px;height:42px}.ring b{width:33px;height:33px;font-size:13px}
-  #last,#eta,.keys,.divider,#logBtn,.fl{display:none}
+  #last,#eta,.keys{display:none}
+  .trow .search{min-width:0;flex:1 1 0}
+  .startline .nx{display:none}
+  .startline .meter{width:56px}
   .appbar #refresh{padding:6px 12px;min-height:36px;font-size:13px}
   .seg{width:100%;overflow-x:auto}.seg button{flex:1;padding:8px 10px}
 }
@@ -159,9 +181,13 @@ body.nojobs .layout{grid-template-columns:1fr;padding-top:20px}
 <header class="appbar" data-page="jobs"><div class="wrap">
   <span class="grow"></span>
   <span class="muted small" id="last"></span>
-  <button class="btn ghost sm" id="logBtn" data-tip="See what the last search did, site by site">Log</button>
   <span class="muted small num" id="eta" aria-live="polite"></span>
   <button class="btn primary" id="refresh">Find new jobs</button>
+  <details class="mnu" id="barMenu"><summary class="btn ghost icon" aria-label="More: search log, setup">⋯</summary><div class="mnu-list" role="menu">
+    <button type="button" id="logBtn">Show the last search log</button>
+    <a href="/setup" target="_self">Change what Jobber searches for</a>
+    <button type="button" id="showStart">Show the getting-started list</button>
+  </div></details>
 </div></header>
 <script src="/ui.js"></script>
 
@@ -175,27 +201,30 @@ body.nojobs .layout{grid-template-columns:1fr;padding-top:20px}
   <div class="panel running" id="progress" role="status" aria-live="polite"><span class="spin"></span><div style="min-width:0"><b>Searching job sites for you…</b><div class="small muted" id="progressTxt">Starting…</div></div><span class="grow"></span><span class="small muted" id="progressEta" style="white-space:nowrap">Takes a few minutes · you can keep browsing</span></div>
   <div id="signin" class="notice">LinkedIn is limiting visits from your internet connection right now. Other sites still updated. Try again in an hour or two.</div>
   <div id="log" class="panel"></div>
-  <section class="panel start" id="start" hidden></section>
+  <section class="panel startline" id="start" hidden></section>
 
   <div class="toolbar">
     <div class="trow">
       <div class="seg" id="tabs" role="tablist" aria-label="Which jobs to show"></div>
       <label class="search"><span id="searchIcon"></span>
         <input type="search" id="q" placeholder="Search role, company or skill  ( / )" aria-label="Search jobs"></label>
+      <details class="pop" id="filters"><summary class="btn fbtn" id="fsum"><span>Filters</span><span class="badge" id="fcount" hidden></span></summary>
+        <div class="pop-body" role="dialog" aria-label="Filters">
+          <div><h4>Location</h4><div class="row" id="locs"></div></div>
+          <div><h4>Show only</h4><div class="row">
+            <button class="chip" id="greatOnly" data-term="fit">Great fit (70%+)</button>
+            <button class="chip" id="directOnly" data-term="direct">Direct company apply</button>
+            <button class="chip" id="refOnly" data-term="referral">Referral possible</button></div></div>
+          <div><h4><span class="term" data-term="below" tabindex="0">Pay</span></h4>
+            <select class="chip" id="pay" aria-label="Pay filter">
+              <option value="ok">Pay ≥ floor or not listed</option>
+              <option value="listed">Pay listed ≥ floor</option>
+              <option value="all">Show all (incl. low pay / too senior)</option>
+            </select></div>
+          <div class="row"><button class="btn sm ghost" onclick="resetFilters()">Clear all</button><span class="grow"></span><button class="btn sm primary" onclick="this.closest('details').open=false">Done</button></div>
+        </div></details>
     </div>
-    <div class="trow">
-      <span class="fl">Location</span>
-      <span class="trow" id="locs" style="gap:6px"></span>
-      <span class="divider"></span>
-      <button class="chip" id="greatOnly">Great fit only</button><button class="tipbtn" data-term="fit"></button>
-      <button class="chip" id="directOnly">Direct company apply</button><button class="tipbtn" data-term="direct"></button>
-      <button class="chip" id="refOnly">Referral possible</button><button class="tipbtn" data-term="referral"></button>
-      <select class="chip" id="pay" aria-label="Pay filter">
-        <option value="ok">Pay ≥ floor or not listed</option>
-        <option value="listed">Pay listed ≥ floor</option>
-        <option value="all">Show all (incl. low pay / too senior)</option>
-      </select><button class="tipbtn" data-term="below"></button>
-    </div>
+    <div class="trow" id="active" hidden></div>
   </div>
 
   <div class="layout">
@@ -207,7 +236,7 @@ body.nojobs .layout{grid-template-columns:1fr;padding-top:20px}
 <script>
 const $=id=>document.getElementById(id);
 const {esc,ICONS,tip,empty}=Jobber;
-$("searchIcon").outerHTML=ICONS.search;
+$("searchIcon").outerHTML=ICONS.search;$("fsum").insertAdjacentHTML("afterbegin",ICONS.filter);
 const cap=s=>s?s[0].toUpperCase()+s.slice(1):"";
 const ICON={
   star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>',
@@ -290,6 +319,7 @@ function render(){
   $("tabs").innerHTML=tabs.map(([k,l,n])=>`<button class="${view===k?"on":""}" data-v="${k}" role="tab">${l}<span class="c">${n}</span></button>`).join("");
   $("locs").innerHTML=["",...LOCS].map(l=>`<button class="chip ${loc===l?"on":""}" data-l="${l}">${l||"All locations"}</button>`).join("");
   $("greatOnly").classList.toggle("on",great);$("directOnly").classList.toggle("on",direct);$("refOnly").classList.toggle("on",refOnly);
+  renderActive();
 
   document.body.classList.toggle("nojobs",!JOBS.length);
   const list=JOBS.filter(j=>inView(j)&&passes(j));visible=[];
@@ -313,6 +343,15 @@ function emptyFor(){
   if(view==="hidden")return empty({icon:"x",title:"Nothing hidden",body:"Jobs you dismiss with ✕ go here, so you can bring them back if you change your mind."});
   return empty({icon:"search",title:"No jobs match these filters",body:"Try another location, turn off \"Great fit only\", or clear the search box.",actions:`<button class="btn" onclick="resetFilters()">Clear all filters</button>`});
 }
+function renderActive(){
+  const pay=$("pay"),on=[];
+  if(loc)on.push(["loc",loc]);if(great)on.push(["great","Great fit"]);if(direct)on.push(["direct","Direct apply"]);if(refOnly)on.push(["ref","Referral possible"]);
+  if(pay.value!=="ok")on.push(["pay",pay.options[pay.selectedIndex].text]);if(stat==="today")on.push(["today","New in last 24 hours"]);
+  $("fcount").hidden=!on.length;$("fcount").textContent=on.length;
+  $("active").hidden=!on.length;
+  $("active").innerHTML=on.map(([k,l])=>`<button class="chip" data-rm="${k}" aria-label="Remove filter: ${esc(l)}">${esc(l)} ${ICONS.x}</button>`).join("")+(on.length>1?`<button class="clear" onclick="resetFilters()">Clear all</button>`:"");
+}
+function rmFilter(k){if(k==="loc")loc="";if(k==="great")great=false;if(k==="direct")direct=false;if(k==="ref")refOnly=false;if(k==="pay")$("pay").value="ok";if(k==="today")stat="";render()}
 function resetFilters(){loc="";great=false;direct=false;refOnly=false;stat="";$("q").value="";$("pay").value="ok";render()}
 let startHidden=false;try{startHidden=localStorage.getItem("jb_start_hide")==="1"}catch(e){}
 function renderStart(){
@@ -324,9 +363,10 @@ function renderStart(){
     ["Get interview-ready","Write one STAR story.",did(["interviewing","offer"]),`<a href="/prep">Interview prep</a>`]];
   const n=items.filter(i=>i[2]).length;
   if(startHidden||n===items.length){el.hidden=true;return}
-  el.hidden=false;
-  el.innerHTML=`<div class="start-h"><h2>Getting started</h2><span class="pill accent">${n} of ${items.length} done</span><span class="grow"></span><button class="btn ghost sm" onclick="hideStart()">Hide</button></div>
-   <ol class="checks">${items.map(([t,d,ok,link])=>`<li class="${ok?"done":""}"><span class="ck">${ok?ICONS.check:""}</span><div><b>${t}</b>${d} ${ok?"":link}</div></li>`).join("")}</ol>`;
+  el.hidden=false;const nx=items.find(i=>!i[2]),wasOpen=el.querySelector("details")?.open;
+  el.innerHTML=`<details ${wasOpen?"open":""}><summary><b>Getting started</b><span class="meter" aria-hidden="true"><i style="width:${n/items.length*100}%"></i></span><span class="small muted num">${n} of ${items.length}</span><span class="nx">Next: ${esc(nx[0])}</span><span class="small" style="color:var(--info);font-weight:600;white-space:nowrap">See steps</span></summary>
+   <ol class="checks">${items.map(([t,d,ok,link])=>`<li class="${ok?"done":""}"><span class="ck">${ok?ICONS.check:""}</span><div><b>${t}</b>${d} ${ok?"":link}</div></li>`).join("")}</ol></details>
+   <button class="btn ghost icon sm" onclick="hideStart()" aria-label="Hide the getting-started list" data-tip="Hide this. Bring it back from the ⋯ menu.">${ICONS.x}</button>`;
 }
 function hideStart(){startHidden=true;try{localStorage.setItem("jb_start_hide","1")}catch(e){}renderStart()}
 function section(name,g,collapsible,hint){
@@ -341,20 +381,26 @@ function card(j){
   <div style="min-width:0"><div class="t"><span>${esc(j.title)}</span>${j.age_days!=null&&j.age_days<=1&&j.status==="new"?'<em class="new">New</em>':""}</div>
     <div class="meta"><b>${esc(j.company)}</b> · ${esc(j.location_bucket)} · ${ago(j)}</div>
     <div class="tags">${s?`<span class="pill ${(j.filtered||"").includes("Salary")?"bad":"good"} num">${s}</span>`:`<span class="pill">Pay not listed</span>`}
-      ${e?`<span class="pill ${j.exp_min>4?"bad":""}">${e}</span>`:""}${isDirect(j)?`<span class="pill accent" data-term="direct">${esc(cap(j.ats))}</span>`:""}${refPill(j)}<span class="pill" data-tip="Where Jobber found this job">${esc(src(j))}</span></div>
+      ${e?`<span class="pill ${j.exp_min>4?"bad":""}">${e}</span>`:""}${signal(j)}</div>
     ${j._ask?`<div class="ask">Did you apply? <button class="btn sm primary" data-a="yes">Yes, mark applied</button><button class="btn sm" data-a="no">Not yet</button></div>`:""}</div>
   <div class="acts">
     <button class="icon ${saved?"on":""}" data-act="save" data-tip="${saved?"Remove from saved":"Save for later"} (S)" aria-label="${saved?"Unsave":"Save"}" aria-pressed="${saved}">${ICON.star}</button>
-    <button class="icon" data-act="hide" data-tip="Not interested: hide it (X)" aria-label="Hide">${ICON.x}</button>
     <a class="btn primary sm" data-act="apply" href="${esc(j.apply_url)}" target="_blank" rel="noopener">Apply ${ICON.out}</a>
+    ${Jobber.menu([{label:"Not interested: hide it (X)",icon:"x",attrs:'data-act="hide"'},
+      ...Object.entries(j.sources).map(([k,u])=>({label:`Open on ${srcName(k)}`,icon:"arrow",href:u})),
+      {label:"Details, referral and notes",icon:"file",attrs:'data-act="open"'}],{label:`More for ${j.title}`})}
   </div></div>`;
 }
 function refText(r){if(!r)return "";const p=[];
   if(r.known)p.push("You know someone");
   if(r.connections)p.push(`${r.connections} ${r.connections===1?"connection":"connections"}`);
   if(r.alumni)p.push(`${r.alumni} alumni`);return p.join(" · ")}
-function refPill(j){return (j.referral?`<span class="pill good" data-tip="You can ask for a referral here. These jobs rank higher.">${ICONS.user}${esc(refText(j.referral))}</span>`:"")+
-  (j.lead&&j.lead.poster?`<span class="pill info" data-tip="Found in a LinkedIn post. The poster is your contact for this job.">Posted by ${esc(j.lead.poster)}</span>`:"")}
+/* One signal per card, most useful first: someone you know > a poster to contact > a quick direct form > where it was found. */
+function signal(j){
+  if(j.referral)return `<span class="pill good" data-tip="You can ask for a referral here. These jobs rank higher.">${ICONS.user}${esc(refText(j.referral))}</span>`;
+  if(j.lead&&j.lead.poster)return `<span class="pill info" data-tip="Found in a LinkedIn post. The poster is your contact for this job.">Posted by ${esc(j.lead.poster)}</span>`;
+  if(isDirect(j))return `<span class="pill accent" data-term="direct">${esc(cap(j.ats))}</span>`;
+  return `<span class="pill" data-tip="Where Jobber found this job">${esc(src(j))}</span>`}
 async function copyText(el,btn){try{await navigator.clipboard.writeText(el.value)}catch(e){el.select();document.execCommand("copy")}
   Jobber.toast?Jobber.toast("Copied. Paste it into a LinkedIn message and send it yourself."):btn.textContent="Copied"}
 async function loadRef(j){
@@ -362,7 +408,7 @@ async function loadRef(j){
   let r;try{r=await fetch("/api/network/job/"+j.id).then(x=>x.json());if(r.error)throw new Error(r.error)}catch(e){box.innerHTML=`<div class="small muted">Couldn't load referral help: ${esc(e.message)}</div>`;return}
   if(sel!==j.id)return;
   const ref=r.referral,lead=r.lead;
-  box.innerHTML=`${lead?`<div class="lead"><div class="who-line"><b>Found in a LinkedIn post${lead.poster?` by ${esc(lead.poster)}`:""}</b></div>
+  box.innerHTML=`${lead?`<div class="postlead"><div class="who-line"><b>Found in a LinkedIn post${lead.poster?` by ${esc(lead.poster)}`:""}</b></div>
       <div class="row">${lead.post_url?`<a class="btn sm" href="${esc(lead.post_url)}" target="_blank" rel="noopener">Open the post ${ICON.out}</a>`:""}${lead.poster_url?`<a class="btn sm" href="${esc(lead.poster_url)}" target="_blank" rel="noopener">${esc(lead.poster||"Poster")}'s profile ${ICON.out}</a>`:""}${lead.email?`<a class="btn sm" href="mailto:${esc(lead.email.split(",")[0])}">Email ${esc(lead.email.split(",")[0])}</a>`:""}</div>
       ${r.poster_note?`<textarea class="in" id="posterNote" aria-label="Message to the poster">${esc(r.poster_note)}</textarea><div class="row"><button class="btn sm" data-copy="posterNote">Copy message to ${esc((lead.poster||"poster").split(" ")[0])}</button></div>`:""}</div>`:""}
     <div class="who-line">${ref?`<span class="pill good">${ICONS.user}${esc(refText(ref))}</span> work at ${esc(j.company)}. Ask one of them for a referral.`:`Find someone at ${esc(j.company)} who can refer you. These open LinkedIn in your browser; Jobber never visits them.`}</div>
@@ -383,19 +429,21 @@ function detail(j){
     <div class="fact"><span class="label">Experience</span><b>${e||"Not stated"}</b></div>
     <div class="fact"><span class="label">Location</span><b>${esc(j.location_bucket)}</b></div>
     <div class="fact"><span class="label">Posted</span><b>${ago(j)}</b></div></div>
-  ${isDirect(j)?`<div class="pill accent">Applies on ${esc(cap(j.ats))}, ready for Batch apply</div> ${tip("direct")}`:""}
+  <div class="dstatus"><label class="label" for="statusSel">Status</label><select class="in" id="statusSel">${STATUS.map(([st,l])=>`<option value="${st}" ${j.status===st?"selected":""}>${l}</option>`).join("")}</select></div>
+  <div class="nexthint">${ICONS.bulb}<span>${NEXT[j.status]?NEXT[j.status](j):""}</span></div>
+  ${isDirect(j)?`<div class="small muted" style="margin-top:10px">Applies on <span class="term" data-term="direct" tabindex="0">${esc(cap(j.ats))}</span>, so Batch apply can prefill it.</div>`:""}
   <div class="label dh">Why it's a ${j.fit}% fit</div>
   <ul class="why">${j.fit_pros.map(p=>`<li class="p">${esc(p)}</li>`).join("")}${j.fit_gaps.map(p=>`<li class="g">${esc(p)}</li>`).join("")}</ul>
-  <div class="label dh">Get a referral ${tip("referral")}</div>
-  <div class="refbox" id="refbox"><div class="small muted">Loading…</div></div>
-  <div class="label dh">Where you are with this job</div>
-  <div class="pipe" role="group" aria-label="Status">${["new","saved",...PIPE,"hidden"].map(st=>`<button class="chip ${j.status===st?"on":""}" data-st="${st}" aria-pressed="${j.status===st}">${cap(st)}</button>`).join("")}</div>
-  <div class="nexthint">${ICONS.bulb}<span>${NEXT[j.status]?NEXT[j.status](j):""}</span></div>
-  <div class="label dh"><label for="notes">Your notes</label></div><textarea id="notes" placeholder="Referral, recruiter name, follow-up date…">${esc(j.notes)}</textarea>
-  <div class="label dh">Found on</div><div class="links">${Object.entries(j.sources).map(([k,u])=>`<a class="pill" href="${esc(u)}" target="_blank" rel="noopener">${esc(srcName(k))} ↗</a>`).join("")}</div>
-  <div class="desc">${j.description?esc(j.description):"No description from this site. Open the listing for full details."}</div>`;
+  <details class="sect" ${j.referral||j.lead?"open":""}><summary>Get a referral<span class="hint">${j.referral?esc(refText(j.referral)):j.lead?"From a LinkedIn post":"Who to ask, plus a message"}</span></summary>
+    <div class="sect-body"><div class="refbox" id="refbox"><div class="small muted">Loading…</div></div></div></details>
+  <details class="sect" ${j.notes?"open":""}><summary>Your notes<span class="hint">${j.notes?"":"Recruiter, follow-up date…"}</span></summary>
+    <div class="sect-body"><textarea id="notes" placeholder="Referral, recruiter name, follow-up date…">${esc(j.notes)}</textarea></div></details>
+  <details class="sect"><summary>Job description<span class="hint">${Object.keys(j.sources).map(srcName).join(", ")}</span></summary>
+    <div class="sect-body"><div class="dlinks">${Object.entries(j.sources).map(([k,u])=>`<a class="pill" href="${esc(u)}" target="_blank" rel="noopener">Open on ${esc(srcName(k))} ↗</a>`).join("")}</div>
+    <div class="desc">${j.description?esc(j.description):"No description from this site. Open the listing for full details."}</div></div></details>`;
   loadRef(j);
 }
+const STATUS=[["new","New (not decided)"],["saved","Saved for later"],["applied","Applied"],["interviewing","Interviewing"],["offer","Offer"],["rejected","Rejected"],["hidden","Hidden (not interested)"]];
 const NEXT={new:()=>"Like it? Save it for later, or press Apply. Jobber will ask if you applied so it can track it.",
   saved:()=>"On your shortlist. When you're ready, apply here or queue several in Batch apply.",
   applied:()=>`Nice work. If you don't hear back in about a week, send a short follow-up: <a href="/copilot#follow">Copilot reminds you</a>.`,
@@ -415,6 +463,8 @@ document.addEventListener("click",e=>{
   const l=d("l");if(l){loc=l.l;render();return}
   const c=d("c");if(c){collapsed.has(c.c)?collapsed.delete(c.c):collapsed.add(c.c);render();return}
   if(t.closest("[data-x]")){$("detail").classList.remove("open");return}
+  const rm=d("rm");if(rm){rmFilter(rm.rm);return}
+  if(t.closest("details.pop")||(t.closest("details.mnu")&&!d("act"))||t.closest("#barMenu"))return;
   const cp=d("copy");if(cp){copyText($(cp.copy),t.closest("[data-copy]"));return}
   if(t.id==="trackRef"&&sel){const j=byId(sel);fetch("/api/copilot/outreach",{method:"POST",body:JSON.stringify({job_id:j.id,company:j.company,person:"",role:"Referral",note:"Referral ask"})}).then(()=>Jobber.toast&&Jobber.toast("Added to Copilot → Outreach"));return}
   const jid=t.closest(".job")?.dataset.id||sel;const j=jid&&byId(jid);
@@ -423,7 +473,8 @@ document.addEventListener("click",e=>{
   const act=d("act")?.act;
   if(act==="apply"&&j){if(j.status==="new"||j.status==="saved"){j._ask=true;setTimeout(render,300)}return}
   if(act==="save"&&j){setStatus(j,j.status==="saved"?"new":"saved");return}
-  if(act==="hide"&&j){setStatus(j,"hidden");return}
+  if(act==="hide"&&j){setStatus(j,"hidden");Jobber.toast&&Jobber.toast(`Hidden. Find it under the Hidden tab.`);return}
+  if(act==="open"&&j){select(j.id,true);return}
   const row=t.closest(".job");if(row)select(row.dataset.id,true);
 });
 document.addEventListener("keydown",e=>{
@@ -436,13 +487,14 @@ document.addEventListener("keydown",e=>{
   else if(k==="escape")$("detail").classList.remove("open");
   else if(k==="/"){e.preventDefault();$("q").focus()}
 });
-document.addEventListener("change",e=>{if(e.target.id==="knowSomeone"&&sel){const j=byId(sel);
+document.addEventListener("change",e=>{if(e.target.id==="statusSel"&&sel){setStatus(byId(sel),e.target.value);return}if(e.target.id==="knowSomeone"&&sel){const j=byId(sel);
   fetch("/api/network/known",{method:"POST",body:JSON.stringify({company:j.company,known:e.target.checked})}).then(load);return}
   if(e.target.id==="notes"&&sel){const j=byId(sel);j.notes=e.target.value;fetch("/api/jobs/"+sel,{method:"POST",body:JSON.stringify({notes:j.notes})})}});
 $("greatOnly").onclick=()=>{great=!great;render()};
 $("directOnly").onclick=()=>{direct=!direct;render()};
 $("refOnly").onclick=()=>{refOnly=!refOnly;render()};
 ["q","pay"].forEach(id=>$(id).addEventListener("input",render));
+$("showStart").onclick=()=>{startHidden=false;try{localStorage.removeItem("jb_start_hide")}catch(e){}renderStart();$("start").scrollIntoView({block:"nearest"})};
 $("logBtn").onclick=()=>{$("log").style.display=$("log").style.display==="block"?"none":"block"};
 // Time estimate: the server times each search and returns the last one's length (estimate_seconds),
 // plus started/eta_seconds while a search runs, so people know it isn't stuck.

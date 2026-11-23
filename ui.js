@@ -30,10 +30,14 @@
     radar: svg('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 19 5"/>'),
     x: svg('<path d="M6 6l12 12M18 6 6 18"/>'),
     network: svg('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9.5" r="2.5"/><path d="M16 14.6a5 5 0 0 1 6 4.9"/>'),
+    gear: svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
+    more: svg('<circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/>'),
+    filter: svg('<path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/>'),
+    chev: svg('<path d="m6 9 6 6 6-6"/>'),
     arrow: svg('<path d="M5 12h14M13 6l6 6-6 6"/>'),
   };
   const MARK = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.5 4v9.5a4.5 4.5 0 0 1-8.6 1.9" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="18.5" cy="6.5" r="2.5" fill="#5fe0bd"/></svg>`;
-  const NAV = [["jobs", "/", "Jobs"], ["apply", "/apply", "Batch apply"], ["copilot", "/copilot", "Copilot"], ["prep", "/prep", "Interview prep"], ["network", "/network", "Referrals"], ["setup", "/setup", "Setup"]];
+  const NAV = [["jobs", "/", "Jobs"], ["apply", "/apply", "Batch apply"], ["copilot", "/copilot", "Copilot"], ["prep", "/prep", "Interview prep"], ["network", "/network", "Referrals"]];
   const SHORT = {apply: "Apply", prep: "Prep", network: "Referrals"};
 
   /* Plain-words glossary. Keys are used by data-term="..." anywhere in the app. */
@@ -81,7 +85,7 @@
     const page = bar.dataset.page, w = bar.querySelector(".wrap") || bar;
     const links = (short) => NAV.map(([k, href, l]) => `<a href="${href}" class="${k === page ? "on" : ""}" ${k === page ? 'aria-current="page"' : ""}>${ICONS[k]}<span>${short && SHORT[k] || l}</span></a>`).join("");
     w.insertAdjacentHTML("afterbegin", `<a class="brand" href="/" aria-label="Jobber home"><span class="mark">${MARK}</span><span>Job<i>ber</i></span></a><nav class="nav" aria-label="Main">${links()}</nav>`);
-    w.insertAdjacentHTML("beforeend", `<button type="button" class="helpbtn" id="jb-help" aria-label="Help and glossary" data-tip="Help: how Jobber works, and what the words mean">${ICONS.help}</button>`);
+    w.insertAdjacentHTML("beforeend", `<a class="helpbtn${page === "setup" ? " on" : ""}" href="/setup" id="jb-setup" aria-label="Setup: your search, pay and CV" data-tip="Setup: your search, pay and CV"${page === "setup" ? ' aria-current="page"' : ""}>${ICONS.gear}</a><button type="button" class="helpbtn" id="jb-help" aria-label="Help and glossary" data-tip="Help: how Jobber works, and what the words mean">${ICONS.help}</button>`);
     document.addEventListener("DOMContentLoaded", () => document.body.insertAdjacentHTML("beforeend", `<nav class="tabbar" aria-label="Main">${links(true)}</nav>`));
   }
 
@@ -130,6 +134,23 @@
     new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1) fillTips(n); }).observe(document.body, {childList: true, subtree: true});
   });
 
+  /* ---------- Overflow menus ----------
+     <details class="mnu"><summary class="btn ghost icon" aria-label="More">…</summary><div class="mnu-list"><button>…</button></div></details>
+     Jobber.menu(items, {label, icon, cls}) builds one: items = [{label, icon?, attrs?, href?, danger?} | "-"]. */
+  function menu(items, o = {}) {
+    const it = items.map(i => i === "-" ? '<hr>' : i.href
+      ? `<a href="${esc(i.href)}" target="${i.self ? "_self" : "_blank"}" rel="noopener" ${i.attrs || ""}>${i.icon ? ICONS[i.icon] || "" : ""}<span>${esc(i.label)}</span></a>`
+      : `<button type="button" class="${i.danger ? "danger" : ""}" ${i.attrs || ""}>${i.icon ? ICONS[i.icon] || "" : ""}<span>${esc(i.label)}</span></button>`).join("");
+    return `<details class="mnu ${o.cls || ""}"><summary class="${o.btn || "btn ghost icon sm"}" aria-label="${esc(o.label || "More options")}">${o.text ? `${o.icon === false ? "" : ICONS[o.icon || "more"]}<span>${esc(o.text)}</span>` : ICONS[o.icon || "more"]}</summary><div class="mnu-list" role="menu">${it}</div></details>`;
+  }
+  const closeMenus = keep => document.querySelectorAll("details.mnu[open],details.pop[open]").forEach(d => { if (d !== keep && !d.contains(keep)) d.open = false; });
+  document.addEventListener("click", e => {
+    const d = e.target.closest && e.target.closest("details.mnu,details.pop");
+    closeMenus(d);
+    if (d && d.classList.contains("mnu") && e.target.closest(".mnu-list button,.mnu-list a")) setTimeout(() => d.open = false, 0);
+  });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenus(null); });
+
   /* ---------- Help drawer ---------- */
   let helpEl = null;
   function openHelp() {
@@ -170,5 +191,5 @@
   }
   const tip = term => `<button type="button" class="tipbtn" data-term="${term}" aria-label="What is &quot;${esc((GLOSS[term] || [term])[0])}&quot;?" aria-expanded="false">${ICONS.info}</button>`;
 
-  window.Jobber = {ICONS, GLOSS, tip, toast, empty, esc, openHelp};
+  window.Jobber = {menu, ICONS, GLOSS, tip, toast, empty, esc, openHelp};
 })();
