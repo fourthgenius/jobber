@@ -27,6 +27,7 @@ except ImportError:
 PORT = 8765
 INDEX = Path(__file__).with_name("index.html")
 THEME = Path(__file__).with_name("theme.css")
+UIJS = Path(__file__).with_name("ui.js")
 SETUP = Path(__file__).with_name("setup.html")
 STATE = {"running": False, "log": [], "last": None, "summary": None, "started": None, "eta_seconds": None}
 
@@ -88,6 +89,8 @@ class H(BaseHTTPRequestHandler):
             return self._send(200, INDEX.read_bytes(), "text/html; charset=utf-8")
         if self.path.split("?")[0] == "/theme.css":
             return self._send(200, THEME.read_bytes(), "text/css; charset=utf-8")
+        if self.path.split("?")[0] == "/ui.js":
+            return self._send(200, UIJS.read_bytes(), "text/javascript; charset=utf-8")
         if self.path == "/api/jobs":
             with store.conn() as c:
                 cfg = fetch.load_cfg()

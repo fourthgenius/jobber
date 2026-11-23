@@ -6,182 +6,196 @@
 <title>Jobber</title>
 <link rel="stylesheet" href="/theme.css">
 <style>
-/* Dashboard layout: summary strip, then toolbar, then a two-pane list + detail. */
-.progress{display:none;position:relative;overflow:hidden;font-size:12px;color:var(--mute);padding:8px 0}
-.progress.on{display:block}
-.progress::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);background-size:40% 100%;background-repeat:no-repeat;animation:slide 1.4s linear infinite}
-@keyframes slide{from{background-position:-40% 0}to{background-position:140% 0}}
-.banner{display:none;margin-top:14px;background:var(--warn-bg);color:var(--warn);border-radius:var(--r);padding:10px 14px;font-size:13px}
-#log{display:none;margin-top:14px;white-space:pre-wrap;font:11px/1.6 var(--f-mono);color:var(--mute);max-height:180px;overflow:auto;padding:12px}
+/* Jobs dashboard: welcome band (greeting, next step, numbers), getting-started list, toolbar, list + detail. */
+.band{margin-top:22px;border-radius:22px;background:var(--brand-deep);color:#e8f5f1;padding:28px;position:relative;overflow:hidden}
+.band::after{content:"";position:absolute;right:-80px;top:-120px;width:340px;height:340px;border-radius:50%;background:radial-gradient(closest-side,rgba(95,224,189,.28),transparent);pointer-events:none}
+.band h1{font-size:30px;line-height:1.15;margin:0;color:#fff;letter-spacing:-.025em;max-width:30ch}
+.band .sub{margin:6px 0 0;color:#b8d9cf;font-size:15.5px;max-width:62ch}
+.band .nextstep{display:inline-flex;align-items:center;gap:10px;margin-top:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:var(--r-pill);padding:6px 6px 6px 14px;font-size:14px;color:#fff;font-weight:600;max-width:100%}
+.band .nextstep .btn{background:#5fe0bd;border-color:#5fe0bd;color:var(--brand-deep)}
+.band .nextstep .btn:hover{background:#8cebd0;border-color:#8cebd0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:22px;position:relative;z-index:1}
+.stat{display:flex;flex-direction:column;gap:2px;text-align:left;cursor:pointer;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#e8f5f1;transition:background .15s,border-color .15s}
+.stat:hover{background:rgba(255,255,255,.12)}
+.stat.on{background:#fff;color:var(--fg);border-color:#fff}
+.stat b{font:800 28px/1.1 var(--f-display);font-variant-numeric:tabular-nums;color:#fff}
+.stat.on b{color:var(--accent)}
+.stat span{font-size:13px;color:#b8d9cf;font-weight:500}
+.stat.on span{color:var(--mute)}
 
-.hello{display:flex;align-items:end;gap:16px;flex-wrap:wrap;padding:24px 0 14px}
-.hello h1{font:700 26px/1.15 var(--f-display);letter-spacing:-.02em;margin:0;text-wrap:balance}
-.hello p{margin:4px 0 0;color:var(--mute)}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.stat{display:flex;flex-direction:column;gap:2px;text-align:left;cursor:pointer;padding:12px 14px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow)}
-.stat:hover{border-color:var(--line-strong)}
-.stat.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
-.stat b{font:600 24px/1.1 var(--f-mono);font-variant-numeric:tabular-nums}
-.stat span{font-size:12px;color:var(--mute)}
-.stat.lead b{color:var(--accent)}
+.running{display:none;margin-top:16px;padding:16px 18px;align-items:center;gap:14px}
+.running.on{display:flex}
+.spin{width:22px;height:22px;border-radius:50%;border:3px solid var(--accent-soft);border-top-color:var(--accent);animation:spin .9s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.running b{display:block}
+.running .small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#signin{display:none;margin-top:14px}
+#log{display:none;margin-top:14px;white-space:pre-wrap;font:12px/1.6 var(--f-code);color:var(--mute);max-height:220px;overflow:auto;padding:14px}
 
-.toolbar{display:flex;flex-direction:column;gap:10px;padding:16px 0 4px}
+.start{margin-top:16px;padding:18px 20px}
+.start-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.start-h h2{font-size:17px;margin:0}
+.start-h .pill{margin-left:4px}
+.checks{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;list-style:none;margin:0;padding:0}
+.checks li{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:12px;background:var(--bg);font-size:13.5px;color:var(--mute);line-height:1.4}
+.checks li b{display:block;color:var(--fg);font-size:14px;margin-bottom:2px}
+.checks .ck{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--line-strong);display:grid;place-items:center;margin-top:1px}
+.checks .ck svg{width:14px;height:14px}
+.checks li.done{background:var(--accent-soft)}
+.checks li.done .ck{background:var(--accent);border-color:var(--accent);color:#fff}
+.checks li.done b{text-decoration:line-through;text-decoration-color:rgba(10,85,70,.4);color:var(--accent-ink)}
+.checks a{color:var(--info);font-weight:600}
+
+.toolbar{display:flex;flex-direction:column;gap:12px;padding:22px 0 4px}
 .trow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.seg{display:inline-flex;gap:2px;background:var(--sunken);border-radius:var(--r);padding:3px}
-.seg button{border:0;background:none;padding:6px 12px;border-radius:7px;cursor:pointer;color:var(--mute);font-weight:600;font-size:13px}
-.seg button:hover{color:var(--fg)}
-.seg button.on{background:var(--surface);color:var(--fg);box-shadow:var(--shadow)}
-.seg .c{font:500 11px var(--f-mono);color:var(--faint);margin-left:4px}
+.seg{display:inline-flex;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px}
+.seg button{border:0;background:none;padding:8px 14px;border-radius:9px;cursor:pointer;color:var(--mute);font-weight:600;font-size:14px;min-height:38px}
+.seg button:hover{color:var(--fg);background:var(--sunken)}
+.seg button.on{background:var(--fg);color:#fff}
+.seg .c{font-size:12px;font-weight:700;margin-left:6px;opacity:.7;font-variant-numeric:tabular-nums}
 .search{flex:1;min-width:220px;position:relative}
-.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--faint)}
-.search input{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:8px 12px 8px 34px}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--faint)}
+.search input{width:100%;border:1px solid var(--line-strong);background:var(--surface);border-radius:12px;padding:10px 12px 10px 42px;min-height:46px;font-size:15px}
 .search input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
-select.chip{appearance:none;padding-right:28px;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 15px) 52%,calc(100% - 10px) 52%;background-size:5px 5px;background-repeat:no-repeat}
-.divider{width:1px;height:22px;background:var(--line)}
+select.chip{appearance:none;padding-right:32px;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 17px) 52%,calc(100% - 12px) 52%;background-size:5px 5px;background-repeat:no-repeat}
+.divider{width:1px;height:24px;background:var(--line-strong)}
+.fl{font-size:13px;font-weight:600;color:var(--faint);margin-right:2px}
 
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:18px;align-items:start;padding:8px 0 48px}
-.sec{margin-top:18px}
-.sec-h{display:flex;align-items:center;gap:8px;margin:0 0 8px;padding:0 4px}
-.sec-h h2{font:600 15px/1.2 var(--f-display);margin:0;letter-spacing:-.01em}
-.sec-h .num{font-size:12px;color:var(--faint)}
-.sec-h .hint{font-size:12px;color:var(--faint)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:20px;align-items:start;padding:10px 0 56px}
+.sec{margin-top:20px}
+.sec:first-child{margin-top:4px}
+.sec-h{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:0 4px}
+.sec-h h2{font-size:16px;margin:0}
+.sec-h .num{font-size:12.5px;font-weight:700;color:var(--mute);background:var(--sunken);border-radius:99px;padding:1px 8px}
+.sec-h .hint{font-size:13px;color:var(--faint)}
 .sec-h button{margin-left:auto}
 .rows{overflow:hidden}
-.job{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 16px;cursor:pointer;border-top:1px solid var(--line);position:relative}
+.job{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:16px;align-items:center;padding:16px 18px;cursor:pointer;border-top:1px solid var(--line);position:relative;transition:background .12s}
 .job:first-child{border-top:0}
-.job:hover{background:color-mix(in srgb,var(--sunken) 55%,transparent)}
+.job:hover{background:#f9fafb}
 .job.sel{background:var(--accent-soft)}
-.job.sel::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
-.ring{--p:0;--c:var(--mute);width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--line) 0);flex:none}
-.ring b{width:36px;height:36px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font:600 13px/1 var(--f-mono);color:var(--c)}
+.job.sel::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:4px;border-radius:0 4px 4px 0;background:var(--accent)}
+.ring{--p:0;--c:var(--mute);width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--sunken) 0);flex:none}
+.ring b{width:38px;height:38px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font:800 14px/1 var(--f-display);color:var(--c);font-variant-numeric:tabular-nums}
 .job.sel .ring b{background:var(--accent-soft)}
-.ring.hi{--c:var(--good)}.ring.mid{--c:var(--warn)}.ring.lo{--c:var(--bad)}
-.t{font-weight:600;font-size:15px;line-height:1.3;display:flex;align-items:center;gap:8px;min-width:0}
+.ring.hi{--c:var(--good)}.ring.mid{--c:var(--warn)}.ring.lo{--c:#98a2b3}
+.ring.lo b{color:var(--mute)}
+.t{font-weight:700;font-size:15.5px;line-height:1.3;display:flex;align-items:center;gap:8px;min-width:0}
 .t span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.new{flex:none;background:var(--accent);color:var(--accent-fg);border-radius:5px;padding:1px 6px;font-size:10px;font-weight:700;letter-spacing:.05em}
-.meta{color:var(--mute);font-size:13px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.new{flex:none;background:var(--guide);color:var(--guide-ink);border:1px solid var(--guide-line);border-radius:99px;padding:0 8px;font-size:11.5px;font-weight:700;font-style:normal}
+.meta{color:var(--mute);font-size:13.5px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .meta b{color:var(--fg);font-weight:600}
-.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
 .acts{display:flex;gap:6px;align-items:center}
-.icon{display:grid;place-items:center;border:1px solid var(--line);background:var(--surface);border-radius:9px;width:34px;height:34px;cursor:pointer;color:var(--mute)}
-.icon:hover{color:var(--fg);border-color:var(--line-strong)}
-.icon.on{color:var(--star);border-color:var(--star)}
+.icon{display:grid;place-items:center;border:1px solid var(--line-strong);background:var(--surface);border-radius:10px;width:40px;height:40px;cursor:pointer;color:var(--mute);transition:color .15s,border-color .15s}
+.icon:hover{color:var(--fg);border-color:var(--fg)}
+.icon.on{color:var(--star);border-color:var(--star);background:#fff8e6}
 .icon.on svg{fill:currentColor}
-.ask{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:6px 10px;font-size:13px;font-weight:500}
-.empty{color:var(--mute);text-align:center;padding:56px 20px;border:1px dashed var(--line-strong);border-radius:var(--r-lg)}
-.empty b{display:block;font:600 16px var(--f-display);color:var(--fg);margin-bottom:4px}
-.keys{margin-top:16px;font-size:12px;color:var(--faint);text-align:center}
-kbd{font:500 11px var(--f-mono);border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:4px;padding:0 5px;color:var(--mute);background:var(--surface)}
+.ask{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;background:var(--guide);border:1px solid var(--guide-line);color:var(--guide-ink);border-radius:10px;padding:8px 12px;font-size:14px;font-weight:600}
+.keys{margin-top:18px;font-size:13px;color:var(--faint);text-align:center}
+kbd{font:600 12px var(--f-body);border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:5px;padding:0 6px;color:var(--mute);background:var(--surface)}
 
-.detail{position:sticky;top:76px;max-height:calc(100vh - 92px);overflow:auto;padding:20px}
-.dtop{display:flex;align-items:center;gap:10px}
-.detail h3{font:700 20px/1.25 var(--f-display);letter-spacing:-.01em;margin:14px 0 2px;text-wrap:balance}
+.detail{position:sticky;top:84px;max-height:calc(100vh - 100px);overflow:auto;padding:22px}
+.detail .empty-state{border:0;padding:36px 12px}
+.dtop{display:flex;align-items:center;gap:12px}
+.dtop .label{color:var(--fg)}
+.detail h3{font-size:22px;line-height:1.25;margin:16px 0 4px;letter-spacing:-.02em}
 .detail .co{color:var(--mute)}
-.facts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:16px 0}
-.fact{background:var(--surface);padding:10px 12px}
-.fact b{display:block;font-size:14px;font-weight:600;margin-top:2px}
-.dh{margin:18px 0 6px}
-.why{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
-.why li{display:flex;gap:8px;font-size:13px;align-items:baseline}
-.why li::before{flex:none;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700;transform:translateY(2px)}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0}
+.fact{background:var(--bg);border-radius:12px;padding:10px 12px}
+.fact .label{font-size:12.5px;color:var(--faint)}
+.fact b{display:block;font-size:15px;font-weight:700;margin-top:1px}
+.dh{margin:20px 0 8px;color:var(--fg);font-size:14px}
+.why{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.why li{display:flex;gap:10px;font-size:14px;align-items:baseline}
+.why li::before{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;transform:translateY(3px)}
 .why li.p::before{content:"✓";background:var(--good-bg);color:var(--good)}
 .why li.g::before{content:"!";background:var(--warn-bg);color:var(--warn)}
 .pipe{display:flex;gap:6px;flex-wrap:wrap}
-textarea{width:100%;min-height:70px;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);padding:10px;resize:vertical}
-textarea:focus{border-color:var(--accent);outline:none}
+.pipe .chip{min-height:32px;padding:4px 12px;font-size:13px}
+.nexthint{margin-top:10px;font-size:13.5px;color:var(--mute);display:flex;gap:8px;align-items:flex-start}
+.nexthint svg{width:16px;height:16px;flex:none;color:var(--accent);margin-top:2px}
+textarea{width:100%;min-height:80px;border:1px solid var(--line-strong);background:var(--surface);border-radius:var(--r);padding:10px 12px;resize:vertical}
+textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
 .links{display:flex;gap:6px;flex-wrap:wrap}
-.desc{white-space:pre-wrap;font-size:13px;line-height:1.65;color:var(--fg);border-top:1px solid var(--line);margin-top:18px;padding-top:14px;max-width:65ch}
+.desc{white-space:pre-wrap;font-size:14px;line-height:1.7;color:var(--fg);border-top:1px solid var(--line);margin-top:20px;padding-top:16px;max-width:68ch}
 .close{display:none}
 
+body.nojobs .stats,body.nojobs .toolbar,body.nojobs .detail{display:none}
+body.nojobs .layout{grid-template-columns:1fr;padding-top:20px}
+@media (max-width:1100px){.checks{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:1040px){
   .layout{grid-template-columns:1fr}
-  .detail{position:fixed;inset:0;max-height:none;border-radius:0;z-index:30;display:none;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+  .detail{position:fixed;inset:0;max-height:none;border-radius:0;z-index:50;display:none;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
   .detail.open{display:block}.close{display:inline-flex}
 }
-@media (max-width:720px){
-  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .job{grid-template-columns:40px minmax(0,1fr);padding:12px}
+@media (max-width:760px){
+  .band{padding:20px;border-radius:18px;margin-top:14px}
+  .band h1{font-size:23px}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}
+  .stat{padding:10px 12px}.stat b{font-size:22px}
+  .checks{grid-template-columns:1fr}
+  .job{grid-template-columns:44px minmax(0,1fr);padding:14px;gap:12px}
   .acts{grid-column:1/-1;justify-content:flex-end}
-  .ring{width:38px;height:38px}.ring b{width:31px;height:31px;font-size:12px}
-  #last,.keys,.divider{display:none}
-  .hello{padding-top:16px}.hello h1{font-size:22px}
+  .ring{width:42px;height:42px}.ring b{width:33px;height:33px;font-size:13px}
+  #last,#eta,.keys,.divider,#logBtn,.fl{display:none}
+  .appbar #refresh{padding:6px 12px;min-height:36px;font-size:13px}
+  .seg{width:100%;overflow-x:auto}.seg button{flex:1;padding:8px 10px}
 }
-
-/* v3 light ledger overrides */
-.hello h1{font:600 30px/1.1 var(--f-display)}
-.stats{gap:0;border-top:1px solid var(--fg);border-bottom:1px solid var(--line)}
-.stat{border:0;border-left:1px solid var(--line);border-radius:0;background:none;box-shadow:none;padding:12px 16px}
-.stat:first-child{border-left:0;padding-left:0}
-.stat:hover{background:var(--sunken)}
-.stat.on{border-color:var(--line);box-shadow:inset 0 -3px var(--accent)}
-.stat b{font:500 26px/1.1 var(--f-display)}
-.stat.lead b{color:var(--accent)}
-.seg{background:none;border:1px solid var(--line-strong);border-radius:var(--r);padding:2px}
-.seg button{border-radius:3px}
-.seg button.on{background:var(--fg);color:var(--bg);box-shadow:none}
-.seg button.on .c{color:var(--line-strong)}
-.search input{border-color:var(--line-strong);border-radius:var(--r)}
-.search input:focus{box-shadow:none;border-color:var(--fg)}
-.sec-h h2{font:600 17px/1.2 var(--f-display)}
-.ring{background:none;width:44px;height:auto;border-radius:0;flex-direction:column;gap:3px}
-.ring b{background:none!important;width:auto;height:auto;border-radius:0;font:500 19px/1 var(--f-display)}
-.ring::after{content:"";display:block;width:32px;height:3px;background:linear-gradient(90deg,var(--c) calc(var(--p)*1%),var(--line) 0)}
-.job.sel{background:var(--accent-soft)}
-.icon{border-radius:var(--r);border-color:var(--line-strong)}
-.new{border-radius:2px;background:var(--fg);color:var(--bg)}
-.facts{border-radius:var(--r)}
-.detail h3{font:600 24px/1.2 var(--f-display)}
-.empty{border-radius:var(--r)}
 </style>
 </head>
 <body>
-<header class="appbar"><div class="wrap">
-  <a class="brand" href="/">Job<i>ber</i></a>
-  <nav class="nav"><a class="on" href="/">Jobs</a><a href="/apply">Batch apply</a><a href="/copilot">Copilot</a><a href="/prep">Interview prep</a><a href="/setup">Setup</a></nav>
+<header class="appbar" data-page="jobs"><div class="wrap">
   <span class="grow"></span>
   <span class="muted small" id="last"></span>
-  <button class="btn ghost sm" id="logBtn" title="Show what the last search did">Log</button>
+  <button class="btn ghost sm" id="logBtn" data-tip="See what the last search did, site by site">Log</button>
+  <span class="muted small num" id="eta" aria-live="polite"></span>
   <button class="btn primary" id="refresh">Find new jobs</button>
 </div></header>
+<script src="/ui.js"></script>
 
 <div class="wrap">
-  <div class="progress" id="progress"></div>
-  <div id="signin" class="banner">LinkedIn is limiting visits from your internet connection right now. Other sites still updated. Try again in an hour or two.</div>
-  <div id="log" class="panel"></div>
-
-  <section class="hello">
-    <div class="grow"><h1 id="greet">Your job search</h1><p id="sub">Newest first, ranked by how well each role fits your CV.</p></div>
+  <section class="band" aria-labelledby="greet">
+    <h1 id="greet">Your job search</h1>
+    <p class="sub" id="sub">Newest first, ranked by how well each role fits your CV.</p>
+    <div id="nextstep"></div>
+    <div class="stats" id="stats"></div>
   </section>
-  <div class="stats" id="stats"></div>
+  <div class="panel running" id="progress" role="status" aria-live="polite"><span class="spin"></span><div style="min-width:0"><b>Searching job sites for you…</b><div class="small muted" id="progressTxt">Starting…</div></div><span class="grow"></span><span class="small muted" id="progressEta" style="white-space:nowrap">Takes a few minutes · you can keep browsing</span></div>
+  <div id="signin" class="notice">LinkedIn is limiting visits from your internet connection right now. Other sites still updated. Try again in an hour or two.</div>
+  <div id="log" class="panel"></div>
+  <section class="panel start" id="start" hidden></section>
 
   <div class="toolbar">
     <div class="trow">
-      <div class="seg" id="tabs" role="tablist"></div>
-      <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="search" id="q" placeholder="Search role, company or skill" aria-label="Search jobs"></label>
+      <div class="seg" id="tabs" role="tablist" aria-label="Which jobs to show"></div>
+      <label class="search"><span id="searchIcon"></span>
+        <input type="search" id="q" placeholder="Search role, company or skill  ( / )" aria-label="Search jobs"></label>
     </div>
     <div class="trow">
+      <span class="fl">Location</span>
       <span class="trow" id="locs" style="gap:6px"></span>
       <span class="divider"></span>
-      <button class="chip" id="greatOnly">Great fit only</button>
-      <button class="chip" id="directOnly" title="Apply on the company's own career portal (Workday, Greenhouse, Lever…)">Direct company apply</button>
+      <button class="chip" id="greatOnly">Great fit only</button><button class="tipbtn" data-term="fit"></button>
+      <button class="chip" id="directOnly">Direct company apply</button><button class="tipbtn" data-term="direct"></button>
       <select class="chip" id="pay" aria-label="Pay filter">
         <option value="ok">Pay ≥ floor or not listed</option>
         <option value="listed">Pay listed ≥ floor</option>
         <option value="all">Show all (incl. low pay / too senior)</option>
-      </select>
+      </select><button class="tipbtn" data-term="below"></button>
     </div>
   </div>
 
   <div class="layout">
     <main id="list"></main>
-    <aside class="detail panel" id="detail"><div class="empty"><b>Pick a job</b>Its salary, experience, fit reasons and full description show here.</div></aside>
+    <aside class="detail panel" id="detail"></aside>
   </div>
 </div>
 
 <script>
 const $=id=>document.getElementById(id);
-const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const {esc,ICONS,tip,empty}=Jobber;
+$("searchIcon").outerHTML=ICONS.search;
 const cap=s=>s?s[0].toUpperCase()+s.slice(1):"";
 const ICON={
   star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>',
@@ -196,21 +210,24 @@ const collapsed=new Set(["8–14 days ago"]);
 async function load(){
   let r;
   try{r=await fetch("/api/jobs").then(x=>x.json());if(r.error)throw new Error(r.error)}
-  catch(e){$("list").innerHTML=`<div class="empty"><b>Couldn't load jobs</b>${esc(e.message)}</div>`;return}
+  catch(e){$("list").innerHTML=empty({icon:"x",title:"Couldn't load your jobs",body:`The local server said: ${esc(e.message)}. Is Jobber still running in its window? Try refreshing this page.`});return}
   if(!r.setup_complete){location.href="/setup";return}
   JOBS=r.jobs;FLOOR=r.min_salary;MONEY=r.money;LOCS=r.locations||[];
   $("pay").options[0].text=FLOOR?`Pay ≥ ${fmt(FLOOR)} or not listed`:"Any pay";$("pay").options[1].text=FLOOR?`Pay listed ≥ ${fmt(FLOOR)}`:"Pay listed";
-  showRefresh(r.refresh);render();
+  showRefresh(r.refresh);render();if(!sel)detail(null);
+  if(new URLSearchParams(location.search).get("run")==="1"){history.replaceState(null,"","/");if(!r.refresh.running&&!r.refresh.last)startRefresh()}
 }
 const fitCls=f=>f>=70?"hi":f>=50?"mid":"lo";
-const ring=f=>`<div class="ring ${fitCls(f)}" style="--p:${f}" title="CV fit ${f}%"><b>${f}</b></div>`;
+const ring=f=>`<div class="ring ${fitCls(f)}" style="--p:${f}" data-tip="CV fit ${f}%: ${f>=70?"a strong match":f>=50?"worth a look":"a long shot"} for what you set up" aria-label="CV fit ${f}%"><b>${f}</b></div>`;
 const ago=j=>j.age_days==null?"date not shown":j.age_days<=0?"today":j.age_days===1?"yesterday":j.age_days+" days ago";
 const unit=()=>/^k$/i.test(MONEY.unit_label||"")?MONEY.unit_label:(MONEY.unit_label?" "+MONEY.unit_label:"");
 const fmt=v=>`${MONEY.symbol||""}${Math.round(v)}${unit()}`;
 function sal(j){if(!j.salary_listed)return null;const f=v=>v==null?"?":Math.round(v);
   return j.sal_min_lpa&&j.sal_min_lpa!==j.sal_max_lpa?`${MONEY.symbol||""}${f(j.sal_min_lpa)}–${f(j.sal_max_lpa)}${unit()}`:fmt(j.sal_max_lpa)}
 function exp(j){return j.exp_min==null?null:j.exp_max?`${j.exp_min}–${j.exp_max} yrs`:`${j.exp_min}+ yrs`}
-function src(j){return Object.keys(j.sources).map(cap).join(", ")}
+const SRC={company_boards:"Company site",remoteok:"Remote OK",weworkremotely:"We Work Remotely",linkedin:"LinkedIn"};
+const srcName=k=>SRC[k]||cap(k);
+function src(j){return Object.keys(j.sources).map(srcName).join(", ")}
 const isDirect=j=>j.ats&&!BOARDS.includes(j.ats);
 
 function inView(j){
@@ -238,15 +255,28 @@ function render(){
     ["great","Great fit (70%+)",active.filter(j=>j.fit>=70).length],
     ["saved","Saved for later",JOBS.filter(j=>j.status==="saved").length],
     ["pipeline","Applied and in progress",JOBS.filter(j=>PIPE.includes(j.status)).length]];
-  $("greet").textContent=fresh?`${fresh} new ${fresh===1?"role":"roles"} since yesterday`:"Your job search";
+  const h=new Date().getHours(),hi=h<12?"Good morning":h<18?"Good afternoon":"Good evening";
+  const nGreat=active.filter(j=>j.fit>=70).length,applied=JOBS.filter(j=>PIPE.includes(j.status)).length;
+  $("greet").textContent=!JOBS.length?`${hi}. Let's find your first jobs.`:fresh?`${hi}. ${fresh} new ${fresh===1?"role":"roles"} since yesterday.`:`${hi}. Here's your search.`;
+  $("sub").textContent=!JOBS.length?"Jobber will search job boards and company career sites for the roles you picked in Setup, then rank every result by how well it fits you.":
+    `${active.length} open ${active.length===1?"job":"jobs"} to look at, newest first. The number in each circle is the CV fit score.`;
+  let ns;
+  if(!JOBS.length)ns=[`Start your first search. It takes 5-10 minutes.`,`<button class="btn sm" onclick="startRefresh()">Find jobs now</button>`];
+  else if(nGreat&&!applied)ns=[`${nGreat} strong ${nGreat===1?"match":"matches"} waiting. Apply to the best one today.`,`<button class="btn sm" data-s="great">Show great fits</button>`];
+  else if(JOBS.filter(j=>j.status==="interviewing").length)ns=[`You have an interview coming up. Time to prepare.`,`<a class="btn sm" href="/prep">Open interview prep</a>`];
+  else if(applied)ns=[`Applied somewhere a week ago? A short follow-up helps.`,`<a class="btn sm" href="/copilot#follow">See follow-ups</a>`];
+  else ns=[`Star the jobs you like, then apply to a few at once.`,`<a class="btn sm" href="/apply">Try Batch apply</a>`];
+  $("nextstep").innerHTML=`<div class="nextstep"><span>${ns[0]}</span>${ns[1]}</div>`;
+  renderStart();
   $("stats").innerHTML=stats.map(([k,l,n,lead])=>`<button class="stat ${lead?"lead":""} ${stat===k||(k==="great"&&great&&!stat)||(view===k&&k!=="discover")?"on":""}" data-s="${k}"><b>${n}</b><span>${l}</span></button>`).join("");
   const tabs=[["discover","Discover",active.length],["saved","Saved",stats[2][2]],["pipeline","Applications",stats[3][2]],["hidden","Hidden",JOBS.filter(j=>j.status==="hidden").length]];
   $("tabs").innerHTML=tabs.map(([k,l,n])=>`<button class="${view===k?"on":""}" data-v="${k}" role="tab">${l}<span class="c">${n}</span></button>`).join("");
   $("locs").innerHTML=["",...LOCS].map(l=>`<button class="chip ${loc===l?"on":""}" data-l="${l}">${l||"All locations"}</button>`).join("");
   $("greatOnly").classList.toggle("on",great);$("directOnly").classList.toggle("on",direct);
 
+  document.body.classList.toggle("nojobs",!JOBS.length);
   const list=JOBS.filter(j=>inView(j)&&passes(j));visible=[];
-  if(!list.length){$("list").innerHTML=JOBS.length?`<div class="empty"><b>No jobs match these filters</b>Try All locations or clear the search.</div>`:`<div class="empty"><b>No jobs yet</b>Click Find new jobs to search job boards and company career portals for the roles you chose in Setup.</div>`;return}
+  if(!list.length){$("list").innerHTML=emptyFor();return}
   let html="";
   if(view==="pipeline"){
     for(const st of PIPE){const g=list.filter(j=>j.status===st);if(g.length)html+=section(cap(st),g,false,"")}
@@ -255,32 +285,57 @@ function render(){
       const g=list.filter(j=>a==null?j.age_days==null:(j.age_days!=null&&j.age_days>=a&&j.age_days<=b)).sort((x,y)=>y.fit-x.fit);
       if(g.length)html+=section(name,g,true,hint)}
   }
-  $("list").innerHTML=html+`<div class="keys"><kbd>J</kbd> <kbd>K</kbd> move · <kbd>A</kbd> apply · <kbd>S</kbd> save · <kbd>X</kbd> hide</div>`;
+  $("list").innerHTML=html+`<div class="keys">Keyboard shortcuts: <kbd>J</kbd> <kbd>K</kbd> move, <kbd>A</kbd> apply, <kbd>S</kbd> save, <kbd>X</kbd> hide, <kbd>/</kbd> search</div>`;
 }
+function emptyFor(){
+  if(!JOBS.length)return empty({icon:"search",title:"No jobs yet, and that's normal",body:"Your first search hasn't run. Press the button and Jobber visits each job site slowly and politely, so it takes 5-10 minutes.",
+    steps:["Jobber searches the sites you picked in Setup","It removes duplicates and jobs that don't match","Every job gets a fit score so the best ones are on top"],
+    actions:`<button class="btn primary" onclick="startRefresh()">Find new jobs</button><a class="btn" href="/setup">Review setup</a>`});
+  if(view==="saved")return empty({icon:"star",title:"Nothing saved yet",body:"Press the ☆ on any job (or the S key) to keep it here while you decide. It's a shortlist, nothing is sent anywhere.",actions:`<button class="btn" data-v="discover">Browse jobs</button>`});
+  if(view==="pipeline")return empty({icon:"send",title:"No applications tracked yet",body:"After you apply to a job, Jobber asks \"Did you apply?\" and moves it here. You can then mark replies, interviews and offers.",actions:`<button class="btn" data-v="discover">Find a job to apply to</button>`});
+  if(view==="hidden")return empty({icon:"x",title:"Nothing hidden",body:"Jobs you dismiss with ✕ go here, so you can bring them back if you change your mind."});
+  return empty({icon:"search",title:"No jobs match these filters",body:"Try another location, turn off \"Great fit only\", or clear the search box.",actions:`<button class="btn" onclick="resetFilters()">Clear all filters</button>`});
+}
+function resetFilters(){loc="";great=false;direct=false;stat="";$("q").value="";$("pay").value="ok";render()}
+let startHidden=false;try{startHidden=localStorage.getItem("jb_start_hide")==="1"}catch(e){}
+function renderStart(){
+  const el=$("start"),did=st=>JOBS.some(j=>st.includes(j.status));
+  const items=[["Set up your search","Roles, cities, pay and CV.",true,`<a href="/setup">Edit</a>`],
+    ["Find your first jobs","Press Find new jobs.",JOBS.length>0,""],
+    ["Save a job you like","Tap the ☆ on a job.",did(["saved","applied","interviewing","offer","rejected"]),""],
+    ["Apply to one job","Use Apply, then confirm.",did(["applied","interviewing","offer","rejected"]),`<a href="/apply">Batch apply</a>`],
+    ["Get interview-ready","Write one STAR story.",did(["interviewing","offer"]),`<a href="/prep">Interview prep</a>`]];
+  const n=items.filter(i=>i[2]).length;
+  if(startHidden||n===items.length){el.hidden=true;return}
+  el.hidden=false;
+  el.innerHTML=`<div class="start-h"><h2>Getting started</h2><span class="pill accent">${n} of ${items.length} done</span><span class="grow"></span><button class="btn ghost sm" onclick="hideStart()">Hide</button></div>
+   <ol class="checks">${items.map(([t,d,ok,link])=>`<li class="${ok?"done":""}"><span class="ck">${ok?ICONS.check:""}</span><div><b>${t}</b>${d} ${ok?"":link}</div></li>`).join("")}</ol>`;
+}
+function hideStart(){startHidden=true;try{localStorage.setItem("jb_start_hide","1")}catch(e){}renderStart()}
 function section(name,g,collapsible,hint){
   const c=collapsible&&collapsed.has(name);if(!c)visible.push(...g);
-  return `<section class="sec"><div class="sec-h"><h2>${esc(name)}</h2><span class="num">${g.length}</span>${hint?`<span class="hint">· ${esc(hint)}</span>`:""}${collapsible?`<button class="btn ghost sm" data-c="${esc(name)}">${c?"Show":"Hide"}</button>`:""}</div>`+
+  return `<section class="sec"><div class="sec-h"><h2>${esc(name)}</h2><span class="num">${g.length}</span>${hint?`<span class="hint">${esc(cap(hint))}</span>`:""}${collapsible?`<button class="btn ghost sm" data-c="${esc(name)}" aria-expanded="${!c}">${c?"Show":"Hide"}</button>`:""}</div>`+
     (c?"":`<div class="rows panel">${g.map(card).join("")}</div>`)+`</section>`;
 }
 function card(j){
   const s=sal(j),e=exp(j),saved=j.status==="saved";
   return `<div class="job ${sel===j.id?"sel":""}" data-id="${j.id}">
   ${ring(j.fit)}
-  <div style="min-width:0"><div class="t"><span>${esc(j.title)}</span>${j.age_days!=null&&j.age_days<=1&&j.status==="new"?'<em class="new">NEW</em>':""}</div>
+  <div style="min-width:0"><div class="t"><span>${esc(j.title)}</span>${j.age_days!=null&&j.age_days<=1&&j.status==="new"?'<em class="new">New</em>':""}</div>
     <div class="meta"><b>${esc(j.company)}</b> · ${esc(j.location_bucket)} · ${ago(j)}</div>
-    <div class="tags">${s?`<span class="pill ${(j.filtered||"").includes("Salary")?"bad":"good"} num">${s}</span>`:`<span class="pill warn">Salary not shown</span>`}
-      ${e?`<span class="pill ${j.exp_min>4?"bad":""}">${e}</span>`:""}${isDirect(j)?`<span class="pill accent" title="Apply goes to the company's own portal">${esc(cap(j.ats))}</span>`:""}<span class="pill">${esc(src(j))}</span></div>
+    <div class="tags">${s?`<span class="pill ${(j.filtered||"").includes("Salary")?"bad":"good"} num">${s}</span>`:`<span class="pill">Pay not listed</span>`}
+      ${e?`<span class="pill ${j.exp_min>4?"bad":""}">${e}</span>`:""}${isDirect(j)?`<span class="pill accent" data-term="direct">${esc(cap(j.ats))}</span>`:""}<span class="pill" data-tip="Where Jobber found this job">${esc(src(j))}</span></div>
     ${j._ask?`<div class="ask">Did you apply? <button class="btn sm primary" data-a="yes">Yes, mark applied</button><button class="btn sm" data-a="no">Not yet</button></div>`:""}</div>
   <div class="acts">
-    <button class="icon ${saved?"on":""}" data-act="save" title="${saved?"Unsave":"Save"} (S)" aria-label="${saved?"Unsave":"Save"}">${ICON.star}</button>
-    <button class="icon" data-act="hide" title="Not interested (X)" aria-label="Hide">${ICON.x}</button>
+    <button class="icon ${saved?"on":""}" data-act="save" data-tip="${saved?"Remove from saved":"Save for later"} (S)" aria-label="${saved?"Unsave":"Save"}" aria-pressed="${saved}">${ICON.star}</button>
+    <button class="icon" data-act="hide" data-tip="Not interested: hide it (X)" aria-label="Hide">${ICON.x}</button>
     <a class="btn primary sm" data-act="apply" href="${esc(j.apply_url)}" target="_blank" rel="noopener">Apply ${ICON.out}</a>
   </div></div>`;
 }
 function detail(j){
-  if(!j){$("detail").innerHTML=`<div class="empty"><b>Pick a job</b>Its salary, experience, fit reasons and full description show here.</div>`;return}
+  if(!j){$("detail").innerHTML=empty({icon:"jobs",title:"Pick a job to see the details",body:"Click any job on the left. You'll see its pay, the experience it asks for, why it fits you, and the full description."});return}
   const s=sal(j),e=exp(j);
-  $("detail").innerHTML=`<div class="dtop">${ring(j.fit)}<div class="grow"><div class="label">CV fit</div><div class="small muted">${j.fit>=70?"Strong match":j.fit>=50?"Partial match":"Weak match"}</div></div>
+  $("detail").innerHTML=`<div class="dtop">${ring(j.fit)}<div class="grow"><div class="label">CV fit ${tip("fit")}</div><div class="small muted">${j.fit>=70?"Strong match":j.fit>=50?"Partial match":"Long shot"}</div></div>
     <button class="btn sm close" data-x>Close</button><a class="btn primary" data-act="apply" href="${esc(j.apply_url)}" target="_blank" rel="noopener">Apply ${ICON.out}</a></div>
   <h3>${esc(j.title)}</h3><div class="co">${esc(j.company)} · ${esc(j.location)}</div>
   <div class="facts">
@@ -288,15 +343,23 @@ function detail(j){
     <div class="fact"><span class="label">Experience</span><b>${e||"Not stated"}</b></div>
     <div class="fact"><span class="label">Location</span><b>${esc(j.location_bucket)}</b></div>
     <div class="fact"><span class="label">Posted</span><b>${ago(j)}</b></div></div>
-  ${isDirect(j)?`<div class="pill accent">Applies on ${esc(cap(j.ats))}, ready for Batch apply</div>`:""}
-  <div class="label dh">Why ${j.fit}% fit</div>
+  ${isDirect(j)?`<div class="pill accent">Applies on ${esc(cap(j.ats))}, ready for Batch apply</div> ${tip("direct")}`:""}
+  <div class="label dh">Why it's a ${j.fit}% fit</div>
   <ul class="why">${j.fit_pros.map(p=>`<li class="p">${esc(p)}</li>`).join("")}${j.fit_gaps.map(p=>`<li class="g">${esc(p)}</li>`).join("")}</ul>
-  <div class="label dh">Status</div>
-  <div class="pipe">${["new","saved",...PIPE,"hidden"].map(st=>`<button class="chip ${j.status===st?"on":""}" data-st="${st}">${cap(st)}</button>`).join("")}</div>
-  <div class="label dh">Notes</div><textarea id="notes" placeholder="Referral, recruiter name, follow-up date">${esc(j.notes)}</textarea>
-  <div class="label dh">Found on</div><div class="links">${Object.entries(j.sources).map(([k,u])=>`<a class="pill" href="${esc(u)}" target="_blank" rel="noopener">${esc(cap(k))} ↗</a>`).join("")}</div>
+  <div class="label dh">Where you are with this job</div>
+  <div class="pipe" role="group" aria-label="Status">${["new","saved",...PIPE,"hidden"].map(st=>`<button class="chip ${j.status===st?"on":""}" data-st="${st}" aria-pressed="${j.status===st}">${cap(st)}</button>`).join("")}</div>
+  <div class="nexthint">${ICONS.bulb}<span>${NEXT[j.status]?NEXT[j.status](j):""}</span></div>
+  <div class="label dh"><label for="notes">Your notes</label></div><textarea id="notes" placeholder="Referral, recruiter name, follow-up date…">${esc(j.notes)}</textarea>
+  <div class="label dh">Found on</div><div class="links">${Object.entries(j.sources).map(([k,u])=>`<a class="pill" href="${esc(u)}" target="_blank" rel="noopener">${esc(srcName(k))} ↗</a>`).join("")}</div>
   <div class="desc">${j.description?esc(j.description):"No description from this site. Open the listing for full details."}</div>`;
 }
+const NEXT={new:()=>"Like it? Save it for later, or press Apply. Jobber will ask if you applied so it can track it.",
+  saved:()=>"On your shortlist. When you're ready, apply here or queue several in Batch apply.",
+  applied:()=>`Nice work. If you don't hear back in about a week, send a short follow-up: <a href="/copilot#follow">Copilot reminds you</a>.`,
+  interviewing:j=>`Congratulations! <a href="/prep?job=${esc(j.id)}">Prepare for this interview</a>: a company brief, likely questions and mock practice.`,
+  offer:()=>"Well done! Compare it against your pay floor and don't be shy to negotiate.",
+  rejected:()=>"It happens to everyone. Note anything you learned; it makes the next one better.",
+  hidden:()=>"Hidden from your list. Press New to bring it back."};
 async function setStatus(j,st){j.status=st;await fetch("/api/jobs/"+j.id,{method:"POST",body:JSON.stringify({status:st})});render();if(sel===j.id)detail(j)}
 const byId=id=>JOBS.find(x=>x.id===id);
 function select(id,open){sel=id;detail(byId(id));if(open)$("detail").classList.add("open");render();
@@ -333,18 +396,33 @@ $("greatOnly").onclick=()=>{great=!great;render()};
 $("directOnly").onclick=()=>{direct=!direct;render()};
 ["q","pay"].forEach(id=>$(id).addEventListener("input",render));
 $("logBtn").onclick=()=>{$("log").style.display=$("log").style.display==="block"?"none":"block"};
+// Time estimate: the server times each search and returns the last one's length (estimate_seconds),
+// plus started/eta_seconds while a search runs, so people know it isn't stuck.
+let EST=null;
+const mins=sec=>Math.max(1,Math.round(sec/60))+" min";
+function etaText(s){
+  if(!s.running)return EST?"Takes about "+mins(EST):"";
+  const total=s.eta_seconds||EST;if(!total||!s.started)return "";
+  const left=total-(Date.now()-new Date(s.started).getTime())/1000;
+  return left>45?"About "+mins(left)+" left":"Almost done…";
+}
 function showRefresh(s){
+  if(s.estimate_seconds)EST=s.estimate_seconds;
   $("last").textContent=s.running?"":s.last?"Updated "+new Date(s.last).toLocaleString([],{dateStyle:"medium",timeStyle:"short"}):"";
+  const eta=etaText(s);
+  $("eta").textContent=eta;$("refresh").title=s.running?"":eta?eta+". Results appear when every site is done.":"";
+  $("progressEta").textContent=(eta||"Takes a few minutes")+" · you can keep browsing";
   $("refresh").disabled=s.running;$("refresh").textContent=s.running?"Searching…":"Find new jobs";
-  const p=$("progress");p.classList.toggle("on",s.running);if(s.running)p.textContent=(s.log[s.log.length-1]||"Starting…").trim();
+  const p=$("progress");p.classList.toggle("on",s.running);if(s.running)$("progressTxt").textContent=(s.log[s.log.length-1]||"Starting…").trim();
   $("log").textContent=s.log.join("\n")||"No search has run since the app started.";
   const limited=s.log.some(l=>/LinkedIn is limiting|LinkedIn started limiting/.test(l));
   $("signin").style.display=limited&&!s.running?"block":"none";
 }
-$("refresh").onclick=async()=>{await fetch("/api/refresh",{method:"POST"});poll()};
+async function startRefresh(){await fetch("/api/refresh",{method:"POST"});showRefresh({running:true,log:[],last:null,started:new Date().toISOString(),eta_seconds:EST});poll()}
+$("refresh").onclick=startRefresh;
 function poll(){clearInterval(polling);polling=setInterval(async()=>{const s=await fetch("/api/refresh").then(r=>r.json());showRefresh(s);
   if(!s.running){clearInterval(polling);load()}},2000)}
-fetch("/api/refresh").then(r=>r.json()).then(s=>{if(s.running)poll()}).catch(()=>{});
+fetch("/api/refresh").then(r=>r.json()).then(s=>{showRefresh(s);if(s.running)poll()}).catch(()=>{});
 load();
 </script>
 </body>
