@@ -1,0 +1,4 @@
+requests>=2.31
+python-jobspy>=1.5   # LinkedIn / Indeed / Naukri (optional; app works without it)
+playwright>=1.45     # optional: LinkedIn public pages in a logged-out Edge/Chrome window (no account used)
+anthropic>=2.0       # optional: AI features in Copilot (needs a Claude API key in secrets.json)

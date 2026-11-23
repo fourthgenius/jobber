@@ -1,0 +1,22 @@
+# Your personal data: never commit
+config.json
+profile.json
+cv.md
+resume.pdf
+*.pdf
+secrets.json
+jobs.db
+jobs.db-*
+chrome-extension/snapshot.json
+daily.log
+
+# Local environments and browser profiles
+.venv/
+venv/
+__pycache__/
+*.pyc
+.li_guest/
+.li_profile/
+.apply_browser/
+.DS_Store
+Thumbs.db

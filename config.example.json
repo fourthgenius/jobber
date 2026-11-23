@@ -1,0 +1,297 @@
+{
+  "_readme": "Example config (Product Manager in India + remote). Easiest: edit everything on the Setup page at http://127.0.0.1:8765/setup. This file is copied to config.json on first run; config.json is yours and never committed.",
+  "setup_complete": false,
+  "search_terms": [
+    "product manager",
+    "associate product manager",
+    "growth product manager",
+    "technical product manager"
+  ],
+  "role_tiers": {
+    "core": [
+      "associate product manager",
+      "apm",
+      "product manager"
+    ],
+    "strong": [
+      "growth product manager",
+      "ai product manager",
+      "technical product manager",
+      "platform product manager",
+      "product owner"
+    ],
+    "related": [
+      "product strategy",
+      "product operations",
+      "product ops",
+      "product analyst"
+    ],
+    "stretch": [
+      "business operations",
+      "strategy & operations",
+      "chief of staff"
+    ]
+  },
+  "title_include": [],
+  "title_exclude": [
+    "intern",
+    "internship",
+    "project manager",
+    "program manager",
+    "director",
+    "head of",
+    "vp ",
+    "vice president",
+    "principal",
+    "group product manager",
+    "trainee"
+  ],
+  "locations": [
+    {
+      "label": "Bengaluru",
+      "match": [
+        "bangalore",
+        "bengaluru"
+      ],
+      "search": "Bengaluru, Karnataka, India"
+    },
+    {
+      "label": "Delhi-NCR",
+      "match": [
+        "delhi",
+        "new delhi",
+        "ncr",
+        "gurgaon",
+        "gurugram",
+        "noida"
+      ],
+      "search": "Delhi, India"
+    }
+  ],
+  "country": "India",
+  "remote": {
+    "enabled": true,
+    "ok_regions": [
+      "anywhere",
+      "worldwide",
+      "global",
+      "india",
+      "apac",
+      "asia",
+      "remote",
+      "work from anywhere"
+    ],
+    "block_regions": [
+      "us only",
+      "usa only",
+      "united states",
+      "us-based",
+      "u.s.",
+      "canada",
+      "europe",
+      "eu only",
+      "uk only",
+      "united kingdom",
+      "germany",
+      "latam",
+      "americas",
+      "north america",
+      "emea"
+    ]
+  },
+  "currency": {
+    "code": "INR",
+    "symbol": "₹",
+    "unit_label": "LPA",
+    "unit_value": 100000
+  },
+  "fx_to_home": {
+    "INR": 1,
+    "USD": 84,
+    "EUR": 91,
+    "GBP": 107
+  },
+  "min_salary": 20,
+  "max_experience_years": 5,
+  "max_age_days": 14,
+  "recent_hours": 72,
+  "profile": {
+    "years_experience": 3,
+    "skills": [
+      "sql",
+      "a/b testing",
+      "experimentation",
+      "roadmap",
+      "prioritization",
+      "user research",
+      "analytics",
+      "stakeholder",
+      "go-to-market",
+      "growth",
+      "funnel"
+    ],
+    "domains": [
+      "saas",
+      "b2b",
+      "consumer",
+      "fintech",
+      "ai"
+    ]
+  },
+  "boost_keywords": {
+    "ai": 2,
+    "growth": 2,
+    "saas": 1,
+    "startup": 1,
+    "series a": 1,
+    "series b": 1
+  },
+  "sources": {
+    "linkedin": true,
+    "naukri": true,
+    "indeed": true,
+    "glassdoor": false,
+    "remotive": true,
+    "remoteok": true,
+    "himalayas": true,
+    "jobicy": true,
+    "weworkremotely": true,
+    "company_boards": true
+  },
+  "results_per_query": 25,
+  "linkedin_results_per_location": 100,
+  "linkedin_mode": "browser",
+  "linkedin_scrolls": 3,
+  "linkedin_max_details": 25,
+  "_company_boards_note": "Company career portals read through their official public APIs (fast, no login). Add a company by its board slug, e.g. boards.greenhouse.io/<slug>, jobs.lever.co/<slug>, jobs.ashbyhq.com/<slug>. Boards that fail twice are skipped. More are discovered automatically from apply links.",
+  "company_boards": {
+    "greenhouse": [
+      "groww",
+      "rubrik",
+      "druva",
+      "stripe",
+      "databricks",
+      "coinbase",
+      "airbnb",
+      "gitlab",
+      "cloudflare",
+      "twilio",
+      "canonical",
+      "remotecom",
+      "okta",
+      "mongodb",
+      "elastic",
+      "datadog",
+      "intercom",
+      "instacart",
+      "robinhood",
+      "brex",
+      "chime",
+      "affirm",
+      "gusto",
+      "discord",
+      "dropbox",
+      "pinterest",
+      "reddit",
+      "airtable",
+      "asana",
+      "figma",
+      "duolingo",
+      "toast",
+      "samsara",
+      "zscaler",
+      "hackerrank"
+    ],
+    "lever": [
+      "cred",
+      "meesho",
+      "zeta",
+      "fampay",
+      "paytm",
+      "fi",
+      "mindtickle",
+      "palantir",
+      "kraken"
+    ],
+    "ashby": [
+      "sarvam",
+      "atlan",
+      "scaler",
+      "deel",
+      "ramp",
+      "notion",
+      "linear",
+      "openai",
+      "cohere",
+      "perplexity",
+      "replit",
+      "vercel",
+      "supabase",
+      "posthog",
+      "mercury",
+      "harvey",
+      "elevenlabs",
+      "composio"
+    ],
+    "smartrecruiters": [
+      "Freshworks",
+      "Visa",
+      "Swiggy",
+      "BoschGroup",
+      "Wipro",
+      "Ubisoft",
+      "Delivery-Hero"
+    ],
+    "workable": [
+      "hike",
+      "inshorts",
+      "classplus"
+    ]
+  },
+  "copilot": {
+    "queue_min_fit": 65,
+    "queue_max_age_days": 2,
+    "followup_after_days": 7,
+    "alert_top_n": 10,
+    "alert_min_fit": 70,
+    "llm_max_per_run": 30,
+    "funding_feeds": [
+      "https://techcrunch.com/category/venture/feed/",
+      "https://inc42.com/feed/",
+      "https://entrackr.com/feed/"
+    ],
+    "watchlist_seed": [
+      "Stripe",
+      "Notion",
+      "Figma",
+      "Razorpay",
+      "Zerodha",
+      "Atlassian"
+    ],
+    "cv_angles": {
+      "growth": {
+        "keywords": [
+          "growth",
+          "conversion",
+          "retention",
+          "activation",
+          "funnel",
+          "monetization",
+          "pricing"
+        ],
+        "summary": "Growth-focused professional who improves conversion, activation and retention with experiments. (Edit this summary on the Setup page or in config.json; use only true facts.)"
+      },
+      "technical": {
+        "keywords": [
+          "api",
+          "platform",
+          "engineering",
+          "technical",
+          "infrastructure",
+          "developer"
+        ],
+        "summary": "Technical professional comfortable with APIs, platforms and engineering trade-offs. (Edit me.)"
+      }
+    }
+  }
+}

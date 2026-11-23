@@ -1,0 +1,1615 @@
+{
+ "_note": "Sample company directory for the Radar tab (well-known global companies plus Indian companies and startups). Edit freely or replace with companies in your own market. category is any label you like.",
+ "companies": [
+  {
+   "name": "Apple",
+   "sector": "Consumer tech",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Microsoft",
+   "sector": "Software & cloud",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Alphabet (Google)",
+   "sector": "Internet & AI",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Amazon",
+   "sector": "E-commerce & cloud",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Meta",
+   "sector": "Social & AI",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "NVIDIA",
+   "sector": "AI hardware",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Tesla",
+   "sector": "EV & energy",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Netflix",
+   "sector": "Streaming",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Salesforce",
+   "sector": "Enterprise SaaS",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Oracle",
+   "sector": "Enterprise software",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Adobe",
+   "sector": "Creative software",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "SAP",
+   "sector": "Enterprise software",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "IBM",
+   "sector": "Enterprise tech",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Intel",
+   "sector": "Semiconductors",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "AMD",
+   "sector": "Semiconductors",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Qualcomm",
+   "sector": "Semiconductors",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Cisco",
+   "sector": "Networking",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "ServiceNow",
+   "sector": "Enterprise SaaS",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Intuit",
+   "sector": "Fintech software",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Uber",
+   "sector": "Mobility",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Airbnb",
+   "sector": "Travel marketplace",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Booking Holdings",
+   "sector": "Travel",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Spotify",
+   "sector": "Audio streaming",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Shopify",
+   "sector": "Commerce software",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Stripe",
+   "sector": "Payments",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "PayPal",
+   "sector": "Payments",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Visa",
+   "sector": "Payments",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Mastercard",
+   "sector": "Payments",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "American Express",
+   "sector": "Financial services",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "JPMorgan Chase",
+   "sector": "Banking",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Goldman Sachs",
+   "sector": "Banking",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Morgan Stanley",
+   "sector": "Banking",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "BlackRock",
+   "sector": "Asset management",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Coinbase",
+   "sector": "Crypto",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Robinhood",
+   "sector": "Trading",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Block (Square)",
+   "sector": "Fintech",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Revolut",
+   "sector": "Fintech",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Wise",
+   "sector": "Payments",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Klarna",
+   "sector": "Fintech",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Adyen",
+   "sector": "Payments",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "OpenAI",
+   "sector": "AI",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Anthropic",
+   "sector": "AI",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Google DeepMind",
+   "sector": "AI",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Databricks",
+   "sector": "Data & AI",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Snowflake",
+   "sector": "Data cloud",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Palantir",
+   "sector": "Data & AI",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Scale AI",
+   "sector": "AI data",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Perplexity",
+   "sector": "AI search",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Mistral AI",
+   "sector": "AI",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Cohere",
+   "sector": "AI",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Hugging Face",
+   "sector": "AI",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Atlassian",
+   "sector": "Developer tools",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Canva",
+   "sector": "Design software",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Figma",
+   "sector": "Design software",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Notion",
+   "sector": "Productivity",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Slack (Salesforce)",
+   "sector": "Productivity",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Zoom",
+   "sector": "Communication",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Dropbox",
+   "sector": "Cloud storage",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Twilio",
+   "sector": "Developer platform",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Okta",
+   "sector": "Security",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "CrowdStrike",
+   "sector": "Security",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Palo Alto Networks",
+   "sector": "Security",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Cloudflare",
+   "sector": "Internet infrastructure",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Datadog",
+   "sector": "Observability",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "MongoDB",
+   "sector": "Databases",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Elastic",
+   "sector": "Search & data",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "HubSpot",
+   "sector": "Marketing SaaS",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Workday",
+   "sector": "HR software",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Zendesk",
+   "sector": "Customer service SaaS",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Freshworks",
+   "sector": "Customer SaaS",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Rippling",
+   "sector": "HR & IT software",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Deel",
+   "sector": "HR & payroll",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Remote",
+   "sector": "HR & payroll",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "GitLab",
+   "sector": "Developer tools",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "GitHub (Microsoft)",
+   "sector": "Developer tools",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "LinkedIn (Microsoft)",
+   "sector": "Professional network",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Pinterest",
+   "sector": "Social",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Reddit",
+   "sector": "Social",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Snap",
+   "sector": "Social",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "ByteDance",
+   "sector": "Social & AI",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Samsung",
+   "sector": "Electronics",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Sony",
+   "sector": "Electronics & media",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Alibaba",
+   "sector": "E-commerce & cloud",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Tencent",
+   "sector": "Internet",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Grab",
+   "sector": "Super app",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Sea (Shopee)",
+   "sector": "E-commerce",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Walmart Global Tech",
+   "sector": "Retail tech",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Target",
+   "sector": "Retail tech",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Expedia",
+   "sector": "Travel",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "DoorDash",
+   "sector": "Delivery",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Instacart",
+   "sector": "Grocery delivery",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Duolingo",
+   "sector": "Edtech",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Agoda",
+   "sector": "Travel",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "McKinsey & Company",
+   "sector": "Consulting",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Boston Consulting Group",
+   "sector": "Consulting",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Bain & Company",
+   "sector": "Consulting",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "American Express GBT",
+   "sector": "Travel",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Nike",
+   "sector": "Consumer",
+   "category": "global",
+   "hq": "",
+   "india_office": false
+  },
+  {
+   "name": "Unilever",
+   "sector": "Consumer goods",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Procter & Gamble",
+   "sector": "Consumer goods",
+   "category": "global",
+   "hq": "",
+   "india_office": true
+  },
+  {
+   "name": "Reliance Industries / Jio",
+   "sector": "Conglomerate & telecom",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Tata Group (Tata Digital, Tata Neu)",
+   "sector": "Conglomerate & digital",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Tata Consultancy Services",
+   "sector": "IT services",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Infosys",
+   "sector": "IT services",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "HCLTech",
+   "sector": "IT services",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Wipro",
+   "sector": "IT services",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Tech Mahindra",
+   "sector": "IT services",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "HDFC Bank",
+   "sector": "Banking",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "ICICI Bank",
+   "sector": "Banking",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Axis Bank",
+   "sector": "Banking",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Kotak Mahindra Bank",
+   "sector": "Banking & broking",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "State Bank of India (YONO)",
+   "sector": "Banking",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Bajaj Finance",
+   "sector": "Lending",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Bajaj Finserv",
+   "sector": "Financial services",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Bajaj Broking",
+   "sector": "Broking",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Aditya Birla Capital",
+   "sector": "Financial services",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Bharti Airtel",
+   "sector": "Telecom",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Mahindra Group",
+   "sector": "Conglomerate & auto",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Larsen & Toubro",
+   "sector": "Engineering",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "ITC",
+   "sector": "Consumer goods",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Hindustan Unilever",
+   "sector": "Consumer goods",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Asian Paints",
+   "sector": "Consumer goods",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Titan Company",
+   "sector": "Retail",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Adani Group",
+   "sector": "Conglomerate",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Flipkart",
+   "sector": "E-commerce",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Myntra",
+   "sector": "Fashion e-commerce",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Paytm",
+   "sector": "Payments",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Zomato (Eternal)",
+   "sector": "Food & quick commerce",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Swiggy",
+   "sector": "Food & quick commerce",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Nykaa",
+   "sector": "Beauty e-commerce",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "PB Fintech (Policybazaar)",
+   "sector": "Insurtech",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "MakeMyTrip",
+   "sector": "Travel",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Info Edge (Naukri)",
+   "sector": "Internet",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "IndiaMART",
+   "sector": "B2B marketplace",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Ola",
+   "sector": "Mobility",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Zerodha",
+   "sector": "Broking",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Angel One",
+   "sector": "Broking",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "NSE",
+   "sector": "Market infrastructure",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "BSE",
+   "sector": "Market infrastructure",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "NPCI",
+   "sector": "Payments infrastructure",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Jio Financial Services",
+   "sector": "Financial services",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "HDFC Life",
+   "sector": "Insurance",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Paisabazaar",
+   "sector": "Fintech",
+   "category": "india_large",
+   "hq": "India",
+   "india_office": true
+  },
+  {
+   "name": "Razorpay",
+   "sector": "Payments",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "PhonePe",
+   "sector": "Payments",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "CRED",
+   "sector": "Fintech",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Groww",
+   "sector": "Investing",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Upstox",
+   "sector": "Broking",
+   "category": "india_startup",
+   "hq": "Mumbai",
+   "india_office": true
+  },
+  {
+   "name": "Dhan",
+   "sector": "Broking",
+   "category": "india_startup",
+   "hq": "Mumbai",
+   "india_office": true
+  },
+  {
+   "name": "Smallcase",
+   "sector": "Investing",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Jupiter",
+   "sector": "Neobank",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Slice",
+   "sector": "Fintech",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Zepto",
+   "sector": "Quick commerce",
+   "category": "india_startup",
+   "hq": "Mumbai",
+   "india_office": true
+  },
+  {
+   "name": "Meesho",
+   "sector": "E-commerce",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Physics Wallah",
+   "sector": "Edtech",
+   "category": "india_startup",
+   "hq": "Noida",
+   "india_office": true
+  },
+  {
+   "name": "Unacademy",
+   "sector": "Edtech",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Lenskart",
+   "sector": "Retail",
+   "category": "india_startup",
+   "hq": "Gurugram",
+   "india_office": true
+  },
+  {
+   "name": "boAt",
+   "sector": "Consumer electronics",
+   "category": "india_startup",
+   "hq": "Delhi",
+   "india_office": true
+  },
+  {
+   "name": "Urban Company",
+   "sector": "Services marketplace",
+   "category": "india_startup",
+   "hq": "Gurugram",
+   "india_office": true
+  },
+  {
+   "name": "ShareChat (Mohalla Tech)",
+   "sector": "Social",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Dream11 (Dream Sports)",
+   "sector": "Gaming",
+   "category": "india_startup",
+   "hq": "Mumbai",
+   "india_office": true
+  },
+  {
+   "name": "Games24x7",
+   "sector": "Gaming",
+   "category": "india_startup",
+   "hq": "Mumbai",
+   "india_office": true
+  },
+  {
+   "name": "Ather Energy",
+   "sector": "EV",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Ola Electric",
+   "sector": "EV",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Rapido",
+   "sector": "Mobility",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Cars24",
+   "sector": "Auto marketplace",
+   "category": "india_startup",
+   "hq": "Gurugram",
+   "india_office": true
+  },
+  {
+   "name": "Spinny",
+   "sector": "Auto marketplace",
+   "category": "india_startup",
+   "hq": "Gurugram",
+   "india_office": true
+  },
+  {
+   "name": "Licious",
+   "sector": "Food",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Swiggy Instamart",
+   "sector": "Quick commerce",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "BlinkIt",
+   "sector": "Quick commerce",
+   "category": "india_startup",
+   "hq": "Gurugram",
+   "india_office": true
+  },
+  {
+   "name": "Postman",
+   "sector": "Developer tools",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "BrowserStack",
+   "sector": "Developer tools",
+   "category": "india_startup",
+   "hq": "Mumbai",
+   "india_office": true
+  },
+  {
+   "name": "Chargebee",
+   "sector": "SaaS billing",
+   "category": "india_startup",
+   "hq": "Chennai",
+   "india_office": true
+  },
+  {
+   "name": "Zoho",
+   "sector": "SaaS",
+   "category": "india_startup",
+   "hq": "Chennai",
+   "india_office": true
+  },
+  {
+   "name": "Darwinbox",
+   "sector": "HR SaaS",
+   "category": "india_startup",
+   "hq": "Hyderabad",
+   "india_office": true
+  },
+  {
+   "name": "Atlan",
+   "sector": "Data SaaS",
+   "category": "india_startup",
+   "hq": "Delhi",
+   "india_office": true
+  },
+  {
+   "name": "Innovaccer",
+   "sector": "Healthtech",
+   "category": "india_startup",
+   "hq": "Noida",
+   "india_office": true
+  },
+  {
+   "name": "Perfios",
+   "sector": "Fintech infrastructure",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "M2P Fintech",
+   "sector": "Fintech infrastructure",
+   "category": "india_startup",
+   "hq": "Chennai",
+   "india_office": true
+  },
+  {
+   "name": "Juspay",
+   "sector": "Payments",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Pine Labs",
+   "sector": "Payments",
+   "category": "india_startup",
+   "hq": "Noida",
+   "india_office": true
+  },
+  {
+   "name": "OfBusiness",
+   "sector": "B2B commerce",
+   "category": "india_startup",
+   "hq": "Gurugram",
+   "india_office": true
+  },
+  {
+   "name": "Zetwerk",
+   "sector": "Manufacturing",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "InMobi",
+   "sector": "Adtech",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Glance",
+   "sector": "Consumer tech",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Navi",
+   "sector": "Fintech",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Acko",
+   "sector": "Insurtech",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Digit Insurance",
+   "sector": "Insurtech",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "PolicyBazaar",
+   "sector": "Insurtech",
+   "category": "india_startup",
+   "hq": "Gurugram",
+   "india_office": true
+  },
+  {
+   "name": "Uni Cards",
+   "sector": "Fintech",
+   "category": "india_startup",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "OneCard (FPL Technologies)",
+   "sector": "Fintech",
+   "category": "india_startup",
+   "hq": "Pune",
+   "india_office": true
+  },
+  {
+   "name": "Sarvam AI",
+   "sector": "AI",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Krutrim",
+   "sector": "AI",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Composio",
+   "sector": "AI agents",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Rocket.new",
+   "sector": "AI dev tools",
+   "category": "india_rising",
+   "hq": "Surat",
+   "india_office": true
+  },
+  {
+   "name": "Emergent",
+   "sector": "AI dev tools",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Lio",
+   "sector": "AI",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Giva",
+   "sector": "Consumer",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Snabbit",
+   "sector": "Home services",
+   "category": "india_rising",
+   "hq": "Mumbai",
+   "india_office": true
+  },
+  {
+   "name": "Pronto",
+   "sector": "Home services",
+   "category": "india_rising",
+   "hq": "Gurugram",
+   "india_office": true
+  },
+  {
+   "name": "Slikk",
+   "sector": "Quick fashion",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "KNOT",
+   "sector": "Quick fashion",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Swish",
+   "sector": "Food delivery",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Zing",
+   "sector": "Quick commerce",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Stable Money",
+   "sector": "Fintech",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Fi Money",
+   "sector": "Neobank",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Kiwi",
+   "sector": "Credit on UPI",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Super.money (Flipkart)",
+   "sector": "Payments",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "POP",
+   "sector": "Fintech",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Scapia",
+   "sector": "Travel fintech",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Jar",
+   "sector": "Savings",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Sahi",
+   "sector": "Trading",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Univest",
+   "sector": "Investing",
+   "category": "india_rising",
+   "hq": "Mumbai",
+   "india_office": true
+  },
+  {
+   "name": "Wint Wealth",
+   "sector": "Investing",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Dezerv",
+   "sector": "Wealth",
+   "category": "india_rising",
+   "hq": "Mumbai",
+   "india_office": true
+  },
+  {
+   "name": "Neo Wealth",
+   "sector": "Wealth",
+   "category": "india_rising",
+   "hq": "Mumbai",
+   "india_office": true
+  },
+  {
+   "name": "Kuvera",
+   "sector": "Investing",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Fintech Setu (Pine Labs)",
+   "sector": "Fintech infrastructure",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Decentro",
+   "sector": "Fintech infrastructure",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Plum",
+   "sector": "Insurtech",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Even Healthcare",
+   "sector": "Healthtech",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Ultrahuman",
+   "sector": "Health wearables",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Battery Smart",
+   "sector": "EV infrastructure",
+   "category": "india_rising",
+   "hq": "Delhi",
+   "india_office": true
+  },
+  {
+   "name": "Seekho",
+   "sector": "Edtech",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Kuku FM",
+   "sector": "Audio",
+   "category": "india_rising",
+   "hq": "Mumbai",
+   "india_office": true
+  },
+  {
+   "name": "Bitespeed",
+   "sector": "AI SaaS",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Spry",
+   "sector": "AI SaaS",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Gushwork",
+   "sector": "AI services",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Rupeek",
+   "sector": "Lending",
+   "category": "india_rising",
+   "hq": "Bengaluru",
+   "india_office": true
+  },
+  {
+   "name": "Mintoak",
+   "sector": "Fintech infrastructure",
+   "category": "india_rising",
+   "hq": "Mumbai",
+   "india_office": true
+  }
+ ]
+}

@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Job Hunter Copilot</title>
+<link rel="stylesheet" href="/theme.css">
+<style>
+main{padding:20px 0 60px}
+h1{font:600 34px/1.1 var(--f-display);letter-spacing:-.02em;margin:0 0 4px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0}
+.tabs .chip b{font-family:var(--f-mono);font-weight:500;margin-left:2px}
+.list{display:grid;gap:0;border-top:1px solid var(--fg)}
+.list>.panel{border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent}
+.list>.panel:hover{background:var(--surface)}
+.row{display:grid;grid-template-columns:56px 1fr auto;gap:14px;align-items:center;padding:14px 4px}
+.fit{font:500 24px/1 var(--f-display);text-align:center}
+.fit small{display:block;font:500 10px/1.4 var(--f-body);color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+.fit.hi{color:var(--good)}.fit.mid{color:var(--warn)}.fit.lo{color:var(--faint)}
+.t{font:600 17px/1.3 var(--f-display)}.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;align-items:center}
+.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.empty{padding:28px;text-align:center;color:var(--mute)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px}
+.kpi{padding:14px}.kpi .v{font:500 30px/1.1 var(--f-display)}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--faint);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+td.n,th.n{text-align:right;font-family:var(--f-mono)}
+.bars{display:flex;gap:6px;align-items:flex-end;height:120px;padding:8px 0}
+.bars div{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.bars i{display:block;width:100%;max-width:38px;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px}
+.bars span{font-size:11px;color:var(--faint)}
+.sec{padding:16px;overflow-x:auto}.sec h3{margin:0 0 10px;font:600 18px/1.2 var(--f-display)}
+.co-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:0;border-top:1px solid var(--fg)}
+.co{padding:12px 10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.co b{font:600 16px/1.25 var(--f-display)}
+.co .acts{justify-content:flex-start}
+.tpl textarea{min-height:320px;font:13.5px/1.6 var(--f-body)}
+input.in,select.in,textarea.in{border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;padding:8px 10px;width:100%}
+.drawer{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:50}
+.drawer.on{display:block}
+.drawer .box{position:absolute;right:0;top:0;bottom:0;width:min(720px,100%);background:var(--bg);overflow:auto;padding:20px;border-left:1px solid var(--line)}
+.out{white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;font-size:13.5px}
+.dtabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.kw{display:flex;flex-wrap:wrap;gap:4px}
+.note{background:var(--warn-bg);color:var(--warn);border-radius:var(--r);padding:10px 12px;font-size:13px;margin-bottom:12px}
+.ok{background:var(--good-bg);color:var(--good)}
+@media (max-width:640px){#aiPill{display:none}.row{grid-template-columns:44px 1fr}.acts{grid-column:1/-1;justify-content:flex-start}}
+</style>
+</head>
+<body>
+<header class="appbar"><div class="wrap">
+  <a class="brand" href="/">Job <i>Hunter</i></a>
+  <nav class="nav"><a href="/">Jobs</a><a href="/apply">Batch apply</a><a class="on" href="/copilot">Copilot</a><a href="/prep">Interview prep</a><a href="/setup">Setup</a></nav>
+  <div class="grow"></div>
+  <span id="aiPill" class="pill"></span>
+</div></header>
+<main class="wrap">
+  <h1>Copilot</h1>
+  <div class="muted">Apply fast to the right jobs, follow up, get referrals, and see what works. Drafts only: you review and send everything yourself.</div>
+  <div id="setupNote"></div>
+  <div class="tabs" id="tabs"></div>
+  <section id="view"></section>
+</main>
+
+<div class="drawer" id="drawer"><div class="box" id="dbox"></div></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let D = null, tab = (location.hash.slice(1) || "today");
+if (!location.hash) { try { tab = localStorage.getItem("cp_tab") || "today"; } catch (e) {} }
+const TABS = [["today","Apply today","queue"],["follow","Follow-ups","followups"],["outreach","Outreach","outreach"],
+  ["interviews","Interviews","interviews"],["letters","Cover letters",null],["insights","Insights",null],["radar","Radar",null],["setup","Setup",null]];
+
+async function api(path, body) {
+  const r = await fetch(path, body ? {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)} : {});
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(d.error || r.status), d);
+  return d;
+}
+async function load() { D = await api("/api/copilot"); render(); }
+
+function fitCell(j) {
+  const v = j.best_fit, cls = v >= 75 ? "hi" : v >= 55 ? "mid" : "lo";
+  return `<div class="fit ${cls}">${v}<small>${j.ai ? "AI fit" : "fit"}</small></div>`;
+}
+function pills(j) {
+  const p = [];
+  if (j.watch) p.push(`<span class="pill accent">★ Watchlist</span>`);
+  if (j.age_days === 0) p.push(`<span class="pill good">Today</span>`); else if (j.age_days != null) p.push(`<span class="pill">${j.age_days}d ago</span>`);
+  if (j.pay) p.push(`<span class="pill ${j.pay_ok ? "good" : "bad"}">${esc(j.pay)}</span>`);
+  if (j.exp_min != null) p.push(`<span class="pill">${j.exp_min}${j.exp_max ? "-" + j.exp_max : "+"} yrs</span>`);
+  if (j.evergreen) p.push(`<span class="pill warn" title="Seen for 30+ days: may be an evergreen or stale post">Long-running post</span>`);
+  if (j.ats) p.push(`<span class="pill">${esc(j.ats)}</span>`);
+  return p.join("");
+}
+function row(j, acts) {
+  return `<div class="panel row">${fitCell(j)}<div><div class="t">${esc(j.title)}</div>
+    <div class="meta"><span class="muted">${esc(j.company)}${j.location ? " · " + esc(j.location) : ""}</span>${pills(j)}</div>
+    ${j.ai ? `<div class="small muted" style="margin-top:4px">${esc(j.ai.verdict)}</div>` : ""}</div>
+    <div class="acts">${acts}</div></div>`;
+}
+const openBtn = j => `<a class="btn sm primary" target="_blank" rel="noopener" href="${esc(j.apply_url || j.url)}" onclick="markApplied('${j.id}')">Apply ↗</a>`;
+const kitBtn = (j, t="kit") => `<button class="btn sm" onclick="kit('${j.id}','${t}')">${t === "prep" ? "Prep pack" : "Apply kit"}</button>`;
+
+function render() {
+  const s = D.settings;
+  $("#aiPill").className = "pill " + (s.ai ? "good" : "");
+  $("#aiPill").textContent = s.ai ? "AI on" : "AI off (templates)";
+  const notes = [];
+  if (!s.telegram) notes.push(`Telegram alerts aren't connected yet. <a href="#" onclick="go('setup');return false">Set up</a>`);
+  $("#setupNote").innerHTML = notes.map(n => `<div class="note" style="margin-top:12px">${n}</div>`).join("");
+  $("#tabs").innerHTML = TABS.map(([k, label, key]) =>
+    `<button class="chip ${tab === k ? "on" : ""}" onclick="go('${k}')">${label}${key ? ` <b>${D[key].length}</b>` : ""}</button>`).join("");
+  ({today, follow, outreach, interviews, letters, insights, radar, setup})[tab]();
+}
+function go(t) { tab = t; try { localStorage.setItem("cp_tab", t); } catch (e) {} render(); }
+
+function today() {
+  const q = D.queue;
+  $("#view").innerHTML = `<div class="small muted" style="margin-bottom:8px">Posted in the last ${D.settings.queue_max_age_days} days, fit ${D.settings.queue_min_fit}%+, not applied, duplicates removed (${D.duplicates} hidden). Watchlist companies first. Applying in the first 48 hours gets the most replies.</div>
+   <div class="list">${q.length ? q.map(j => row(j, kitBtn(j) + openBtn(j) +
+     `<button class="btn sm ghost" onclick="setStatus('${j.id}','hidden')">Skip</button>`)).join("")
+     : `<div class="panel empty">Nothing fresh above the bar. Fetch new jobs on the Jobs page, or lower the bar in config.json → "copilot".</div>`}</div>`;
+}
+function follow() {
+  const f = D.followups;
+  $("#view").innerHTML = `<div class="small muted" style="margin-bottom:8px">Applied ${D.settings.followup_after_days}+ days ago with no reply. Send a short follow-up to the recruiter or hiring manager, then mark it done.</div>
+   <div class="list">${f.length ? f.map(j => row(j, `<span class="pill warn">${j.applied_days}d</span>
+     <button class="btn sm" onclick="kit('${j.id}','followup')">Draft follow-up</button>
+     <button class="btn sm ghost" onclick="followed('${j.id}')">Done</button>
+     <button class="btn sm ghost" onclick="setStatus('${j.id}','interviewing')">Got a reply</button>`)).join("")
+     : `<div class="panel empty">No follow-ups due. Nice.</div>`}</div>`;
+}
+function outreach() {
+  const o = D.outreach, sts = ["to contact","sent","replied","referred","no reply"];
+  $("#view").innerHTML = `<div class="small muted" style="margin-bottom:8px">Referrals get far more callbacks than cold applies. Open "Apply kit → Outreach" on any job to find people and get drafted notes, then track them here. You send every message yourself.</div>
+   <div class="panel" style="overflow:auto">${o.length ? `<table><tr><th>Person</th><th>Company / role</th><th>Status</th><th>Note</th><th></th></tr>
+   ${o.map(r => `<tr><td>${esc(r.person)}<div class="small muted">${esc(r.role)}</div></td>
+     <td>${esc(r.company)}<div class="small muted">${esc(r.job ? r.job.title : "")}</div></td>
+     <td><select class="in" style="width:auto" onchange="api('/api/copilot/outreach',{id:${r.id},status:this.value}).then(load)">
+       ${sts.map(s => `<option ${s === r.status ? "selected" : ""}>${s}</option>`).join("")}</select></td>
+     <td class="small">${esc(r.note)}</td>
+     <td><button class="btn sm ghost" onclick="api('/api/copilot/outreach',{id:${r.id},delete:1}).then(load)">✕</button></td></tr>`).join("")}</table>`
+     : `<div class="empty">No contacts yet.</div>`}</div>`;
+}
+function interviews() {
+  const l = D.interviews;
+  $("#view").innerHTML = `<div class="list">${l.length ? l.map(j => row(j, kitBtn(j, "prep") + ` <a class="btn sm ghost" href="/prep?job=${j.id}">Interview prep →</a>`)).join("")
+    : `<div class="panel empty">No interviews yet. Set a job's status to "interviewing" on the Jobs page and it shows here with a prep pack.</div>`}</div>`;
+}
+function ftable(title, rows) {
+  return `<div class="panel sec"><h3>${title}</h3>${rows.length ? `<table><tr><th>${""}</th><th class="n">Apps</th><th class="n">Replies</th><th class="n">Intv</th><th class="n">Rate</th></tr>
+   ${rows.map(r => `<tr><td>${esc(r.name)}</td><td class="n">${r.applied}</td><td class="n">${r.replied}</td><td class="n">${r.interview}</td><td class="n">${r.rate}%</td></tr>`).join("")}</table>`
+   : `<div class="muted small">No applications yet.</div>`}</div>`;
+}
+function insights() {
+  const a = D.analytics, t = a.total, max = Math.max(1, ...a.weeks.map(w => w.applied));
+  const p = a.pipeline;
+  $("#view").innerHTML = `<div class="kpis">
+    ${[["Applied", t.applied], ["Replies", t.replied], ["Interviews", t.interview], ["Interview rate", t.rate + "%"], ["Offers", t.offer], ["In queue", D.queue.length]]
+      .map(([k, v]) => `<div class="panel kpi"><div class="label">${k}</div><div class="v">${v}</div></div>`).join("")}</div>
+    <div class="grid2">
+      <div class="panel sec"><h3>Applications per week</h3><div class="bars">${a.weeks.map(w =>
+        `<div title="${w.applied} applications"><span class="num">${w.applied || ""}</span><i style="height:${100 * w.applied / max}%"></i><span>${w.week}</span></div>`).join("")}</div>
+        <div class="small muted">Target: 15-20 well-matched applications a week.</div></div>
+      <div class="panel sec"><h3>Pipeline</h3><table>${Object.entries(p).map(([k, v]) => `<tr><td>${k}</td><td class="n">${v}</td></tr>`).join("")}</table></div>
+      ${ftable("By role type", a.by_role)}${ftable("By source", a.by_source)}${ftable("By career portal", a.by_portal)}${ftable("By CV version", a.by_cv)}
+    </div>`;
+}
+let TPL = null;
+async function letters() {
+  if (!TPL) TPL = await api("/api/copilot/cover-templates");
+  const T = TPL.templates;
+  const cur = window._tpl && T[window._tpl] ? window._tpl : Object.keys(T)[0];
+  $("#view").innerHTML = `<div class="small muted" style="margin-bottom:10px">Six reusable letters, one per role type. Each job gets the best match automatically (you can switch it in the Apply kit). Fields: {role}, {company}, {hook} (one line on why this company), {name}, {date}. Only facts from your CV.</div>
+   <div class="tabs" style="margin-top:0">${Object.entries(T).map(([k, t]) => `<button class="chip ${k === cur ? "on" : ""}" onclick="window._tpl='${k}';letters()">${esc(t.label)}</button>`).join("")}</div>
+   <div class="grid2"><div class="panel sec tpl"><h3>${esc(T[cur].label)}</h3>
+     <div class="small muted" style="margin-bottom:6px">Used for titles mentioning: ${esc((T[cur].match || []).join(", "))}</div>
+     <textarea class="in" id="tplBody">${esc(T[cur].body)}</textarea>
+     <div style="display:flex;gap:6px;margin-top:8px"><button class="btn sm primary" onclick="saveTpl('${cur}')">Save template</button></div></div>
+   <div class="panel sec"><h3>Default "why this company" line</h3>
+     <div class="small muted" style="margin-bottom:6px">Used when you don't write a custom hook for a job. A specific line per company (in the Apply kit) lifts reply rates.</div>
+     <input class="in" id="hookDef" value="${esc(TPL.default_hook)}">
+     <button class="btn sm" style="margin-top:8px" onclick="saveHook()">Save line</button>
+     <div class="label" style="margin-top:18px">Tips</div>
+     <ul class="small muted" style="padding-left:18px;margin:6px 0 0"><li>Keep it under 250 words; recruiters skim.</li><li>One concrete reason for this company beats three generic ones.</li><li>Lead with the number most relevant to the JD.</li></ul></div></div>`;
+}
+async function saveTpl(k) { TPL = await api("/api/copilot/cover-templates", {templates: {[k]: {body: $("#tplBody").value}}}); toast("Template saved"); }
+async function saveHook() { TPL = await api("/api/copilot/cover-templates", {default_hook: $("#hookDef").value}); toast("Saved"); }
+
+let CO = null, coCat = "all", coQ = "";
+const CAT_LABEL = {global: "Top global", india_large: "Big Indian companies", india_startup: "Indian startups", india_rising: "Rising in India"};
+let CATS = [["all", "All"]];
+async function companiesView(el) {
+  if (!CO) { CO = (await api("/api/copilot/companies")).companies;
+    CATS = [["all", "All"], ...[...new Set(CO.map(c => c.category).filter(Boolean))].map(k => [k, CAT_LABEL[k] || k.replace(/_/g, " ")])]; }
+  const q = coQ.toLowerCase();
+  const list = CO.filter(c => (coCat === "all" || c.category === coCat) && (!q || (c.name + " " + c.sector).toLowerCase().includes(q)))
+    .sort((a, b) => (b.open_jobs - a.open_jobs) || (b.watching - a.watching));
+  el.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0 10px">
+    ${CATS.map(([k, l]) => `<button class="chip ${coCat === k ? "on" : ""}" onclick="coCat='${k}';companiesView($('#coWrap'))">${l} <b class="num">${CO.filter(c => k === "all" || c.category === k).length}</b></button>`).join("")}
+    <input class="in" style="max-width:240px" placeholder="Search company or sector" value="${esc(coQ)}" oninput="coQ=this.value;clearTimeout(window._ct);window._ct=setTimeout(()=>companiesView($('#coWrap')),200)"></div>
+    <div class="co-grid">${list.map(c => `<div class="co"><div><b>${esc(c.name)}</b>
+      <div class="small muted">${esc(c.sector)}${c.hq ? " · " + esc(c.hq) : ""}</div></div>
+      <div class="acts">${c.open_jobs ? `<span class="pill good">${c.open_jobs} open in your list</span>` : ""}
+      <a class="btn sm" target="_blank" rel="noopener" href="${esc(c.careers)}">Careers</a>
+      <a class="btn sm ghost" target="_blank" rel="noopener" href="${esc(c.linkedin)}">LinkedIn jobs</a>
+      ${c.watching ? `<span class="pill accent">★ Watching</span>` : `<button class="btn sm ghost" onclick="addWatch('${esc(c.name.split("(")[0].split("/")[0].trim()).replace(/'/g, "")}');CO=null">★ Watch</button>`}</div></div>`).join("") || `<div class="muted small" style="padding:12px">No match.</div>`}</div>`;
+}
+function radar() {
+  const w = D.watch, f = D.funding;
+  $("#view").innerHTML = `<div class="panel sec" style="margin-bottom:12px"><h3>Company directory</h3>
+     <div class="small muted">A starter list of well-known employers (edit companies.json to make it yours). Star the ones you want: their jobs jump your queue and alerts.</div>
+     <div id="coWrap"><div class="muted small">Loading…</div></div></div><div class="grid2">
+   <div class="panel sec"><h3>Company watchlist</h3>
+     <div class="small muted" style="margin-bottom:8px">Jobs at these companies get a ★ and jump the queue. Paste a careers link from Greenhouse, Lever, Ashby, SmartRecruiters or Workable and it's checked on every fetch.</div>
+     <div style="display:grid;grid-template-columns:1fr 1.4fr auto;gap:6px;margin-bottom:10px">
+       <input class="in" id="wCo" placeholder="Company"><input class="in" id="wUrl" placeholder="Careers link (optional)">
+       <button class="btn primary sm" onclick="addWatch()">Add</button></div>
+     <div class="kw">${w.map(x => `<span class="pill ${x.careers_url ? "accent" : ""}">${esc(x.company)} <a href="#" onclick="delWatch('${esc(x.company)}');return false" style="text-decoration:none">✕</a></span>`).join("")}</div></div>
+   <div class="panel sec"><h3>Funding radar <button class="btn sm ghost" onclick="refreshFunding(this)">Refresh</button></h3>
+     <div class="small muted" style="margin-bottom:8px">Freshly funded startups often hire before they post jobs. Feeds are set in config.json (copilot → funding_feeds).</div>
+     ${f.length ? `<table>${f.slice(0, 30).map(x => `<tr><td><a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.title)}</a>
+       <div class="small muted">${esc(x.source)} · ${esc(x.published)}${x.open_jobs ? ` · <b>${x.open_jobs} jobs in your list</b>` : ""}</div></td>
+       <td style="white-space:nowrap"><a class="btn sm ghost" target="_blank" rel="noopener" href="${esc(x.careers_search)}">Careers</a>
+       ${x.company && !x.watching ? `<button class="btn sm ghost" onclick="addWatch('${esc(x.company).replace(/'/g, "")}')">★</button>` : ""}</td></tr>`).join("")}</table>`
+       : `<div class="muted small">No stories yet: press Refresh (runs on your computer).</div>`}</div></div>`;
+  companiesView($("#coWrap"));
+}
+function setup() {
+  const s = D.settings;
+  $("#view").innerHTML = `<div class="grid2">
+   <div class="panel sec"><h3>Telegram daily alert ${s.telegram ? `<span class="pill good">Connected</span>` : ""}</h3>
+     <ol class="small" style="padding-left:18px;margin:0 0 10px">
+       <li>Paste your bot token (from BotFather) and save.</li><li>Send "hi" to your bot in Telegram.</li><li>Press Find my chat, then Send test.</li><li>Press Schedule daily to get the digest every morning at 8:30.</li></ol>
+     <input class="in" id="tgTok" placeholder="${s.telegram ? "Token saved (paste to replace)" : "Bot token"}" autocomplete="off">
+     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+       <button class="btn sm" onclick="saveSecret('telegram_bot_token','#tgTok')">Save token</button>
+       <button class="btn sm" onclick="act('/api/copilot/telegram/chatid',this)">Find my chat</button>
+       <button class="btn sm" onclick="act('/api/copilot/telegram/test',this)">Send test</button>
+       <button class="btn sm" onclick="act('/api/copilot/alert',this)">Send digest now</button>
+       <button class="btn sm primary" onclick="act('/api/copilot/schedule',this,{time:'08:30'})">Schedule daily 8:30</button></div>
+     <div class="small muted" style="margin-top:8px">The daily run fetches new jobs first (takes ~10 min), so keep the laptop on and awake at 8:30.</div></div>
+   <div class="panel sec"><h3>AI features ${s.ai ? `<span class="pill good">On · ${esc(s.model)}</span>` : `<span class="pill">Off</span>`}</h3>
+     <div class="small muted" style="margin-bottom:8px">Without a key you still get smart templates, rule-based CV tailoring, keyword gaps and prep packs. With a Claude API key you also get AI fit scoring, written cover notes, rewritten CVs, screening answers and outreach notes (usually a few cents per job). Get one at console.anthropic.com.</div>
+     <input class="in" id="aiKey" placeholder="Claude API key (optional)" autocomplete="off">
+     <div style="display:flex;gap:6px;margin-top:8px"><button class="btn sm" onclick="saveSecret('anthropic_api_key','#aiKey')">Save key</button>
+     ${s.ai ? `<button class="btn sm" onclick="act('/api/copilot/score',this)">AI-score new jobs</button>` : ""}</div></div>
+   <div class="panel sec"><h3>Chrome extension (autofill)</h3>
+     <div class="small muted" style="margin-bottom:8px">Fills application forms with your details, attaches your CV and pastes the right cover letter. It never presses Submit.</div>
+     <ol class="small" style="padding-left:18px;margin:0 0 10px"><li>In Chrome, open <b>chrome://extensions</b> (paste it in the address bar).</li><li>Turn on <b>Developer mode</b> (top right).</li><li>Click <b>Load unpacked</b> and choose the folder that opens with the button below.</li><li>Pin "Job Hunter Autofill" from the puzzle icon. On any job form press its icon or Alt+Shift+F.</li></ol>
+     <button class="btn sm primary" onclick="act('/api/copilot/open-extension',this)">Open extension folder</button>
+     <button class="btn sm ghost" onclick="navigator.clipboard.writeText('chrome://extensions').then(()=>toast('Copied: paste it in Chrome'))">Copy chrome://extensions</button></div>
+   <div class="panel sec"><h3>Save any job (bookmarklet)</h3>
+     <div class="small muted" style="margin-bottom:8px">For sites the app can't fetch (Wellfound, iimjobs, Instahyre, Cutshort, YC Work at a Startup, company sites): drag this button to your bookmarks bar. On any job page, click it to save the job into your tracker. Select the job description text first for the best result.</div>
+     <a class="btn primary" id="bm" href="#">＋ Save to Job Hunter</a></div>
+   <div class="panel sec"><h3>Tuning</h3><div class="small muted">Edit config.json → "copilot" to change: queue_min_fit (${s.queue_min_fit}), queue_max_age_days (${s.queue_max_age_days}), followup_after_days (${s.followup_after_days}), alert_top_n (${s.alert_top_n}), alert_min_fit (${s.alert_min_fit}), llm_max_per_run (${s.llm_max_per_run}).</div></div>
+  </div>`;
+  $("#bm").setAttribute("href", s.bookmarklet);
+  $("#bm").onclick = e => { e.preventDefault(); toast("Drag this button to your bookmarks bar"); };
+}
+
+async function act(path, btn, body) {
+  const t = btn.textContent; btn.disabled = true; btn.textContent = "Working…";
+  try { const d = await api(path, body || {}); toast(d.chat_id ? `Connected to ${d.name || d.chat_id}` : d.scored != null ? `Scored ${d.scored} jobs` : "Done"); load(); }
+  catch (e) { toast(e.message, true); }
+  btn.disabled = false; btn.textContent = t;
+}
+async function saveSecret(k, sel) {
+  const v = $(sel).value.trim(); if (!v) return toast("Paste it first", true);
+  await api("/api/copilot/secrets", {[k]: v}); $(sel).value = ""; toast("Saved on this computer"); load();
+}
+async function setStatus(id, status) { await api("/api/jobs/" + id, {status}); load(); }
+async function markApplied(id) {
+  setTimeout(async () => { if (confirm("Did you submit the application?")) { await api("/api/jobs/" + id, {status:"applied"}); load(); } }, 1500);
+}
+async function followed(id) { await api("/api/copilot/followed", {id}); load(); }
+async function addWatch(co) {
+  const company = co || $("#wCo").value.trim(), url = co ? "" : $("#wUrl").value.trim();
+  if (!company) return; const d = await api("/api/copilot/watch", {company, url});
+  toast(d.portal_tracked ? "Added; careers page will be checked on each fetch" : "Added to watchlist"); load();
+}
+async function delWatch(company) { await api("/api/copilot/watch", {company, delete:1}); load(); }
+async function refreshFunding(btn) { await act("/api/copilot/funding", btn); }
+
+/* ---------- Apply kit drawer ---------- */
+let K = null;
+function allJobs() { return [...D.queue, ...D.followups, ...D.interviews, ...D.applied, ...D.outreach.map(o => o.job).filter(Boolean)]; }
+async function kit(id, start) {
+  K = {job: allJobs().find(j => j.id === id), tab: start === "kit" ? "cover" : start};
+  $("#drawer").classList.add("on"); drawK();
+}
+function closeK() { $("#drawer").classList.remove("on"); }
+$("#drawer").addEventListener("click", e => { if (e.target.id === "drawer") closeK(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeK(); });
+const KT = [["cover","Cover note"],["cv","Tailored CV"],["outreach","Outreach"],["gap","Keyword gap"],["answers","Screening answers"],["followup","Follow-up"],["prep","Prep pack"]];
+function drawK() {
+  const j = K.job;
+  $("#dbox").innerHTML = `<div style="display:flex;gap:10px;align-items:flex-start"><div class="grow"><div class="label">${esc(j.company)}</div>
+    <h2 style="margin:2px 0;font:700 20px/1.2 var(--f-display)">${esc(j.title)}</h2><div class="meta">${pills(j)}</div></div>
+    <button class="btn sm ghost" onclick="closeK()">✕</button></div>
+    ${j.ai ? `<div class="out" style="margin-top:12px"><b>${j.ai.score}% · ${esc(j.ai.verdict)}</b>\n✓ ${j.ai.reasons.map(esc).join("\n✓ ")}${j.ai.gaps.length ? "\n△ " + j.ai.gaps.map(esc).join("\n△ ") : ""}</div>` :
+      (j.fit_pros || []).length ? `<div class="small muted" style="margin-top:8px">✓ ${j.fit_pros.map(esc).join(" · ")}${(j.fit_gaps || []).length ? " · △ " + j.fit_gaps.map(esc).join(" · ") : ""}</div>` : ""}
+    <div class="dtabs">${KT.map(([k, l]) => `<button class="chip ${K.tab === k ? "on" : ""}" onclick="K.tab='${k}';drawK()">${l}</button>`).join("")}</div>
+    <div id="kout"><div class="muted">Loading…</div></div>
+    <div style="margin-top:14px;display:flex;gap:6px">${openBtn(j)}<a class="btn sm ghost" target="_blank" rel="noopener" href="${esc(j.url)}">Job post</a></div>`;
+  loadK();
+}
+const copyBtn = id => `<button class="btn sm" onclick="navigator.clipboard.writeText(document.getElementById('${id}').innerText).then(()=>toast('Copied'))">Copy</button>`;
+async function loadK(force) {
+  const j = K.job, t = K.tab, el = $("#kout");
+  try {
+    if (t === "gap") {
+      const g = await api("/api/copilot/gap/" + j.id);
+      el.innerHTML = `<div class="small muted">Keywords from the job post. Make sure the missing ones that are true for you appear in your CV and answers (ATS filters look for them).</div>
+        <div class="label" style="margin-top:10px">In your CV</div><div class="kw">${g.matched.map(k => `<span class="pill good">${esc(k)}</span>`).join("") || "<span class='muted small'>none found</span>"}</div>
+        <div class="label" style="margin-top:10px">Missing from your CV</div><div class="kw">${g.missing.map(k => `<span class="pill warn">${esc(k)}</span>`).join("") || "<span class='muted small'>none</span>"}</div>`;
+      return;
+    }
+    if (t === "answers") {
+      el.innerHTML = `<div class="small muted">Paste the form's custom questions, one per line. Answers are also saved for Batch apply to fill in.</div>
+        <textarea class="in" id="qs" rows="5" style="margin-top:8px" placeholder="Why do you want to work here?\nDescribe a product you launched..."></textarea>
+        <button class="btn sm primary" style="margin-top:8px" onclick="answers()">Draft answers</button><div id="ans"></div>`;
+      return;
+    }
+    el.innerHTML = `<div class="muted">${D.settings.ai ? "Writing with AI (10-30s)…" : "Preparing…"}</div>`;
+    const body = {force: !!force}; if (t === "followup") body.days = j.applied_days || 7;
+    const r = await api(`/api/copilot/ai/${t}/${j.id}`, body), d = r.data;
+    const tag = r.ai ? "" : `<div class="note">AI is off, so this is a smart template. Edit it before sending, or add a Claude API key in Setup.</div>`;
+    const redo = `<button class="btn sm ghost" onclick="loadK(true)">Regenerate</button>`;
+    if (t === "cover") {
+      const opts = Object.entries(d.templates || {}).map(([k, l]) => `<option value="${k}" ${k === d.template ? "selected" : ""}>${esc(l)}</option>`).join("");
+      el.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1.4fr;gap:8px;margin-bottom:8px">
+          <label class="label">Template<select class="in" id="cvTpl" onchange="coverRedo()">${opts}</select></label>
+          <label class="label">Why this company (one line, optional)<input class="in" id="cvHook" placeholder="e.g. I've used ${esc(j.company)} for years and…"></label></div>
+        <div style="display:flex;gap:6px;margin-bottom:8px"><button class="btn sm" onclick="coverRedo()">Apply line</button>
+          ${d.edited ? `<span class="pill accent">Your edited version</span>` : ""}</div>
+        <textarea class="in" id="ko" style="min-height:340px;font:13.5px/1.6 var(--f-body)">${esc(d.text)}</textarea>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button class="btn sm primary" onclick="coverSave()">Save for this job</button>
+          <button class="btn sm" onclick="navigator.clipboard.writeText($('#ko').value).then(()=>toast('Copied'))">Copy</button>
+          <a class="btn sm" target="_blank" href="/copilot/cover/${j.id}" onclick="coverSave(true)">Open as PDF</a>
+          ${D.settings.ai ? `<button class="btn sm ghost" onclick="coverRedo(true)">Rewrite with AI</button>` : ""}</div>
+        <div class="small muted" style="margin-top:6px">The Chrome extension pastes this letter into the job's cover letter box.</div>`;
+      return;
+    }
+    if (t === "cv") {
+      el.innerHTML = `${r.ai ? "" : `<div class="note">AI is off: your CV was re-ordered for this job (most relevant bullets first, role-specific summary). Nothing new was added.</div>`}
+        <div style="display:flex;gap:6px;margin-bottom:8px"><a class="btn sm primary" target="_blank" href="/copilot/cv/${j.id}">Open printable CV → Save as PDF</a>${redo}</div>
+        <div class="out" id="ko">${esc(d)}</div>`;
+    } else if (t === "outreach") {
+      el.innerHTML = `${tag}<div class="label">1. Find people (opens LinkedIn search in your own browser)</div>
+        <div class="kw" style="margin:6px 0 12px">${Object.entries(d.links).map(([k, u]) => `<a class="btn sm" target="_blank" rel="noopener" href="${esc(u)}">${esc(k)}</a>`).join("")}</div>
+        <div class="label">2. Send a short note (under 300 characters)</div>
+        ${[["hiring_manager_note","Hiring manager"],["alumni_note","Alum / referral"],["recruiter_note","Recruiter"]].map(([k, l], i) =>
+          `<div style="margin-top:8px"><div class="small muted">${l} · ${d[k].length} chars</div><div class="out" id="on${i}">${esc(d[k])}</div>${copyBtn("on" + i)}</div>`).join("")}
+        <div class="label" style="margin-top:12px">3. Track who you contacted</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin-top:6px"><input class="in" id="oP" placeholder="Name"><input class="in" id="oR" placeholder="Their role">
+        <button class="btn sm primary" onclick="addOut()">Add</button></div>`;
+    } else {
+      el.innerHTML = `${tag}<div class="out" id="ko">${esc(d)}</div><div style="display:flex;gap:6px;margin-top:8px">${copyBtn("ko")}${r.ai || t === "prep" ? redo : ""}</div>`;
+    }
+  } catch (e) {
+    el.innerHTML = `<div class="note">${esc(e.message)}${e.need_key ? ` <a href="#" onclick="closeK();go('setup');return false">Open Setup</a>` : ""}</div>`;
+  }
+}
+async function coverRedo(ai) {
+  const r = await api(`/api/copilot/ai/cover/${K.job.id}`, {template: $("#cvTpl").value, hook: $("#cvHook").value.trim(), ai: !!ai});
+  $("#ko").value = r.data.text;
+}
+async function coverSave(quiet) {
+  await api(`/api/copilot/ai/cover/${K.job.id}`, {save: $("#ko").value, template: $("#cvTpl").value});
+  if (!quiet) toast("Saved for this job");
+}
+async function answers() {
+  const qs = $("#qs").value.split("\n").map(s => s.trim()).filter(Boolean);
+  $("#ans").innerHTML = `<div class="muted">Writing…</div>`;
+  try { const r = await api(`/api/copilot/ai/answers/${K.job.id}`, {questions: qs});
+    $("#ans").innerHTML = r.data.map((a, i) => `<div style="margin-top:10px"><b class="small">${esc(a.question)}</b><div class="out" id="a${i}">${esc(a.answer)}</div>${copyBtn("a" + i)}</div>`).join("");
+  } catch (e) { $("#ans").innerHTML = `<div class="note">${esc(e.message)}</div>`; }
+}
+async function addOut() {
+  const j = K.job, person = $("#oP").value.trim(); if (!person) return;
+  await api("/api/copilot/outreach", {job_id: j.id, company: j.company, person, role: $("#oR").value.trim(), note: ""});
+  $("#oP").value = $("#oR").value = ""; toast("Added to Outreach"); load();
+}
+function toast(m, bad) {
+  const t = document.createElement("div"); t.className = "note " + (bad ? "" : "ok");
+  t.style.cssText = "position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99;box-shadow:var(--shadow)";
+  t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 3500);
+}
+load().catch(e => { $("#view").innerHTML = `<div class="note">Couldn't load: ${esc(e.message)}</div>`; });
+</script>
+</body>
+</html>

@@ -1,0 +1,545 @@
+{
+  "_note": "Interview question bank by role type. Add your own questions here; each role's 'match' words pick it automatically from a job title.",
+  "roles": {
+    "general": {
+      "label": "Any role (behavioural)",
+      "match": [],
+      "questions": [
+        {
+          "q": "Tell me about yourself.",
+          "type": "behavioural",
+          "tip": "90 seconds: present role, 2 proof points, why this job now."
+        },
+        {
+          "q": "Why do you want to work here?",
+          "type": "behavioural",
+          "tip": "One reason about the company, one about the team or product, one about your growth."
+        },
+        {
+          "q": "Why are you leaving your current role?",
+          "type": "behavioural",
+          "tip": "Stay positive: what you're moving toward, not away from."
+        },
+        {
+          "q": "Tell me about a time you failed.",
+          "type": "behavioural",
+          "tip": "Real failure, your share of it, what you changed afterwards."
+        },
+        {
+          "q": "Describe a conflict with a colleague and how you resolved it.",
+          "type": "behavioural",
+          "tip": "Show you sought to understand first, then the outcome."
+        },
+        {
+          "q": "Tell me about a time you led without formal authority.",
+          "type": "behavioural",
+          "tip": "How you built alignment: data, a shared goal, small wins."
+        },
+        {
+          "q": "Describe a time you had to make a decision with incomplete information.",
+          "type": "behavioural",
+          "tip": "What you knew, what you assumed, how you limited the risk."
+        },
+        {
+          "q": "What's an accomplishment you're most proud of?",
+          "type": "behavioural",
+          "tip": "Pick one with a number and a clear 'I' role."
+        },
+        {
+          "q": "Tell me about a time you received tough feedback.",
+          "type": "behavioural",
+          "tip": "What it was, how you reacted, what changed."
+        },
+        {
+          "q": "How do you prioritise when everything is urgent?",
+          "type": "behavioural",
+          "tip": "Name a framework, then a real example."
+        },
+        {
+          "q": "Where do you see yourself in three years?",
+          "type": "behavioural",
+          "tip": "Ambitious but tied to this role's growth path."
+        },
+        {
+          "q": "What are your salary expectations?",
+          "type": "behavioural",
+          "tip": "Give a researched range; anchor on the role's scope."
+        },
+        {
+          "q": "Do you have any questions for us?",
+          "type": "behavioural",
+          "tip": "Always yes: ask about success metrics, team challenges, how decisions are made."
+        }
+      ]
+    },
+    "product": {
+      "label": "Product management",
+      "match": [
+        "product manager",
+        "product owner",
+        "apm",
+        "product lead"
+      ],
+      "questions": [
+        {
+          "q": "Pick a product you love. How would you improve it?",
+          "type": "skills",
+          "tip": "User segment → pain point → solutions → prioritise → metric."
+        },
+        {
+          "q": "How would you measure the success of [our core feature]?",
+          "type": "skills",
+          "tip": "North-star metric, 2-3 input metrics, a guardrail metric."
+        },
+        {
+          "q": "Our key metric dropped 10% last week. How do you investigate?",
+          "type": "case",
+          "tip": "Check data issues first, then segment by time, platform, cohort, funnel step."
+        },
+        {
+          "q": "How do you decide what goes on the roadmap?",
+          "type": "skills",
+          "tip": "Impact vs effort, strategy fit, evidence; show a real trade-off."
+        },
+        {
+          "q": "Design a product for [user group] to solve [problem].",
+          "type": "case",
+          "tip": "Clarify goal, pick a segment, list needs, sketch MVP, define metric."
+        },
+        {
+          "q": "Tell me about a product you launched end to end.",
+          "type": "behavioural",
+          "tip": "Problem, insight, what you shipped, result with numbers."
+        },
+        {
+          "q": "How do you work with engineers who disagree with your priorities?",
+          "type": "behavioural",
+          "tip": "Shared context, data, willingness to change your mind."
+        },
+        {
+          "q": "Should we build, buy or partner for [capability]?",
+          "type": "case",
+          "tip": "Core vs context, time to market, cost, control."
+        },
+        {
+          "q": "How would you price a new feature?",
+          "type": "case",
+          "tip": "Value to user, competitor anchors, willingness-to-pay test."
+        },
+        {
+          "q": "Estimate the market size for [product] in [country].",
+          "type": "case",
+          "tip": "Top-down and bottom-up; state assumptions out loud."
+        },
+        {
+          "q": "When would you NOT use AI in a product?",
+          "type": "skills",
+          "tip": "When accuracy, cost or trust requirements aren't met; show judgement."
+        }
+      ]
+    },
+    "engineering": {
+      "label": "Software engineering",
+      "match": [
+        "engineer",
+        "developer",
+        "sde",
+        "swe",
+        "backend",
+        "frontend",
+        "full stack",
+        "devops",
+        "sre"
+      ],
+      "questions": [
+        {
+          "q": "Walk me through a system you designed. What would you change now?",
+          "type": "skills",
+          "tip": "Requirements, components, trade-offs, bottlenecks, lessons."
+        },
+        {
+          "q": "Design a URL shortener / rate limiter / news feed.",
+          "type": "case",
+          "tip": "Requirements → API → data model → scale → failure modes."
+        },
+        {
+          "q": "How do you debug a production issue you can't reproduce locally?",
+          "type": "skills",
+          "tip": "Logs, metrics, traces, bisecting changes, feature flags."
+        },
+        {
+          "q": "Tell me about a hard bug you fixed.",
+          "type": "behavioural",
+          "tip": "Symptom, hypotheses, the clue that cracked it, prevention."
+        },
+        {
+          "q": "How do you decide between a quick fix and a proper refactor?",
+          "type": "skills",
+          "tip": "Blast radius, deadlines, tech-debt ticket with owner."
+        },
+        {
+          "q": "Explain [a concept from the JD] to a non-engineer.",
+          "type": "skills",
+          "tip": "Analogy first, then one level deeper."
+        },
+        {
+          "q": "How do you review code? What do you look for?",
+          "type": "skills",
+          "tip": "Correctness, readability, tests, security, then style."
+        },
+        {
+          "q": "Describe a time you improved performance or reliability.",
+          "type": "behavioural",
+          "tip": "Baseline number, what you changed, the new number."
+        },
+        {
+          "q": "How do you write tests for code that's hard to test?",
+          "type": "skills",
+          "tip": "Seams, dependency injection, contract tests."
+        },
+        {
+          "q": "Tell me about disagreeing with a technical decision.",
+          "type": "behavioural",
+          "tip": "Evidence, how you raised it, disagree-and-commit."
+        }
+      ]
+    },
+    "data": {
+      "label": "Data / analytics / science",
+      "match": [
+        "data",
+        "analyst",
+        "analytics",
+        "scientist",
+        "machine learning",
+        "ml",
+        "bi"
+      ],
+      "questions": [
+        {
+          "q": "Walk me through an analysis that changed a business decision.",
+          "type": "behavioural",
+          "tip": "Question, data, method, insight, decision, impact."
+        },
+        {
+          "q": "How would you design an A/B test for [feature]?",
+          "type": "skills",
+          "tip": "Hypothesis, metric, sample size, duration, pitfalls (peeking, novelty)."
+        },
+        {
+          "q": "A metric moved unexpectedly. How do you find out why?",
+          "type": "case",
+          "tip": "Data quality, seasonality, segments, recent launches."
+        },
+        {
+          "q": "Write a SQL query to find the top 3 [items] per [group].",
+          "type": "skills",
+          "tip": "Window functions: ROW_NUMBER() OVER (PARTITION BY ...)."
+        },
+        {
+          "q": "How do you explain a model's results to non-technical stakeholders?",
+          "type": "skills",
+          "tip": "Business framing, one chart, confidence and limits."
+        },
+        {
+          "q": "How do you handle missing or messy data?",
+          "type": "skills",
+          "tip": "Understand why it's missing, then impute, flag or drop with reason."
+        },
+        {
+          "q": "Precision vs recall: which matters more for [use case]?",
+          "type": "skills",
+          "tip": "Tie to the cost of false positives vs false negatives."
+        },
+        {
+          "q": "Tell me about a dashboard or metric you built that people actually used.",
+          "type": "behavioural",
+          "tip": "Who used it, for what decision, adoption."
+        },
+        {
+          "q": "How would you detect fraud / churn / anomalies in [domain]?",
+          "type": "case",
+          "tip": "Features, labels, baseline model, evaluation, monitoring."
+        }
+      ]
+    },
+    "design": {
+      "label": "Design / UX",
+      "match": [
+        "designer",
+        "ux",
+        "ui",
+        "product design",
+        "researcher"
+      ],
+      "questions": [
+        {
+          "q": "Walk me through a project in your portfolio.",
+          "type": "behavioural",
+          "tip": "Problem, research, options, decision, outcome; show your process."
+        },
+        {
+          "q": "How do you handle feedback you disagree with?",
+          "type": "behavioural",
+          "tip": "Get to the underlying concern, test it, decide with evidence."
+        },
+        {
+          "q": "Redesign [common app screen] for [user group].",
+          "type": "case",
+          "tip": "Users, goals, constraints, sketches, how you'd validate."
+        },
+        {
+          "q": "How do you measure whether a design is successful?",
+          "type": "skills",
+          "tip": "Task success, time on task, conversion, qualitative signals."
+        },
+        {
+          "q": "Tell me about a time research changed your direction.",
+          "type": "behavioural",
+          "tip": "What you assumed, what you learned, what you changed."
+        },
+        {
+          "q": "How do you work with engineers on edge cases and handoff?",
+          "type": "skills",
+          "tip": "Specs, states, design systems, early pairing."
+        },
+        {
+          "q": "How do you balance user needs with business goals?",
+          "type": "skills",
+          "tip": "Show a concrete trade-off and how you resolved it."
+        },
+        {
+          "q": "What does accessibility mean in your work?",
+          "type": "skills",
+          "tip": "Contrast, keyboard, screen readers, inclusive language."
+        }
+      ]
+    },
+    "marketing": {
+      "label": "Marketing / growth",
+      "match": [
+        "marketing",
+        "growth",
+        "seo",
+        "content",
+        "brand",
+        "performance",
+        "acquisition"
+      ],
+      "questions": [
+        {
+          "q": "Walk me through a campaign you ran and its results.",
+          "type": "behavioural",
+          "tip": "Goal, audience, channel, creative, spend, result."
+        },
+        {
+          "q": "How would you grow [our product] from 0 to 10,000 users?",
+          "type": "case",
+          "tip": "ICP, channels to test, budget, metrics, iteration loop."
+        },
+        {
+          "q": "Our CAC doubled. What do you look at?",
+          "type": "case",
+          "tip": "Channel mix, conversion rates, competition, attribution changes."
+        },
+        {
+          "q": "How do you decide which channels to invest in?",
+          "type": "skills",
+          "tip": "Test small, compare CAC/LTV and payback, scale winners."
+        },
+        {
+          "q": "Tell me about an experiment that failed.",
+          "type": "behavioural",
+          "tip": "Hypothesis, result, what you learned, what you did next."
+        },
+        {
+          "q": "How do you measure brand impact?",
+          "type": "skills",
+          "tip": "Branded search, share of voice, surveys, direct traffic."
+        },
+        {
+          "q": "How do you work with product and sales teams?",
+          "type": "behavioural",
+          "tip": "Shared goals, regular feedback loops, a concrete example."
+        },
+        {
+          "q": "Write a one-line positioning statement for our product.",
+          "type": "case",
+          "tip": "For [user] who [need], [product] is [category] that [benefit]."
+        }
+      ]
+    },
+    "sales": {
+      "label": "Sales / account management / customer success",
+      "match": [
+        "sales",
+        "account",
+        "business development",
+        "customer success",
+        "partnerships",
+        "bdr",
+        "sdr"
+      ],
+      "questions": [
+        {
+          "q": "Sell me this pen / our product.",
+          "type": "case",
+          "tip": "Ask questions first, find the need, then pitch to it."
+        },
+        {
+          "q": "Walk me through your sales process.",
+          "type": "skills",
+          "tip": "Prospecting, discovery, demo, objections, close, handoff."
+        },
+        {
+          "q": "Tell me about a deal you lost and why.",
+          "type": "behavioural",
+          "tip": "Honest reason, what you'd do differently."
+        },
+        {
+          "q": "How do you handle the objection 'it's too expensive'?",
+          "type": "skills",
+          "tip": "Reframe on value and cost of inaction; never discount first."
+        },
+        {
+          "q": "How did you perform against quota?",
+          "type": "behavioural",
+          "tip": "Numbers: attainment %, deal size, cycle length."
+        },
+        {
+          "q": "A key customer is about to churn. What do you do?",
+          "type": "case",
+          "tip": "Understand root cause, exec alignment, success plan."
+        },
+        {
+          "q": "How do you prioritise your pipeline?",
+          "type": "skills",
+          "tip": "Qualification framework (e.g. MEDDIC/BANT) and deal stage."
+        },
+        {
+          "q": "Tell me about building a relationship with a difficult client.",
+          "type": "behavioural",
+          "tip": "Listening, small wins, trust over time."
+        }
+      ]
+    },
+    "operations": {
+      "label": "Operations / strategy / founder's office",
+      "match": [
+        "operations",
+        "strategy",
+        "chief of staff",
+        "founder",
+        "bizops",
+        "program",
+        "consultant"
+      ],
+      "questions": [
+        {
+          "q": "Walk me through how you'd size a new market for us in 48 hours.",
+          "type": "case",
+          "tip": "Structure first, quick data sources, sanity checks."
+        },
+        {
+          "q": "Our CEO wants to cut costs 20% this quarter. How would you approach it?",
+          "type": "case",
+          "tip": "Cost baseline, big buckets, quick wins vs structural moves."
+        },
+        {
+          "q": "Tell me about a process you redesigned.",
+          "type": "behavioural",
+          "tip": "Before/after metrics, how you got buy-in."
+        },
+        {
+          "q": "How do you run a project across several teams?",
+          "type": "skills",
+          "tip": "Clear owner, milestones, cadence, escalation path."
+        },
+        {
+          "q": "Which of our metrics would you look at in your first week, and why?",
+          "type": "case",
+          "tip": "Revenue drivers, unit economics, a leading indicator."
+        },
+        {
+          "q": "Tell me about a time you had to influence senior leadership.",
+          "type": "behavioural",
+          "tip": "Data, framing for their goals, the decision made."
+        },
+        {
+          "q": "How do you decide what NOT to do?",
+          "type": "skills",
+          "tip": "Strategy fit, opportunity cost, explicit trade-offs."
+        },
+        {
+          "q": "Build a simple model: how many [units] do we need to break even?",
+          "type": "case",
+          "tip": "Fixed costs / contribution margin; state assumptions."
+        }
+      ]
+    },
+    "finance": {
+      "label": "Finance / accounting",
+      "match": [
+        "finance",
+        "financial",
+        "accountant",
+        "fp&a",
+        "controller",
+        "investment",
+        "analyst"
+      ],
+      "questions": [
+        {
+          "q": "Walk me through the three financial statements and how they link.",
+          "type": "skills",
+          "tip": "Net income → cash flow → balance sheet."
+        },
+        {
+          "q": "How would you build a forecast for a business with little history?",
+          "type": "case",
+          "tip": "Drivers, comparable companies, scenarios."
+        },
+        {
+          "q": "Tell me about a time you found an error in the numbers.",
+          "type": "behavioural",
+          "tip": "How you caught it, impact, the control you added."
+        },
+        {
+          "q": "How do you value a company?",
+          "type": "skills",
+          "tip": "DCF, comparables, precedent transactions; when to use each."
+        },
+        {
+          "q": "Explain a variance in the budget to a non-finance manager.",
+          "type": "skills",
+          "tip": "Plain language, drivers, what to do about it."
+        },
+        {
+          "q": "What metrics would you track for a subscription business?",
+          "type": "skills",
+          "tip": "MRR, churn, CAC, LTV, payback, net revenue retention."
+        }
+      ]
+    }
+  },
+  "ask_them": [
+    "What does success look like in the first 90 days?",
+    "Which metrics does this team own, and how are they trending?",
+    "What's the biggest challenge the last person in this role faced?",
+    "How are decisions made on this team?",
+    "What do you enjoy most about working here?",
+    "What are the next steps in the process?"
+  ],
+  "competencies": [
+    "Impact / results",
+    "Leadership / influence",
+    "Conflict",
+    "Failure / learning",
+    "Ambiguity",
+    "Teamwork",
+    "Customer focus",
+    "Data-driven decision",
+    "Ownership",
+    "Communication"
+  ]
+}

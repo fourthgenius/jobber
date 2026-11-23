@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Job Hunter Autofill</title>
+<style>
+:root{--bg:#ffffff;--soft:#f4f5f2;--line:#dfe2db;--fg:#171a17;--mute:#5f665f;--accent:#0e6b5c;--accent-fg:#fff;--good:#17784a;--good-bg:#e1f2e8;--warn:#8a5b00;--warn-bg:#f8edd2}
+*{box-sizing:border-box}body{margin:0;width:320px;background:var(--bg);color:var(--fg);font:13px/1.45 "Segoe UI",system-ui,sans-serif}
+header{display:flex;gap:10px;align-items:center;padding:14px 14px 10px;border-bottom:1px solid var(--line)}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;font-weight:700}
+h1{font-size:14px;margin:0}.sub{color:var(--mute);font-size:12px}
+main{padding:12px 14px 14px;display:grid;gap:10px}
+.who{background:var(--soft);border-radius:10px;padding:10px 12px}
+.who b{display:block;font-size:14px}
+.pill{display:inline-block;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:600}
+.pill.on{background:var(--good-bg);color:var(--good)}.pill.off{background:var(--warn-bg);color:var(--warn)}
+button{font:inherit;font-weight:600;border-radius:9px;padding:9px 12px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--fg);width:100%}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+button:hover{filter:brightness(.97)}
+#msg{min-height:18px;color:var(--mute);font-size:12px}
+footer{font-size:11px;color:var(--mute);padding:0 14px 12px}
+a{color:var(--accent)}
+</style></head>
+<body>
+<header><div class="logo">J</div><div><h1>Job Hunter Autofill</h1><div class="sub">Fills forms. You press Submit.</div></div></header>
+<main>
+  <div class="who" id="who">Loading…</div>
+  <button class="primary" id="fill">Fill this page</button>
+  <button id="cover">Copy cover letter</button>
+  <div id="msg"></div>
+  <div class="sub" id="last"></div>
+</main>
+<footer>Shortcut: Alt+Shift+F · <a href="http://127.0.0.1:8765/apply" target="_blank">Batch apply</a> · <a href="http://127.0.0.1:8765/copilot" target="_blank">Copilot</a></footer>
+<script src="popup.js"></script>
+</body></html>

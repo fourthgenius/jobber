@@ -1,0 +1,84 @@
+{
+  "_note": "Cover letter templates. Edit them on Copilot > Cover letters. Placeholders: {role} {company} {hook} {name} {headline} {achievement} {current_company} {current_title} {date}. Replace every [bracketed] line with your own facts. The template whose 'match' words best fit the job title/description is picked automatically.",
+  "default_hook": "What {company} is building is exactly the kind of problem I like to own end to end.",
+  "templates": {
+    "general": {
+      "label": "General",
+      "match": [
+        "manager",
+        "analyst",
+        "engineer",
+        "specialist",
+        "associate",
+        "lead"
+      ],
+      "body": "Dear Hiring Team,\n\nI'm applying for the {role} role at {company}. {hook}\n\nI'm {headline}. Most recently I {achievement}.\n\nA few more results that map to what this role needs:\n\n- [Result 1: what you did, and the number that moved]\n- [Result 2: a skill from the job description, with proof]\n- [Result 3: scope you owned, team size, or stakeholders]\n\nI'd value the chance to show how I'd approach the work at {company}. Thank you for your time.\n\nBest regards,\n{name}"
+    },
+    "technical": {
+      "label": "Technical / Engineering",
+      "match": [
+        "engineer",
+        "developer",
+        "technical",
+        "platform",
+        "api",
+        "infrastructure",
+        "data",
+        "backend",
+        "frontend"
+      ],
+      "body": "Dear Hiring Team,\n\nI'm applying for the {role} role at {company}. {hook}\n\nI'm {headline}, and I like problems where scale and reliability are the product. At {current_company} I {achievement}.\n\n- [System or feature you built, the stack, and the measurable outcome]\n- [A performance, reliability or cost improvement with numbers]\n- [How you work with product, design or other engineers]\n\nI'd love to talk about the technical challenges your team is working on.\n\nBest regards,\n{name}"
+    },
+    "growth": {
+      "label": "Growth / Marketing",
+      "match": [
+        "growth",
+        "marketing",
+        "conversion",
+        "acquisition",
+        "retention",
+        "seo",
+        "performance",
+        "monetization"
+      ],
+      "body": "Dear Hiring Team,\n\nI'm applying for the {role} role at {company}. {hook}\n\nMy work is measured in funnel numbers. As {headline}, I {achievement}.\n\n- [Experiment or campaign, and the lift it produced]\n- [Channel or funnel stage you owned, before and after]\n- [How you measure: tools, dashboards, attribution]\n\nI'd be glad to share how I'd look at {company}'s funnel in my first 30 days.\n\nBest regards,\n{name}"
+    },
+    "startup": {
+      "label": "Startup / Founder's office / Generalist",
+      "match": [
+        "founder",
+        "chief of staff",
+        "strategy",
+        "operations",
+        "bizops",
+        "generalist",
+        "early"
+      ],
+      "body": "Dear {company} team,\n\nI'm applying for the {role} role. {hook}\n\nI'm {headline} and I'm at my best when I own an outcome end to end with little structure around it. At {current_company} I {achievement}.\n\n- [A 0-to-1 initiative you drove, and its result]\n- [A time you worked across several teams without formal authority]\n- [Analysis or a decision you made that changed direction]\n\nI'd love to help {company} move faster on its most important priorities.\n\nBest regards,\n{name}"
+    },
+    "people": {
+      "label": "Sales / Customer / Account roles",
+      "match": [
+        "sales",
+        "account",
+        "customer",
+        "success",
+        "business development",
+        "partnerships",
+        "client"
+      ],
+      "body": "Dear Hiring Team,\n\nI'm applying for the {role} role at {company}. {hook}\n\nI'm {headline}. Recently I {achievement}.\n\n- [Quota, revenue or retention number you hit]\n- [A difficult customer or deal you turned around]\n- [The tools and process you use to stay organised]\n\nI'd welcome a conversation about {company}'s customers and goals.\n\nBest regards,\n{name}"
+    },
+    "career_switch": {
+      "label": "Career switch",
+      "match": [
+        "junior",
+        "entry",
+        "associate",
+        "graduate",
+        "trainee"
+      ],
+      "body": "Dear Hiring Team,\n\nI'm applying for the {role} role at {company}. {hook}\n\nI'm moving into this field from [previous field], and I bring skills that transfer directly. As {headline}, I {achievement}.\n\n- [Transferable skill 1 with proof]\n- [Course, project or certification relevant to this role]\n- [Why this field, and why now]\n\nI learn fast and would be glad to show what I can do for {company}.\n\nBest regards,\n{name}"
+    }
+  }
+}

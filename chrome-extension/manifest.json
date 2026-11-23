@@ -1,0 +1,71 @@
+{
+  "manifest_version": 3,
+  "name": "Job Hunter Autofill",
+  "version": "2.0.0",
+  "description": "Fills job applications and cover letters from your Job Hunter profile and CV, even with the app closed. Never presses Submit.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8765/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Job Hunter Autofill",
+    "default_popup": "popup.html"
+  },
+  "commands": {
+    "fill": {
+      "suggested_key": {
+        "default": "Alt+Shift+F"
+      },
+      "description": "Fill this form"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.greenhouse.io/*",
+        "*://*.lever.co/*",
+        "*://*.ashbyhq.com/*",
+        "*://*.myworkdayjobs.com/*",
+        "*://*.myworkdaysite.com/*",
+        "*://*.smartrecruiters.com/*",
+        "*://*.workable.com/*",
+        "*://*.recruitee.com/*",
+        "*://*.keka.com/*",
+        "*://*.darwinbox.in/*",
+        "*://*.darwinbox.com/*",
+        "*://*.freshteam.com/*",
+        "*://*.zohorecruit.com/*",
+        "*://*.zohorecruit.in/*",
+        "*://*.bamboohr.com/*",
+        "*://*.icims.com/*",
+        "*://*.teamtailor.com/*",
+        "*://*.breezy.hr/*",
+        "*://*.jobvite.com/*",
+        "*://*.rippling.com/*",
+        "*://*.personio.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "all_frames": true,
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "http://127.0.0.1:8765/*"
+      ],
+      "js": [
+        "bridge.js"
+      ],
+      "run_at": "document_start"
+    }
+  ]
+}
