@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import collections
+import importlib.util
 import json
 import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 
@@ -16,12 +18,26 @@ def load_cfg():
     return settings.load_cfg()
 
 
+def estimate_seconds(cfg=None) -> int:
+    """How long a search will probably take: the last search's time, or a typical default."""
+    cfg = cfg or load_cfg()
+    li = bool(cfg["sources"].get("linkedin"))
+    try:
+        last = json.loads(Path(__file__).with_name("last_search.json").read_text(encoding="utf-8"))
+        if last.get("seconds") and last.get("linkedin", li) == li:
+            return max(60, int(last["seconds"]))
+    except (OSError, ValueError):
+        pass
+    return 540 if li else 420
+
+
 def run(log=print) -> dict:
     cfg = load_cfg()
     if not cfg["search_terms"] and not cfg.get("role_tiers", {}).get("core"):
         log("No search terms yet: open the Setup page (/setup) and choose what to search for.")
         return dict(raw=0, matched=0, new=0, below_bar=0, sources={})
     enabled = cfg["sources"]
+    started = time.time()
     raw: list[dict] = []
     stats = {}
 
@@ -36,24 +52,42 @@ def run(log=print) -> dict:
             stats[name] = {"fetched": 0, "error": str(e)[:200]}
             log(f"{name}: FAILED {str(e)[:150]}")
 
-    for name, fn in sources.OFFICIAL.items():
-        if enabled.get(name):
-            take(name, lambda fn=fn: fn(cfg))
     log("Searching for: " + ", ".join(sources.queries(cfg)))
+    # Different sites run side by side (each still paces its own requests), which roughly halves
+    # the wait: LinkedIn's slow, polite page loads overlap with Indeed/Naukri and the remote boards.
+    lanes = []
+
+    def official():
+        for name, fn in sources.OFFICIAL.items():
+            if enabled.get(name):
+                take(name, lambda fn=fn: fn(cfg))
+    lanes.append(official)
     js_sites = [s for s in sources.JOBSPY if enabled.get(s)]
     if "linkedin" in js_sites and cfg.get("linkedin_mode", "browser") == "browser":
-        try:
+        if importlib.util.find_spec("playwright"):
             import linkedin_browser
             with store.conn() as c:
                 known = {r[0] for r in c.execute("SELECT url FROM jobs WHERE url LIKE '%linkedin.com%'")}
-            log("linkedin (logged-out browser): searching newest first...")
-            take("linkedin", lambda: linkedin_browser.fetch(cfg, known, log))
             js_sites.remove("linkedin")
-        except ImportError:
-            log("linkedin: Playwright not installed (pip install playwright); using logged-out mode")
+
+            def linkedin():
+                log("linkedin (logged-out browser): searching newest first...")
+                take("linkedin", lambda: linkedin_browser.fetch(cfg, known, log))
+            lanes.append(linkedin)
+        else:
+            log("linkedin: Playwright not installed (pip install playwright); using jobspy instead")
     if js_sites:
-        log(f"jobspy ({', '.join(js_sites)}): searching, takes a few minutes...")
-        take("jobspy", lambda: sources.jobspy_sites(cfg, js_sites, log))
+        def jobspy():
+            log(f"jobspy ({', '.join(js_sites)}): searching, takes a few minutes...")
+            take("jobspy", lambda: sources.jobspy_sites(cfg, js_sites, log))
+        lanes.append(jobspy)
+    if cfg.get("parallel_sources", True):
+        with ThreadPoolExecutor(max_workers=len(lanes)) as ex:
+            for f in [ex.submit(lane) for lane in lanes]:
+                f.result()
+    else:
+        for lane in lanes:
+            lane()
 
     if enabled.get("company_boards"):
         import ats
@@ -86,7 +120,8 @@ def run(log=print) -> dict:
             st["new"] += is_new
         c.commit()
     summary = dict(raw=len(raw), matched=kept, new=new, below_bar=soft, sources=stats, by_site=by_site,
-                   dropped=dict(dropped.most_common()), queries=sources.queries(cfg))
+                   dropped=dict(dropped.most_common()), queries=sources.queries(cfg),
+                   seconds=round(time.time() - started), linkedin=bool(enabled.get("linkedin")))
     for name, st in sorted(by_site.items(), key=lambda kv: -kv[1]["kept"]):
         log(f"  {name}: {st['fetched']} fetched, {st['kept']} relevant, {st['new']} new")
     if dropped:

@@ -18,8 +18,9 @@ from urllib.parse import quote_plus
 PROFILE = Path(__file__).with_name(".li_guest")  # cookies of a guest visitor only; never signed in
 
 
-def _ctx(p):
-    kw = dict(headless=False, args=["--start-minimized"], viewport={"width": 1280, "height": 900})
+def _ctx(p, headless=False):
+    kw = dict(headless=headless, args=[] if headless else ["--start-minimized"],
+              viewport={"width": 1280, "height": 900})
     for channel in ("chrome", "msedge", None):
         try:
             return p.chromium.launch_persistent_context(str(PROFILE), channel=channel, **kw) if channel \
@@ -92,6 +93,18 @@ DETAIL_JS = r"""
 
 
 def fetch(cfg, known_urls: set[str] | None = None, log=print) -> list[dict]:
+    """Option "linkedin_headless": true runs the browser without a window. LinkedIn sends hidden
+    browsers to its sign-in wall more often; if that happens before any job is found, we retry once
+    with the normal (minimised) window. We never disguise the browser."""
+    if cfg.get("linkedin_headless"):
+        jobs, blocked = _fetch(cfg, known_urls, log, headless=True)
+        if jobs or not blocked:
+            return jobs
+        log("  LinkedIn blocked the hidden browser; retrying with a normal window...")
+    return _fetch(cfg, known_urls, log, headless=False)[0]
+
+
+def _fetch(cfg, known_urls, log, headless=False) -> tuple[list[dict], bool]:
     from playwright.sync_api import sync_playwright
     from sources import job
 
@@ -107,7 +120,7 @@ def fetch(cfg, known_urls: set[str] | None = None, log=print) -> list[dict]:
     blocked = False
 
     with sync_playwright() as p:
-        ctx = _ctx(p)
+        ctx = _ctx(p, headless)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         try:
             searches = [(loc, False, w) for w in windows for loc in locs] + ([(remote_where, True, windows[0])] if cfg["remote"].get("enabled") else [])
@@ -181,7 +194,7 @@ def fetch(cfg, known_urls: set[str] | None = None, log=print) -> list[dict]:
                        url=f"https://www.linkedin.com/jobs/view/{c['id']}/",
                        posted=_posted(c["time"], c["text"]),
                        salary_text=c.get("salary") or "", description=desc[:6000]))
-    return out
+    return out, blocked
 
 
 if __name__ == "__main__":

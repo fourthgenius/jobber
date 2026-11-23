@@ -28,11 +28,15 @@ PORT = 8765
 INDEX = Path(__file__).with_name("index.html")
 THEME = Path(__file__).with_name("theme.css")
 SETUP = Path(__file__).with_name("setup.html")
-STATE = {"running": False, "log": [], "last": None, "summary": None}
+STATE = {"running": False, "log": [], "last": None, "summary": None, "started": None, "eta_seconds": None}
 
 
 def _refresh():
-    STATE.update(running=True, log=[])
+    try:
+        eta = fetch.estimate_seconds()
+    except Exception:
+        eta = 540
+    STATE.update(running=True, log=[], started=datetime.now().isoformat(timespec="seconds"), eta_seconds=eta)
     try:
         STATE["summary"] = fetch.run(log=lambda m: STATE["log"].append(m))
     except Exception as e:  # keep server alive
@@ -96,7 +100,13 @@ class H(BaseHTTPRequestHandler):
                                         "min_salary": cfg["min_salary"], "money": cfg["currency"],
                                         "locations": locs, "setup_complete": cfg.get("setup_complete", False)})
         if self.path == "/api/refresh":
-            return self._send(200, STATE)
+            est = STATE["eta_seconds"]
+            if not STATE["running"]:
+                try:
+                    est = fetch.estimate_seconds()
+                except Exception:
+                    pass
+            return self._send(200, {**STATE, "estimate_seconds": est})
         self._send(404, {"error": "not found"})
 
     def do_POST(self):

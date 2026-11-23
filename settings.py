@@ -47,6 +47,8 @@ DEFAULTS = {
     "auto_synonyms": True,
     "keep_unspecified_location": True,
     "portal_max_age_days": 45,
+    "parallel_sources": True,
+    "linkedin_headless": False,
     "recent_hours": 72,
     "copilot": {},
 }

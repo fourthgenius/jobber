@@ -166,6 +166,8 @@
   "portal_max_age_days": 45,
   "linkedin_results_per_location": 100,
   "linkedin_mode": "browser",
+  "linkedin_headless": false,
+  "parallel_sources": true,
   "linkedin_scrolls": 3,
   "linkedin_max_details": 25,
   "_company_boards_note": "Company career portals read through their official public APIs (fast, no login). Add a company by its board slug, e.g. boards.greenhouse.io/<slug>, jobs.lever.co/<slug>, jobs.ashbyhq.com/<slug>. Boards that fail twice are skipped. More are discovered automatically from apply links.",
