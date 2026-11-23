@@ -29,14 +29,17 @@
     mic: svg('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>'),
     radar: svg('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 19 5"/>'),
     x: svg('<path d="M6 6l12 12M18 6 6 18"/>'),
+    network: svg('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9.5" r="2.5"/><path d="M16 14.6a5 5 0 0 1 6 4.9"/>'),
     arrow: svg('<path d="M5 12h14M13 6l6 6-6 6"/>'),
   };
   const MARK = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.5 4v9.5a4.5 4.5 0 0 1-8.6 1.9" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="18.5" cy="6.5" r="2.5" fill="#5fe0bd"/></svg>`;
-  const NAV = [["jobs", "/", "Jobs"], ["apply", "/apply", "Batch apply"], ["copilot", "/copilot", "Copilot"], ["prep", "/prep", "Interview prep"], ["setup", "/setup", "Setup"]];
-  const SHORT = {apply: "Apply", prep: "Prep"};
+  const NAV = [["jobs", "/", "Jobs"], ["apply", "/apply", "Batch apply"], ["copilot", "/copilot", "Copilot"], ["prep", "/prep", "Interview prep"], ["network", "/network", "Referrals"], ["setup", "/setup", "Setup"]];
+  const SHORT = {apply: "Apply", prep: "Prep", network: "Referrals"};
 
   /* Plain-words glossary. Keys are used by data-term="..." anywhere in the app. */
   const GLOSS = {
+    referral: ["Referral", "Someone who works at the company passes your CV to the hiring team. Referred candidates are far more likely to get an interview. Jobs where you know someone rank higher in your list."],
+    posts: ["LinkedIn hiring posts", "Many roles are only announced in posts: recruiters writing \"we're hiring\", or people sharing lists of job links. Jobber finds public posts through a web search, or you paste one, and it pulls out the jobs. No LinkedIn login is used."],
     fit: ["CV fit score", "How closely a job matches what you told Setup: your target titles, skills, experience and pay. 70%+ is a strong match, 50-69% is worth a look, below 50% is a long shot."],
     aifit: ["AI fit", "A second opinion from Claude, which reads the full job post against your CV. Only shows when you add an API key."],
     ats: ["ATS (applicant tracking system)", "The software companies use to collect applications, e.g. Greenhouse, Lever, Workday. Many ATSs scan your CV for keywords from the job post, so matching words matters."],

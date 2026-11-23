@@ -113,8 +113,14 @@ def all_jobs(c, cfg):
         except ValueError:
             d["age_days"] = None
         out.append(d)
-    # Newest first, then best fit
-    out.sort(key=lambda d: (d["age_days"] if d["age_days"] is not None else 99, -d["fit"]))
+    try:  # referral signals + LinkedIn post contacts; d["rank"] = fit plus a boost where you know someone
+        import network
+        network.annotate(c, out, cfg)
+    except Exception:
+        for d in out:
+            d.setdefault("rank", d["fit"])
+    # Newest first, then best fit (jobs where you can get a referral rank higher)
+    out.sort(key=lambda d: (d["age_days"] if d["age_days"] is not None else 99, -d["rank"]))
     return out
 
 

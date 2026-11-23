@@ -81,6 +81,12 @@ def run(log=print) -> dict:
             log(f"jobspy ({', '.join(js_sites)}): searching, takes a few minutes...")
             take("jobspy", lambda: sources.jobspy_sites(cfg, js_sites, log))
         lanes.append(jobspy)
+    if enabled.get("linkedin_posts"):
+        import network
+
+        def linkedin_posts():  # public "we're hiring" / job-list posts found via web search (no login)
+            take("linkedin_posts", lambda: network.run(cfg, log))
+        lanes.append(linkedin_posts)
     if cfg.get("parallel_sources", True):
         with ThreadPoolExecutor(max_workers=len(lanes)) as ex:
             for f in [ex.submit(lane) for lane in lanes]:
@@ -115,6 +121,9 @@ def run(log=print) -> dict:
             kept += 1
             soft += bool(ev["filtered"])
             is_new = store.upsert(c, j)
+            if j.get("_lead"):  # found in a LinkedIn post: keep who posted it
+                import network as _network
+                _network.save_lead(c, store.key(j), j["_lead"])
             new += is_new
             st["kept"] += 1
             st["new"] += is_new

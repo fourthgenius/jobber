@@ -16,6 +16,7 @@ try:  # batch apply / autofill (separate module; app works without it)
 except ImportError:
     autofill = None
 
+import network
 import prep
 import settings
 
@@ -81,11 +82,13 @@ class H(BaseHTTPRequestHandler):
             return copilot.handle(self, "GET")
         if self.path.startswith(("/prep", "/api/prep")):
             return prep.handle(self, "GET")
+        if self.path.startswith(("/network", "/api/network")):
+            return network.handle(self, "GET")
         if self.path.split("?")[0] in ("/setup", "/setup/"):
             return self._send(200, SETUP.read_bytes(), "text/html; charset=utf-8")
         if self.path == "/api/setup":
             return self._send(200, settings.state())
-        if self.path in ("/", "/index.html"):
+        if self.path.split("?")[0] in ("/", "/index.html"):
             return self._send(200, INDEX.read_bytes(), "text/html; charset=utf-8")
         if self.path.split("?")[0] == "/theme.css":
             return self._send(200, THEME.read_bytes(), "text/css; charset=utf-8")
@@ -125,6 +128,8 @@ class H(BaseHTTPRequestHandler):
         body = json.loads(raw)
         if self.path.startswith("/api/prep"):
             return prep.handle(self, "POST", body)
+        if self.path.startswith("/api/network"):
+            return network.handle(self, "POST", body)
         if self.path == "/api/setup":
             try:
                 return self._send(200, settings.save(body))

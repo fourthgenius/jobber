@@ -36,3 +36,14 @@ $("cover").onclick = async () => {
     $("msg").textContent = `Copied (${c.label || c.template}${c.offline ? ", offline template" : ""}). Paste it with Ctrl+V.`;
   });
 };
+
+$("post").onclick = async () => {
+  const t = await tab();
+  if (!t || !/^https?:/.test(t.url || "")) { $("msg").textContent = "Open a LinkedIn post (or any page with job links) first."; return; }
+  $("msg").textContent = "Reading the post and its job links…";
+  chrome.runtime.sendMessage({ type: "savePost", tabId: t.id }, r => {
+    if (!r || r.error) { $("msg").textContent = (r && r.error) || "Couldn't save this post."; return; }
+    $("msg").textContent = r.kept ? `Saved ${r.kept} job${r.kept === 1 ? "" : "s"} to your shortlist (${r.new} new)${r.found > r.kept ? `, skipped ${r.found - r.kept} outside your search` : ""}.`
+      : r.found ? `Found ${r.found} job${r.found === 1 ? "" : "s"}, none match your roles and cities.` : "No job links or roles found. Tip: click \"…see more\" on the post first.";
+  });
+};

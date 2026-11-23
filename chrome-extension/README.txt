@@ -14,4 +14,11 @@ What it does:
 - "Copy cover letter" in the popup copies a letter for the job on screen, to paste anywhere.
 - Works even when the Jobber app is closed (uses snapshot.json in this folder, refreshed
   every time the app starts or you save answers).
+- "Save jobs from this post": on LinkedIn, scroll a hiring post (a list of job links, or a
+  "we're hiring" post) to the middle of the screen, or select its text, then press it in the
+  popup. Jobber reads the links, keeps the roles that fit your search and saves who posted it.
+  The Jobber app must be running for this.
+- Referral boost: when you open a LinkedIn job page, it reads the "N connections work here"
+  note LinkedIn shows you and tells Jobber, so that company's jobs rank higher. Read-only:
+  it never clicks, scrolls or messages anyone.
 - It never presses Submit. Check the orange fields and submit yourself; it logs the job as applied.

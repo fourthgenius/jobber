@@ -104,9 +104,83 @@ chrome.tabs.onRemoved.addListener(async tabId => {
   try { await fetch(API + "/closed", { method: "POST", body: JSON.stringify({ id }) }); } catch (e) {}
 });
 
+// ---------- referrals + LinkedIn posts (see /network in the app) ----------
+async function post(path, body) {
+  const r = await fetch(APP + path, { method: "POST", body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || j.error) throw new Error(j.error || `Jobber said ${r.status}`);
+  return j;
+}
+async function signal(msg) {
+  try { await post("/api/network/signal", msg); } catch (e) {
+    const { signals = [] } = await chrome.storage.local.get("signals");  // app closed: send later
+    signals.push(msg);
+    await chrome.storage.local.set({ signals: signals.slice(-200) });
+  }
+}
+async function flushSignals() {
+  const { signals = [] } = await chrome.storage.local.get("signals");
+  if (!signals.length) return;
+  const left = [];
+  for (const m of signals) { try { await post("/api/network/signal", m); } catch (e) { left.push(m); } }
+  await chrome.storage.local.set({ signals: left });
+}
+async function savePost(tabId) {
+  const [r] = await chrome.scripting.executeScript({ target: { tabId }, func: readPost });
+  const p = r && r.result;
+  if (!p || (p.text || "").length < 20) return { error: "Couldn't find a post here. Select the post's text, then try again." };
+  try {
+    const res = await post("/api/network/post", { ...p, via: "extension", status: "saved" });
+    await status(`Post: ${res.kept} job${res.kept === 1 ? "" : "s"} saved${res.poster ? " from " + res.poster : ""}`);
+    return res;
+  } catch (e) {
+    return { error: /fetch/i.test(e.message) ? "Open the Jobber app first (it must be running to read the links)." : e.message };
+  }
+}
+// Runs inside the page: the selected text, or the LinkedIn post nearest the middle of the screen.
+function readPost() {
+  const onLI = /(^|\.)linkedin\.com$/.test(location.hostname);
+  const anchors = root => [...root.querySelectorAll("a[href]")].map(a => ({ url: a.href, text: (a.innerText || "").trim().slice(0, 200) }));
+  const POST = '[data-urn*="urn:li:activity"], [data-id*="urn:li:activity"], .feed-shared-update-v2, article';
+  let text = "", links = [], post = null;
+  const sel = getSelection();
+  if (sel && String(sel).trim().length > 30) {
+    text = String(sel);
+    const n = sel.getRangeAt(0).commonAncestorContainer, box = n.nodeType === 1 ? n : n.parentElement;
+    links = anchors(box).filter((l, i) => sel.containsNode(box.querySelectorAll("a[href]")[i], true));
+    post = onLI ? box.closest(POST) : null;
+  } else if (onLI) {
+    const mid = innerHeight / 2;
+    const dist = e => { const r = e.getBoundingClientRect(); return r.top <= mid && r.bottom >= mid ? 0 : Math.min(Math.abs(r.top - mid), Math.abs(r.bottom - mid)); };
+    const all = [...document.querySelectorAll(POST)].filter(e => e.offsetHeight > 80);
+    post = all.sort((a, b) => dist(a) - dist(b) || a.offsetHeight - b.offsetHeight)[0] || null;
+    if (post) {
+      const body = post.querySelector(".update-components-text, .feed-shared-update-v2__description, .feed-shared-inline-show-more-text, .feed-shared-text, .attributed-text-segment-list__content") || post;
+      text = body.innerText;
+      links = anchors(body).concat(anchors(post).filter(l => !/linkedin\.com\/(in|company|feed\/hashtag|search)/.test(l.url)));
+    }
+  } else {
+    const main = document.querySelector("main, article") || document.body;
+    text = main.innerText;
+    links = anchors(main);
+  }
+  let url = location.href.split("?")[0], poster = "", poster_url = "";
+  if (post) {
+    const urn = (post.getAttribute("data-urn") || post.getAttribute("data-id") || "").match(/urn:li:(activity|share|ugcPost):\d+/);
+    if (urn) url = `https://www.linkedin.com/feed/update/${urn[0]}/`;
+    const actor = post.querySelector('.update-components-actor__title span[aria-hidden="true"], .update-components-actor__name span[aria-hidden="true"], .update-components-actor__title, .feed-shared-actor__name');
+    poster = actor ? actor.innerText.trim().split("\n")[0] : "";
+    const a = post.querySelector('a.update-components-actor__meta-link[href*="/in/"], .update-components-actor__container a[href*="/in/"], a[href*="linkedin.com/in/"]');
+    poster_url = a ? a.href.split("?")[0] : "";
+  }
+  return { text: text.slice(0, 15000), links: links.slice(0, 150), url: onLI ? url : location.href, poster, poster_url };
+}
+
 chrome.runtime.onMessage.addListener((msg, sender, reply) => {
+  if (msg.type === "signal") { signal(msg); return; }
+  if (msg.type === "savePost") { savePost(msg.tabId).then(reply); return true; }
   if (msg.type === "open") { openJob(msg); return; }
-  if (msg.type === "profile") { flush(); profile(msg.force).then(reply); return true; }
+  if (msg.type === "profile") { flush(); flushSignals(); profile(msg.force).then(reply); return true; }
   if (msg.type === "cover") { cover(msg.job || {}).then(reply); return true; }
   if (msg.type === "status") { status(msg.text); return; }
   if (msg.type === "fill") { fillTab(msg.tabId); return; }

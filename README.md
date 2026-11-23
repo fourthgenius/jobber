@@ -14,6 +14,7 @@ Works for any field: product, engineering, data, design, marketing, sales, opera
 | **Jobs** (`/`) | Every matching job, newest first, de-duplicated across sites. Fit % against your CV with reasons and gaps, salary, experience asked, source. Track each job: saved → applied → interviewing → offer / rejected, with notes. |
 | **Batch apply** (`/apply`) | Queue jobs and open them a few at a time in Chrome. The included Chrome extension fills the form, attaches your CV and writes a cover letter. You press Submit. Per-site pacing avoids hammering one portal. |
 | **Copilot** (`/copilot`) | Apply-today queue, follow-up reminders, outreach drafts and a contact tracker, cover letter templates, tailored CVs (printable to PDF), keyword gap vs your CV, funnel insights, company watchlist, funding news radar, optional Telegram daily digest. |
+| **Referrals** (`/network`) | Every job gets a "Get a referral" box: one-click LinkedIn people searches for that company (your 1st/2nd-degree connections, alumni, ex-colleagues, recruiters) and a drafted referral message to copy. Jobs where you know someone rank higher. Also: jobs from LinkedIn hiring posts, found automatically by web search or pasted / saved from a post you're reading. |
 | **Interview prep** (`/prep`) | Company brief built from the job post plus research links and your notes; question bank by role type (80+ questions with tips); STAR story bank with competency coverage; timed mock practice with a self-check rubric and history. |
 
 **AI is optional.** Everything above works with templates and rules. Add a [Claude API key](https://console.anthropic.com) (Copilot → Setup) to also get AI fit scores, written cover notes, rewritten CVs, screening answers, richer interview briefs, job-specific questions and feedback on your mock answers.
@@ -46,6 +47,11 @@ python app.py
 
 ### LinkedIn (optional)
 LinkedIn is read from its public job pages in a real, **logged-out** browser window, so no account is involved. It needs Google Chrome or Microsoft Edge installed. If neither is found, run `python -m playwright install chromium` once inside the virtual environment. To skip LinkedIn, untick it in Setup.
+
+### Referrals and LinkedIn hiring posts
+- **Referrals, no setup:** open any job and use **Get a referral**. The links open LinkedIn in your own browser; Jobber never visits LinkedIn as you. Tick **I know someone here** and that company's jobs move up (`network.referral_boost` in config.json, default +12). With the Chrome extension installed, opening a LinkedIn job page also records LinkedIn's own "N connections work here" note for the same boost.
+- **Hiring posts:** many roles only appear in posts ("we're hiring", or lists of job links). With **LinkedIn hiring posts** ticked in Setup, each search runs a few web searches for public posts that mention your roles and cities, follows each job link (including lnkd.in short links) to the real job page, keeps the matching ones and tags them "LinkedIn post" with the poster as your contact. No LinkedIn login, nothing posted or sent. It uses DuckDuckGo by default; a free [Brave Search API](https://api-dashboard.search.brave.com/) key (or a Google Programmable Search key + engine ID) on the Referrals page is more reliable.
+- **One post at a time:** paste a post on the Referrals page, or press **Save jobs from this post** in the extension popup while the post is in the middle of your screen.
 
 ### Chrome extension (for faster applying)
 1. Open `chrome://extensions` and turn on **Developer mode**.
@@ -110,6 +116,7 @@ store.py            SQLite storage, de-duplication, status tracking
 copilot.py, llm.py, alerts.py             Copilot, optional AI, Telegram
 autofill.py         Batch apply + Chrome extension API
 prep.py             Interview prep
+network.py          Referrals (find referrers, boost) and jobs from LinkedIn hiring posts
 *.html, theme.css   the pages
 chrome-extension/   the autofill extension
 ```

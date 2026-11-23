@@ -148,6 +148,7 @@
   },
   "sources": {
     "linkedin": true,
+    "linkedin_posts": true,
     "naukri": true,
     "indeed": true,
     "glassdoor": false,
@@ -253,6 +254,21 @@
       "hike",
       "inshorts",
       "classplus"
+    ]
+  },
+  "_network_note": "Referrals + LinkedIn hiring posts (/network). referral_boost: fit points added to jobs where you know someone (ticked 'I know someone here', or the Chrome extension saw LinkedIn's 'N connections work here'). post_engine: auto uses a Brave Search or Google key from secrets.json when set, else DuckDuckGo. post_queries: searches per run (one per role); post_max: posts read per run; post_days: how recent.",
+  "network": {
+    "referral_boost": 12,
+    "post_engine": "auto",
+    "post_queries": 4,
+    "post_max": 15,
+    "post_days": 7,
+    "post_words": [
+      "hiring",
+      "we're hiring",
+      "openings",
+      "job alert",
+      "referral"
     ]
   },
   "copilot": {

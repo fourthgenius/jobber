@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Referrals & posts</title>
+<link rel="stylesheet" href="/theme.css">
+<style>
+main{padding-bottom:64px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:16px;align-items:start;margin-top:18px}
+.sec{padding:20px;display:grid;gap:12px;min-width:0}
+.sec h2{margin:0;font-size:18px;display:flex;align-items:center;gap:8px}
+.sec h2 svg{width:20px;height:20px;color:var(--accent)}
+.sec p{margin:0;color:var(--mute);font-size:14px}
+textarea.in{min-height:170px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.res{display:grid;gap:6px;font-size:14px}
+.res .ok{color:var(--good);font-weight:600}
+.res .drop{color:var(--mute);font-size:13px}
+.steps-ol{margin:0;padding-left:20px;font-size:14px;color:var(--mute)}.steps-ol li{margin:5px 0}
+.steps-ol b{color:var(--fg)}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-size:12.5px;color:var(--mute);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line)}
+.tbl td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .t{font-weight:600}
+.tbl .s{color:var(--mute);font-size:12.5px;margin-top:2px;max-width:520px}
+.full{grid-column:1/-1}
+.q{font:12.5px/1.5 ui-monospace,Consolas,monospace;background:var(--sunken);border-radius:var(--r-sm);padding:6px 8px;color:var(--mute);word-break:break-word}
+.switch{display:flex;gap:10px;align-items:center;font-weight:600;font-size:14px;cursor:pointer}
+details summary{cursor:pointer;font-weight:600;font-size:14px}
+details[open] summary{margin-bottom:10px}
+@media (max-width:640px){.tbl .hide-s{display:none}}
+</style>
+</head>
+<body>
+<header class="appbar" data-page="network"><div class="wrap"><span class="grow"></span></div></header>
+<script src="/ui.js"></script>
+<main class="wrap">
+  <section class="pagehead"><div class="grow">
+    <h1>Referrals & LinkedIn posts</h1>
+    <p>Two ways to get ahead of the job boards: ask someone inside for a referral, and catch roles that are only announced in LinkedIn posts. Jobber never logs in to LinkedIn and never messages anyone for you.</p>
+  </div></section>
+
+  <div class="grid2">
+    <section class="panel sec" aria-labelledby="h-paste">
+      <h2 id="h-paste"><span id="i1"></span>Add jobs from a LinkedIn post</h2>
+      <p>Copy a post's text (a list of job links, or a recruiter's "we're hiring") and paste it here. Jobber follows each link to the real job page, keeps the roles that match your search and remembers who posted it.</p>
+      <textarea class="in" id="text" placeholder="Paste the whole post here, links included…"></textarea>
+      <input class="in" id="url" type="url" placeholder="Post link (optional): https://www.linkedin.com/posts/…">
+      <div class="row"><button class="btn primary" id="go">Find jobs in this post</button><label class="switch small"><input type="checkbox" id="star" checked> Save them to my shortlist</label></div>
+      <div class="res" id="res" aria-live="polite"></div>
+    </section>
+
+    <section class="panel sec" aria-labelledby="h-auto">
+      <h2 id="h-auto"><span id="i2"></span>Find hiring posts automatically</h2>
+      <p>Every time you press Find new jobs, Jobber runs a few web searches for public LinkedIn posts that mention your roles and cities, then reads the jobs in them. It only sees posts that are public on the web.</p>
+      <label class="switch"><input type="checkbox" id="on"> Search LinkedIn hiring posts on every job search</label>
+      <div class="small muted" id="eng"></div>
+      <details><summary>Searches Jobber will run</summary><div id="queries" style="display:grid;gap:6px"></div>
+        <p class="small" style="margin-top:8px">Built from your roles and cities in <a href="/setup">Setup</a>. Fine-tune the words in config.json → network.</p></details>
+      <details><summary>Better results: add a free search key (optional)</summary>
+        <p class="small">Without a key Jobber uses DuckDuckGo, which works but sometimes limits automated searches. A free <a href="https://api-dashboard.search.brave.com/" target="_blank" rel="noopener">Brave Search API</a> key (about 2,000 searches a month) is more reliable. A Google Programmable Search key and engine ID also work.</p>
+        <div style="display:grid;gap:8px;margin-top:8px">
+          <input class="in" id="brave" placeholder="Brave Search API key" autocomplete="off">
+          <input class="in" id="gkey" placeholder="Google API key (optional)" autocomplete="off">
+          <input class="in" id="gcx" placeholder="Google search engine ID (optional)" autocomplete="off">
+          <div class="row"><button class="btn sm" id="saveKeys">Save keys</button><span class="small muted">Stored only in secrets.json on this computer.</span></div>
+        </div></details>
+    </section>
+
+    <section class="panel sec" aria-labelledby="h-ref">
+      <h2 id="h-ref"><span id="i3"></span>How referrals work in Jobber</h2>
+      <ol class="steps-ol">
+        <li><b>Every job has a "Get a referral" box.</b> Open a job on the Jobs page: one click opens LinkedIn people search for that company, filtered to your 1st and 2nd-degree connections, plus alumni and ex-colleague searches when your school and last company are in <a href="/setup">Setup</a>.</li>
+        <li><b>A referral message is drafted for you.</b> Copy it, add their name, and send it yourself on LinkedIn.</li>
+        <li><b>Jobs where you know someone move up.</b> Tick "I know someone here" on a job, or let the Chrome extension notice LinkedIn's own "N connections work here" line when you open a LinkedIn job page.</li>
+      </ol>
+      <div class="small muted">Track who you asked in <a href="/copilot#outreach">Copilot → Outreach</a>.</div>
+    </section>
+
+    <section class="panel sec" aria-labelledby="h-ext">
+      <h2 id="h-ext"><span id="i4"></span>With the Chrome extension</h2>
+      <ol class="steps-ol">
+        <li><b>Save jobs from a post:</b> while reading LinkedIn, scroll a hiring post to the middle of your screen (or select its text), click the Jobber extension icon and press <b>Save jobs from this post</b>.</li>
+        <li><b>Connection boost:</b> when you open any LinkedIn job page, the extension reads the "connections work here" note LinkedIn already shows you and tells Jobber. It never clicks, scrolls or visits anything on its own.</li>
+      </ol>
+      <div class="small muted">Install or update it: chrome://extensions → Developer mode → Load unpacked → the chrome-extension folder (or press reload on its card).</div>
+    </section>
+
+    <section class="panel sec full" aria-labelledby="h-leads">
+      <h2 id="h-leads"><span id="i5"></span>Jobs found in LinkedIn posts <span class="pill" id="nLeads">0</span></h2>
+      <div id="leads"></div>
+    </section>
+
+    <section class="panel sec full" aria-labelledby="h-know">
+      <h2 id="h-know"><span id="i6"></span>Companies where you know someone <span class="pill" id="nRefs">0</span></h2>
+      <div id="refs"></div>
+    </section>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const {esc,ICONS,empty,toast}=Jobber;
+[["i1","file"],["i2","search"],["i3","network"],["i4","plug"],["i5","inbox"],["i6","user"]].forEach(([id,k])=>$(id).outerHTML=ICONS[k]||"");
+const post=(u,b)=>fetch(u,{method:"POST",body:JSON.stringify(b)}).then(async r=>{const j=await r.json();if(!r.ok||j.error)throw new Error(j.error||r.statusText);return j});
+const say=m=>toast?toast(m):alert(m);
+let D=null;
+async function load(){
+  D=await fetch("/api/network").then(r=>r.json());
+  $("on").checked=D.enabled;
+  const names={brave:"Brave Search",google:"Google Programmable Search",duckduckgo:"DuckDuckGo (no key)"};
+  $("eng").textContent=`Search engine: ${names[D.engine]||D.engine} · ${D.posts_week} posts read in the last 7 days · up to ${D.options.post_max} posts per search`;
+  $("queries").innerHTML=D.queries.length?D.queries.map(q=>`<div class="q">${esc(q)}</div>`).join(""):`<div class="small muted">Add your roles in Setup first.</div>`;
+  $("brave").placeholder=D.keys.brave?"Brave key saved (paste a new one to replace)":"Brave Search API key";
+  $("gkey").placeholder=D.keys.google?"Google key saved":"Google API key (optional)";
+  $("nLeads").textContent=D.leads.length;$("nRefs").textContent=D.referrals.length;
+  $("leads").innerHTML=D.leads.length?`<table class="tbl"><thead><tr><th>Job</th><th class="hide-s">Posted by</th><th>Status</th></tr></thead><tbody>${D.leads.map(l=>`<tr>
+     <td><div class="t"><a href="/?job=${esc(l.job_id)}">${esc(l.title)}</a> · ${esc(l.company)}</div><div class="s">${esc((l.snippet||"").slice(0,160))}${(l.snippet||"").length>160?"…":""}</div></td>
+     <td class="hide-s">${l.poster_url?`<a href="${esc(l.poster_url)}" target="_blank" rel="noopener">${esc(l.poster||"Profile")} ↗</a>`:esc(l.poster||"")}${l.post_url?`<div class="s"><a href="${esc(l.post_url)}" target="_blank" rel="noopener">Open post ↗</a></div>`:""}${l.email?`<div class="s">${esc(l.email)}</div>`:""}</td>
+     <td><span class="pill">${esc(l.status)}</span></td></tr>`).join("")}</tbody></table>`
+    :empty({icon:"inbox",title:"No jobs from posts yet",body:"Paste a post above, save one with the extension, or turn on the automatic search and press Find new jobs."});
+  $("refs").innerHTML=D.referrals.length?`<table class="tbl"><thead><tr><th>Company</th><th>Who</th><th></th></tr></thead><tbody>${D.referrals.map(r=>`<tr>
+     <td class="t">${esc(r.label||r.company)}</td>
+     <td>${[r.known?"You know someone":"",r.connections?`${r.connections} connections`:"",r.alumni?`${r.alumni} alumni`:""].filter(Boolean).join(" · ")}${r.note?`<div class="s">${esc(r.note)}</div>`:""}${r.url?`<div class="s"><a href="${esc(r.url)}" target="_blank" rel="noopener">Seen on LinkedIn ↗</a></div>`:""}</td>
+     <td><button class="btn sm ghost" data-forget="${esc(r.label||r.company)}">Forget</button></td></tr>`).join("")}</tbody></table>`
+    :empty({icon:"user",title:"No referral contacts yet",body:"Tick \"I know someone here\" on a job, or open LinkedIn job pages with the Chrome extension installed. Those companies show up here and their jobs rank higher."});
+}
+$("go").onclick=async()=>{
+  const b=$("go");b.disabled=true;b.textContent="Reading the links… (up to a minute)";$("res").innerHTML="";
+  try{
+    const r=await post("/api/network/post",{text:$("text").value,url:$("url").value.trim(),status:$("star").checked?"saved":null});
+    $("res").innerHTML=`<div class="ok">${r.kept?`Added ${r.kept} ${r.kept===1?"job":"jobs"} (${r.new} new)`:"No matching jobs in this post"}${r.found>r.kept?`, skipped ${r.found-r.kept} that don't fit your search`:""}.</div>`+
+      r.jobs.map(j=>`<div>• <a href="/?job=${esc(j.id)}">${esc(j.title)}</a> · ${esc(j.company)} · ${esc(j.location)}${j.new?"":` <span class="pill">already in your list</span>`}</div>`).join("")+
+      r.dropped.slice(0,12).map(d=>`<div class="drop">Skipped: ${esc(d.title)} · ${esc(d.company)} (${esc(d.why)})</div>`).join("")+
+      (!r.found?`<div class="drop">Tip: paste the full text including the links, or check that the post names one of your roles from Setup.</div>`:"");
+    if(r.kept){$("text").value="";$("url").value=""}
+    load();
+  }catch(e){$("res").innerHTML=`<div class="drop">${esc(e.message)}</div>`}
+  b.disabled=false;b.textContent="Find jobs in this post";
+};
+$("on").onchange=async e=>{await post("/api/network/source",{on:e.target.checked});say(e.target.checked?"LinkedIn hiring posts are on for your next search":"LinkedIn hiring posts turned off");load()};
+$("saveKeys").onclick=async()=>{const b={};if($("brave").value.trim())b.brave_api_key=$("brave").value;if($("gkey").value.trim())b.google_cse_key=$("gkey").value;if($("gcx").value.trim())b.google_cse_id=$("gcx").value;
+  if(!Object.keys(b).length)return say("Paste a key first");await post("/api/network/keys",b);["brave","gkey","gcx"].forEach(i=>$(i).value="");say("Saved");load()};
+document.addEventListener("click",async e=>{const f=e.target.closest("[data-forget]");if(!f)return;const co=f.dataset.forget;
+  await post("/api/network/known",{company:co,known:false});await post("/api/network/signal",{company:co,connections:0,alumni:0});load()});
+load();
+</script>
+</body>
+</html>
