@@ -69,6 +69,12 @@ LinkedIn is read from its public job pages in a real, **logged-out** browser win
 
 Please respect each site's terms of use. The app keeps volumes low, uses your own internet connection, and never logs in anywhere.
 
+### Getting more (relevant) jobs per search
+
+- **Queries are widened for you.** Besides your search terms, each site is searched for your core and strong role titles and common synonyms (e.g. *product manager* → *product owner*, *product lead*; *chief of staff* → *founder's office*), up to `max_queries` (default 8). Turn off with `"auto_synonyms": false`.
+- **Fewer silent drops.** Locations that only give a state (Indeed's `KA, India`) map to your city; jobs that only name your country (`India`, `Multiple locations, India`) are kept as **City not stated** and ranked lower; career-portal jobs stay for `portal_max_age_days` (default 45) because portals only list open roles. Remote jobs tied to another country (`Remote - USA`) are skipped.
+- **See what's happening.** Every search logs fetched / relevant / new per site and why jobs were dropped (also saved to `last_search.json`). For a deeper look run `python diagnose.py` (or `python diagnose.py naukri indeed`): it runs each source once without saving and shows sample titles for every drop reason.
+
 ## Your data stays yours
 
 Everything runs on `127.0.0.1` (your own machine). Your settings and data are plain files next to the app, and all of them are in `.gitignore` so they're never committed if you fork the project:

@@ -90,6 +90,8 @@ class H(BaseHTTPRequestHandler):
                 locs = [L["label"] for L in cfg["locations"]] + (["Remote"] if cfg["remote"].get("enabled") else [])
                 if not cfg["locations"]:
                     locs.append("Any location")
+                elif cfg.get("country") and cfg.get("keep_unspecified_location", True):
+                    locs.append("City not stated")  # filters.UNSPECIFIED: e.g. LinkedIn's plain "India"
                 return self._send(200, {"jobs": store.all_jobs(c, cfg), "refresh": STATE,
                                         "min_salary": cfg["min_salary"], "money": cfg["currency"],
                                         "locations": locs, "setup_complete": cfg.get("setup_complete", False)})

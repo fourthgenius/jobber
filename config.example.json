@@ -158,7 +158,12 @@
     "weworkremotely": true,
     "company_boards": true
   },
-  "results_per_query": 25,
+  "results_per_query": 50,
+  "_search_note": "Searches use your search terms plus your core/strong role titles and common synonyms (auto_synonyms), up to max_queries per site. Jobs that name only the country (e.g. 'India') are kept as 'City not stated' and ranked lower. Career-portal jobs stay up to portal_max_age_days. Run python diagnose.py to see which sources and filters drop jobs.",
+  "max_queries": 8,
+  "auto_synonyms": true,
+  "keep_unspecified_location": true,
+  "portal_max_age_days": 45,
   "linkedin_results_per_location": 100,
   "linkedin_mode": "browser",
   "linkedin_scrolls": 3,

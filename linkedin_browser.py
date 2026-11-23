@@ -96,7 +96,8 @@ def fetch(cfg, known_urls: set[str] | None = None, log=print) -> list[dict]:
     from sources import job
 
     known_urls = known_urls or set()
-    q = " OR ".join(f'"{t}"' for t in cfg["search_terms"])
+    from sources import queries
+    q = " OR ".join(f'"{t}"' for t in queries(cfg))
     locs = cfg.get("linkedin_locations") or [loc["search"] for loc in cfg["locations"] if loc.get("search")]
     remote_where = cfg.get("country") or "Worldwide"
     scrolls = cfg.get("linkedin_scrolls", 3)          # each "see more" = one more request
@@ -132,6 +133,17 @@ def fetch(cfg, known_urls: set[str] | None = None, log=print) -> list[dict]:
                     except Exception:
                         pass
                 cards = page.evaluate(CARDS_JS)
+                if not cards:  # sometimes the first load comes back empty; one slow retry
+                    _pause(10, 15)
+                    page.goto(url, wait_until="domcontentloaded", timeout=45000)
+                    _pause(4, 7)
+                    if _blocked(page):
+                        log("  LinkedIn is limiting logged-out visits from your connection; stopping LinkedIn for this run.")
+                        blocked = True
+                        break
+                    page.mouse.wheel(0, 6000)
+                    _pause(2.5, 4.5)
+                    cards = page.evaluate(CARDS_JS)
                 new = 0
                 for c in cards:
                     if c["id"] not in found and c["title"]:

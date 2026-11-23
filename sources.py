@@ -24,6 +24,11 @@ def _first_word(cfg) -> str:
 TIMEOUT = 25
 
 
+def queries(cfg) -> list[str]:
+    """Search-box queries: your terms plus role titles and synonyms (settings.search_queries)."""
+    return cfg.get("derived_queries") or cfg.get("search_terms") or []
+
+
 def _get(url, **kw):
     r = requests.get(url, headers=UA, timeout=TIMEOUT, **kw)
     r.raise_for_status()
@@ -74,7 +79,7 @@ def job(**kw) -> dict:
 
 def remotive(cfg):
     out = []
-    for q in cfg["search_terms"][:6]:
+    for q in queries(cfg)[:6]:
         data = _get("https://remotive.com/api/remote-jobs", params={"search": q, "limit": 100}).json()
         for j in data.get("jobs", []):
             out.append(job(source="remotive", ext_id=str(j["id"]), title=j.get("title"),
@@ -103,7 +108,7 @@ def remoteok(cfg):
 
 def himalayas(cfg):
     out = []
-    for q in cfg["search_terms"][:6]:
+    for q in queries(cfg)[:6]:
         try:
             data = _get("https://himalayas.app/jobs/api/search", params={"q": q, "limit": 100}).json()
         except Exception:
@@ -242,7 +247,7 @@ def jobspy_sites(cfg, sites, log=print):
     # 1) LinkedIn blocks by request count, so: a few big boolean-OR searches, long pauses,
     #    back off on 429 and stop for this run if it keeps blocking.
     if "linkedin" in sites:
-        q = " OR ".join(f'"{t}"' for t in cfg["search_terms"])
+        q = " OR ".join(f'"{t}"' for t in queries(cfg))
         li_locs = [(loc, False) for loc in search_locs] + remote_q
         n = cfg.get("linkedin_results_per_location", 100)
         # Newest first: last few days for every location, then the full window if LinkedIn still allows.
@@ -273,9 +278,9 @@ def jobspy_sites(cfg, sites, log=print):
     # 2) Other sites (Naukri, Indeed...): one search per term x location.
     others = [s for s in sites if s != "linkedin"]
     if others:
-        queries = [(t, loc, False) for t in cfg["search_terms"] for loc in search_locs]
-        queries += [(t, r[0], True) for t in cfg["search_terms"] for r in remote_q]
-        for term, loc, remote in queries:
+        todo = [(t, loc, False) for t in queries(cfg) for loc in search_locs]
+        todo += [(t, r[0], True) for t in queries(cfg) for r in remote_q]
+        for term, loc, remote in todo:
             got, _ = run(others, term, loc, remote, cfg.get("results_per_query", 25))
             rows += got
             time.sleep(2 + random.random() * 2)

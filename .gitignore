@@ -9,6 +9,9 @@ jobs.db
 jobs.db-*
 chrome-extension/snapshot.json
 daily.log
+last_search.json
+diagnose_report.json
+diagnose_*.txt
 
 # Local environments and browser profiles
 .venv/

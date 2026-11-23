@@ -22,7 +22,7 @@ QUERY = ""  # keyword passed to boards that support server-side search (SmartRec
 
 def _configure(cfg):
     global PM_HINT, QUERY
-    words = cfg.get("title_include") or []
+    words = cfg.get("derived_titles") or cfg.get("title_include") or []
     if words:
         PM_HINT = re.compile("|".join(re.escape(w.strip()) for w in words if w.strip()), re.I)
     from sources import _first_word
