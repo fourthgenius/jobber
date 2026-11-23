@@ -158,35 +158,61 @@ def short(s: str, n: int = 110) -> str:
 
 
 # ---------------------------------------------------------------- CV parsing
+SKIP_SEC = re.compile(r"educat|academ|achiev|award|certif|honou?r|extra|interest|hobb|language|position|volunteer|"
+                      r"publication|reference|personal|contact|course|scholastic", re.I)
+DATES = re.compile(r"((jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s*'?\d{2,4}|\b(19|20)\d{2}\b)"
+                   r"\s*[-–—to]+\s*((jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s*'?\d{2,4}|"
+                   r"\b(19|20)\d{2}\b|present|current|now|date)", re.I)
+NOT_WORK = re.compile(r"percentile|%ile|\bcgpa\b|\bgpa\b|\bjee\b|\bcat 20|\bgmat\b|\bclass (x|xii)|\brank(ed)? \d|"
+                      r"\bairs?\b \d", re.I)
+
+
+def _role(head: str) -> dict:
+    """'Product Manager — INDmoney, Gurugram | Apr 2025 – Oct 2026' -> title, company, dates."""
+    h = re.sub(r"[*_`]+", "", head).strip()
+    m = DATES.search(h)
+    dates = m.group(0) if m else ""
+    if m:
+        h = (h[:m.start()] + h[m.end():]).strip(" |,()-–—")
+    h = re.sub(r"\(\s*\)", "", h).strip()
+    parts = [p.strip() for p in re.split(r"\s+[—–|@-]\s+|\s+at\s+|\s*\|\s*", h) if p.strip()]
+    if len(parts) == 1 and "," in parts[0]:
+        parts = [p.strip() for p in parts[0].split(",", 1)]
+    title = parts[0] if parts else ""
+    company = re.split(r",\s*", parts[1])[0] if len(parts) > 1 else ""
+    return {"title": title[:80], "company": company[:80], "dates": dates}
+
+
 def parse_cv(text: str) -> dict:
-    """Markdown CV -> {name, summary, roles:[{title, company, dates}], bullets:[{text, title, company, dates}], skills}"""
+    """Markdown or plain-text CV -> {name, summary, roles:[{title, company, dates}], bullets:[...], skills}"""
     out = {"name": "", "summary": "", "roles": [], "bullets": [], "skills": []}
     sec, role = "", {"title": "", "company": "", "dates": ""}
     for ln in (text or "").splitlines():
         s = ln.strip()
-        if s.startswith("# "):
+        if not s:
+            continue
+        bullet = re.match(r"^[-*•▪●◦]\s+", s)
+        plain = re.sub(r"[*_`#]+", "", s).strip()
+        if s.startswith("# ") and not out["name"]:
             out["name"] = s[2:].strip()
-        elif s.startswith("## "):
-            sec = s[3:].strip().lower()
-        elif s.startswith("### "):
-            h = s[4:].strip()
-            m = re.match(r"(.+?)\s*\(([^)]*)\)\s*$", h)
-            head, dates = (m.group(1), m.group(2)) if m else (h, "")
-            parts = re.split(r",\s*|\s+[|@–-]\s+|\s+at\s+", head, maxsplit=1)
-            role = {"title": parts[0].strip(), "company": parts[1].strip() if len(parts) > 1 else "", "dates": dates}
+        elif s.startswith("## ") or (not bullet and plain.isupper() and len(plain) < 40 and len(plain.split()) <= 4):
+            sec = plain.lower()
+        elif s.startswith("###") or (not bullet and DATES.search(s) and len(s) < 160 and not SKIP_SEC.search(sec)):
+            role = _role(s.lstrip("# "))
             out["roles"].append(role)
-        elif re.match(r"^[-*•] ", s):
-            b = s[2:].strip()
+        elif bullet:
+            b = re.sub(r"\*\*|__", "", s[bullet.end():]).strip()
             if "skill" in sec:
-                out["skills"] += [x.strip() for x in re.split(r"[,;|]", b) if x.strip()]
-            elif "summary" in sec or "about" in sec:
+                out["skills"] += [x.strip() for x in re.split(r"[,;|·]", b.split(":", 1)[-1]) if x.strip()]
+            elif "summary" in sec or "about" in sec or "profile" in sec:
                 out["summary"] += " " + b
-            elif "educat" not in sec and len(b) > 20:
+            elif not SKIP_SEC.search(sec) and len(b) > 30 and not NOT_WORK.search(b):
                 out["bullets"].append({"text": b, **role})
-        elif s and "summary" in sec:
-            out["summary"] += " " + s
-        elif s and "skill" in sec:
-            out["skills"] += [x.strip() for x in re.split(r"[,;|]", s) if x.strip()]
+        elif "summary" in sec or "about" in sec or "profile" in sec:
+            if len(plain) > 40 and not re.search(r"@|\||\+?\d[\d -]{8,}", plain):
+                out["summary"] += " " + plain
+        elif "skill" in sec:
+            out["skills"] += [x.strip() for x in re.split(r"[,;|·]", plain.split(":", 1)[-1]) if x.strip()]
     out["summary"] = out["summary"].strip()
     return out
 
@@ -300,17 +326,17 @@ def draft_answer(ev: dict | None, req: str, company: str, comp: str | None) -> d
         text = " ".join(x for x in [s.get("situation"), s.get("task"), s.get("action"), s.get("result")] if x)
         return {"source": f"Story: {s.get('title')}", "outline": outline, "text": f"{text} {tie}".strip(), "gap": False}
     action, result = split_bullet(ev["text"])
-    where = f"{ev['title']} at {ev['company']}" if ev["company"] else ev["title"] or "my last role"
-    outline = [["Situation", f"As {where}{' (' + ev['dates'] + ')' if ev['dates'] else ''}: "
+    where = f"{ev['title']} at {ev['company']}" if ev["company"] else ev["title"] or ""
+    outline = [["Situation", f"{'As ' + where if where else 'In my last role'}{' (' + ev['dates'] + ')' if ev['dates'] else ''}: "
                              "[what problem or opportunity, and why it mattered]"],
                ["Task", f"[the goal you owned{', tied to ' + comp.lower() if comp else ''}]"],
                ["Action", _i_did(action) + (" [add 2 specific steps you took]" if len(action) < 70 else "")],
                ["Result", re.sub(r"^(which|that)[ ]", "It ", result[:1].upper() + result[1:]) if result else "[the measurable result]"]]
-    text = (f"When I was {where}, [the problem in one line]. I owned [the goal]. {_i_did(action)}. "
+    text = (f"{'When I was ' + where if where else 'In my last role'}, [the problem in one line]. I owned [the goal]. {_i_did(action)}. "
             + (f"As a result, I {_lower1(result)}. " if result and not result.lower().startswith(("which", "that"))
                else (f"As a result, it {re.sub(r'^(which|that)[ ]', '', result)}. " if result else "[The result, with a number.] "))
             + tie)
-    return {"source": f"CV: {where}", "outline": outline, "text": text, "gap": False}
+    return {"source": f"CV: {where or 'your CV'}", "outline": outline, "text": text, "gap": False}
 
 
 # ---------------------------------------------------------------- question set for one job
@@ -323,9 +349,9 @@ def question_set(j: dict, cv_text: str, stories: list[dict], gap: dict, role_ban
     used: set = set()
     qs: list[dict] = []
 
-    def add(q, kind, why, look, comp=None, req="", ev_query=""):
+    def add(q, kind, why, look, comp=None, req="", ev_query="", min_score=1):
         ev = evidence(cv, stories, ev_query or (q + " " + req), comp, used)
-        best = ev[0] if ev and ev[0]["score"] > 1 else None
+        best = ev[0] if ev and ev[0]["score"] > min_score else None
         if best:
             used.add(best["text"])
         qs.append({"id": f"q{len(qs) + 1}", "q": q, "kind": kind, "why": why, "look_for": look, "comp": comp,
@@ -353,7 +379,7 @@ def question_set(j: dict, cv_text: str, stories: list[dict], gap: dict, role_ban
                "outline": [["What they do", short(about[0], 140) if about else "[what they sell, to whom]"],
                            ["What excites you", "[a product detail, a recent move, or their market]"],
                            ["Why you fit", ", ".join(gap.get("matched", [])[:4]) or "[2 skills they need that you have]"]]}
-    lead = short(about[0], 160) if about else ""
+    lead = re.sub(r"^(we are|we're)\s+", f"{co} is ", short(about[0], 160), flags=re.I) if about else ""
     lead = lead if lead.lower().startswith(co.lower()) else f"{co} {_lower1(lead)}" if lead else f"{co} [does X for Y]"
     why_ans["text"] = (lead.rstrip(".…") + ". "
                        + "What draws me is [one specific thing: product, mission, a recent launch]. "
@@ -424,7 +450,7 @@ def question_set(j: dict, cv_text: str, stories: list[dict], gap: dict, role_ban
     add("Tell me about a time something you owned failed. What did you do?", "Behavioural",
         "Every loop has one. They test self-awareness and learning.",
         ["A real failure, owned", "What you did in the moment", "What you changed after", "Brief, not defensive"],
-        None, "", "failed missed mistake learned delay")
+        None, "", "failed failure missed mistake learned delay wrong", min_score=4)
     return qs
 
 
@@ -466,9 +492,11 @@ def news(company: str, n: int = 5) -> list[dict]:
     except ET.ParseError:
         return []
     out = []
+    key = re.sub(r"[^a-z0-9 ]", " ", re.sub(r"\s*\(.*?\)", "", company).lower()).split()
+    key = " ".join(w for w in key if w not in ("pvt", "ltd", "private", "limited", "inc", "technologies"))[:40]
     for it in root.iter("item"):
         t = (it.findtext("title") or "").strip()
-        if t:
+        if t and key in re.sub(r"[^a-z0-9 ]", " ", t.lower().rsplit(" - ", 1)[0]):
             out.append({"title": t, "url": it.findtext("link") or "", "date": (it.findtext("pubDate") or "")[5:16]})
         if len(out) >= n:
             break
