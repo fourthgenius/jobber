@@ -138,7 +138,7 @@ body.nojobs .layout{grid-template-columns:1fr;padding-top:20px}
   .job{grid-template-columns:44px minmax(0,1fr);padding:14px;gap:12px}
   .acts{grid-column:1/-1;justify-content:flex-end}
   .ring{width:42px;height:42px}.ring b{width:33px;height:33px;font-size:13px}
-  #last,.keys,.divider,#logBtn,.fl{display:none}
+  #last,#eta,.keys,.divider,#logBtn,.fl{display:none}
   .appbar #refresh{padding:6px 12px;min-height:36px;font-size:13px}
   .seg{width:100%;overflow-x:auto}.seg button{flex:1;padding:8px 10px}
 }
@@ -149,6 +149,7 @@ body.nojobs .layout{grid-template-columns:1fr;padding-top:20px}
   <span class="grow"></span>
   <span class="muted small" id="last"></span>
   <button class="btn ghost sm" id="logBtn" data-tip="See what the last search did, site by site">Log</button>
+  <span class="muted small num" id="eta" aria-live="polite"></span>
   <button class="btn primary" id="refresh">Find new jobs</button>
 </div></header>
 <script src="/ui.js"></script>
@@ -160,7 +161,7 @@ body.nojobs .layout{grid-template-columns:1fr;padding-top:20px}
     <div id="nextstep"></div>
     <div class="stats" id="stats"></div>
   </section>
-  <div class="panel running" id="progress" role="status" aria-live="polite"><span class="spin"></span><div style="min-width:0"><b>Searching job sites for you…</b><div class="small muted" id="progressTxt">Starting…</div></div><span class="grow"></span><span class="small muted" style="white-space:nowrap">Takes 5-10 min · you can keep browsing</span></div>
+  <div class="panel running" id="progress" role="status" aria-live="polite"><span class="spin"></span><div style="min-width:0"><b>Searching job sites for you…</b><div class="small muted" id="progressTxt">Starting…</div></div><span class="grow"></span><span class="small muted" id="progressEta" style="white-space:nowrap">Takes a few minutes · you can keep browsing</span></div>
   <div id="signin" class="notice">LinkedIn is limiting visits from your internet connection right now. Other sites still updated. Try again in an hour or two.</div>
   <div id="log" class="panel"></div>
   <section class="panel start" id="start" hidden></section>
@@ -395,19 +396,33 @@ $("greatOnly").onclick=()=>{great=!great;render()};
 $("directOnly").onclick=()=>{direct=!direct;render()};
 ["q","pay"].forEach(id=>$(id).addEventListener("input",render));
 $("logBtn").onclick=()=>{$("log").style.display=$("log").style.display==="block"?"none":"block"};
+// Time estimate: the server times each search and returns the last one's length (estimate_seconds),
+// plus started/eta_seconds while a search runs, so people know it isn't stuck.
+let EST=null;
+const mins=sec=>Math.max(1,Math.round(sec/60))+" min";
+function etaText(s){
+  if(!s.running)return EST?"Takes about "+mins(EST):"";
+  const total=s.eta_seconds||EST;if(!total||!s.started)return "";
+  const left=total-(Date.now()-new Date(s.started).getTime())/1000;
+  return left>45?"About "+mins(left)+" left":"Almost done…";
+}
 function showRefresh(s){
+  if(s.estimate_seconds)EST=s.estimate_seconds;
   $("last").textContent=s.running?"":s.last?"Updated "+new Date(s.last).toLocaleString([],{dateStyle:"medium",timeStyle:"short"}):"";
+  const eta=etaText(s);
+  $("eta").textContent=eta;$("refresh").title=s.running?"":eta?eta+". Results appear when every site is done.":"";
+  $("progressEta").textContent=(eta||"Takes a few minutes")+" · you can keep browsing";
   $("refresh").disabled=s.running;$("refresh").textContent=s.running?"Searching…":"Find new jobs";
   const p=$("progress");p.classList.toggle("on",s.running);if(s.running)$("progressTxt").textContent=(s.log[s.log.length-1]||"Starting…").trim();
   $("log").textContent=s.log.join("\n")||"No search has run since the app started.";
   const limited=s.log.some(l=>/LinkedIn is limiting|LinkedIn started limiting/.test(l));
   $("signin").style.display=limited&&!s.running?"block":"none";
 }
-async function startRefresh(){await fetch("/api/refresh",{method:"POST"});showRefresh({running:true,log:[],last:null});poll()}
+async function startRefresh(){await fetch("/api/refresh",{method:"POST"});showRefresh({running:true,log:[],last:null,started:new Date().toISOString(),eta_seconds:EST});poll()}
 $("refresh").onclick=startRefresh;
 function poll(){clearInterval(polling);polling=setInterval(async()=>{const s=await fetch("/api/refresh").then(r=>r.json());showRefresh(s);
   if(!s.running){clearInterval(polling);load()}},2000)}
-fetch("/api/refresh").then(r=>r.json()).then(s=>{if(s.running)poll()}).catch(()=>{});
+fetch("/api/refresh").then(r=>r.json()).then(s=>{showRefresh(s);if(s.running)poll()}).catch(()=>{});
 load();
 </script>
 </body>
