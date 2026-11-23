@@ -1,6 +1,6 @@
-# Job Hunter
+# Jobber
 
-A free, open-source job search assistant that runs on your own computer. It finds jobs that match **your** roles, locations and pay floor across job boards and company career pages, shows them in one clean dashboard with a CV fit score, tracks your applications, helps you fill application forms faster, and gets you ready for interviews.
+Jobber (the app calls itself Job Hunter) is a free, open-source job search assistant that runs on your own computer. It finds jobs that match **your** roles, locations and pay floor across job boards and company career pages, shows them in one clean dashboard with a CV fit score, tracks your applications, helps you fill application forms faster, and gets you ready for interviews.
 
 Works for any field: product, engineering, data, design, marketing, sales, operations, finance, or your own custom list of titles. Works in any country and currency.
 
@@ -23,8 +23,8 @@ Works for any field: product, engineering, data, design, marketing, sales, opera
 You need **Python 3.10+** ([python.org](https://www.python.org/downloads/)). On Windows, tick "Add Python to PATH" during install.
 
 ```bash
-git clone https://github.com/fourthgenius/job-hunter.git
-cd job-hunter
+git clone https://github.com/fourthgenius/jobber.git
+cd jobber
 ```
 
 Then start it:
@@ -55,7 +55,7 @@ LinkedIn is read from its public job pages in a real, **logged-out** browser win
 ### Daily search + Telegram digest (optional)
 - **Telegram:** create a bot with @BotFather, paste the token in Copilot → Setup, send "hi" to your bot, press **Find my chat** then **Send test**.
 - **Windows:** Copilot → Setup → **Schedule daily** (or run `install_daily.bat`) registers a daily 08:30 task.
-- **Mac / Linux:** `crontab -e` and add `30 8 * * * /full/path/to/job-hunter/daily.sh`.
+- **Mac / Linux:** `crontab -e` and add `30 8 * * * /full/path/to/jobber/daily.sh`.
 
 ## Where to search
 
