@@ -6,84 +6,127 @@
 <title>Batch apply</title>
 <link rel="stylesheet" href="/theme.css">
 <style>
-/* Batch apply layout. Tokens and base components come from /theme.css. */
-h2{font:600 11px/1 var(--f-body);text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin:22px 0 10px;display:flex;gap:8px;align-items:center}
-h2 .sub{text-transform:none;letter-spacing:0;font-size:12px;font-weight:500}
-.hello{padding:24px 0 4px}.hello h1{font:700 26px/1.15 var(--f-display);letter-spacing:-.02em;margin:0}.hello p{margin:4px 0 0;color:var(--mute)}
-.sub{color:var(--mute);font-size:13px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:14px 16px}
-.alert{background:var(--warn-bg);color:var(--warn);border-radius:var(--r);padding:10px 14px;margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:20px;align-items:start;padding-bottom:48px}
-@media (max-width:900px){.layout{grid-template-columns:1fr}}
-.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
-.tablewrap{overflow-x:auto}
-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow)}
-td,th{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
-th{font-size:11px;color:var(--faint);font-weight:600;text-transform:uppercase;letter-spacing:.06em;background:var(--sunken)}
-tr:last-child td{border-bottom:0}tbody tr:hover td{background:color-mix(in srgb,var(--sunken) 50%,transparent)}
-td.t b{display:block;font-weight:600}td.t span{color:var(--mute);font-size:12px}
-td.fitc{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
-input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
+/* Batch apply. Tokens and base components come from /theme.css, helpers from /ui.js. */
+.promise{display:inline-flex;align-items:center;gap:8px;background:var(--accent-soft);color:var(--accent-ink);border-radius:99px;padding:6px 14px;font-weight:700;font-size:13.5px}
+.promise svg{width:18px;height:18px}
+.flow{margin:20px 0 4px;padding:16px 20px}
+.flow .steps li{gap:12px}
+.flow .steps li span{display:block;font-weight:500;color:var(--faint);font-size:12.5px}
+.flow .steps li+li{padding-left:12px;border-left:1px solid var(--line)}
+#extGuide,#alert{margin-top:14px}
+#extGuide ol{margin:6px 0 0;padding-left:18px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:24px;align-items:start;padding:18px 0 56px}
+.colh{display:flex;align-items:center;gap:8px;margin:0 0 12px}
+.colh h2{font-size:18px;margin:0}
+.colh .sub{color:var(--mute);font-size:13.5px}
+.sub{color:var(--mute);font-size:13.5px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:18px}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.tablewrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse}
+td,th{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{font-size:13px;color:var(--mute);font-weight:600;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer}tbody tr:hover td{background:#f9fafb}
+tbody tr.on td{background:var(--accent-soft)}
+td.t b{display:block;font-weight:700}td.t span{color:var(--mute);font-size:13px}
+td.fitc{font-weight:800;font-variant-numeric:tabular-nums}
+td.fitc.hi{color:var(--good)}td.fitc.mid{color:var(--warn)}td.fitc.lo{color:var(--mute)}
+td.empty-cell{padding:16px;cursor:default}td.empty-cell .empty-state{border:0}
 .pill.fast,.pill.applied{background:var(--good-bg);color:var(--good)}.pill.slow,.pill.login,.pill.open{background:var(--warn-bg);color:var(--warn)}
-.pill.skipped{background:var(--bad-bg);color:var(--bad)}.pill.redirect,.pill.maybe{background:var(--accent-soft);color:var(--accent)}
-.q{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;padding:10px 0;border-bottom:1px solid var(--line)}
-.q:last-child{border:0}.q small{color:var(--mute);grid-column:1/-1}.q small .btn{margin-top:6px}
-.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.form label{font-size:12px;color:var(--mute)}.form input{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:var(--r-sm);padding:6px 9px}
-.form input:focus{border-color:var(--accent);outline:none}
-.form input.need{border-color:var(--warn);background:var(--warn-bg)}
-details summary{cursor:pointer;font-weight:600}
-.big{font:700 28px/1 var(--f-display)}
-#bs{width:56px;border:1px solid var(--line);background:var(--bg);border-radius:var(--r-sm);padding:4px 6px}
+.pill.skipped{background:var(--bad-bg);color:var(--bad)}.pill.redirect,.pill.maybe{background:var(--info-bg);color:var(--info)}
+.selbox{display:flex;align-items:baseline;gap:8px;margin-bottom:14px}
+.big{font:800 40px/1 var(--f-display);font-variant-numeric:tabular-nums;color:var(--accent)}
+.q{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;padding:12px 0;border-bottom:1px solid var(--line)}
+.q:last-of-type{border:0}.q small{color:var(--mute);grid-column:1/-1;font-size:13px}.q small .btn{margin-top:8px}
+.qempty{text-align:center;color:var(--mute);font-size:14px;padding:10px 6px}
+.qempty b{display:block;color:var(--fg);margin-bottom:2px}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form label{display:block;font-size:13px;font-weight:600;color:var(--mute);margin-bottom:4px}
+.form input{width:100%;border:1px solid var(--line-strong);background:var(--surface);border-radius:var(--r-sm);padding:8px 10px;min-height:40px}
+.form input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.form input.need{border-color:#e9b44c;background:var(--warn-bg)}
+details summary{cursor:pointer;font-weight:700}
+#bs{width:64px;border:1px solid var(--line-strong);background:var(--surface);border-radius:var(--r-sm);padding:6px 8px;min-height:36px}
+.side h3{font-size:15px;margin:22px 0 10px;display:flex;align-items:center;gap:6px}
+.side h3:first-child{margin-top:0}
+@media (max-width:980px){.layout{grid-template-columns:1fr}.flow .steps{flex-direction:column;gap:12px}.flow .steps li+li{padding-left:0;border-left:0}}
+@media (max-width:760px){
+  thead{display:none}
+  table,tbody,tr,td{display:block}
+  tbody tr{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:2px 10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  tbody tr:last-child{border-bottom:0}
+  tbody td{border:0;padding:0}
+  td:first-child{grid-row:1/3;padding-top:2px}
+  td.t{grid-column:2}td.fitc{grid-column:3;grid-row:1}
+  td:nth-child(4){grid-column:2}td:nth-child(5){grid-column:3;grid-row:2;text-align:right}
+  td.empty-cell{display:block;grid-column:1/-1}
+  .form{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
-<header class="appbar"><div class="wrap">
-  <a class="brand" href="/">Job<i>ber</i></a>
-  <nav class="nav"><a href="/">Jobs</a><a class="on" href="/apply">Batch apply</a><a href="/copilot">Copilot</a><a href="/prep">Interview prep</a><a href="/setup">Setup</a></nav>
+<header class="appbar" data-page="apply"><div class="wrap">
   <span class="grow"></span>
-  <span class="muted small" id="bstat"></span>
+  <span class="pill" id="bstat"></span>
 </div></header>
+<script src="/ui.js"></script>
 <main class="wrap">
-  <section class="hello"><h1>Batch apply</h1><p>Pick jobs, let the app prefill every form, review and submit. Nothing is sent without you.</p></section>
-  <div class="alert" id="alert" hidden></div>
+  <section class="pagehead"><div class="grow">
+    <h1>Batch apply</h1>
+    <p>Apply to several jobs in one sitting. Jobber opens them a few at a time with the forms already filled in. <button class="tipbtn" data-term="batch"></button></p>
+  </div><span class="promise" id="promise"><span id="shieldIcon"></span>You always press Submit <button class="tipbtn" data-term="never"></button></span></section>
+
+  <div class="panel flow"><ol class="steps" id="flowSteps">
+    <li class="now"><div>Pick jobs<span>Tick the ones you want below</span></div></li>
+    <li><div>Open &amp; prefill<span>The extension fills each form</span></div></li>
+    <li><div>Check &amp; submit<span>Review orange fields, press Submit</span></div></li>
+  </ol></div>
+  <div class="guide" id="extGuide" hidden><span class="gi" id="plugIcon"></span><div><b>One-time setup: add the Jobber extension to Chrome</b>
+    <p>It's what fills in the forms. Takes about 2 minutes:</p>
+    <ol><li>Open <b>chrome://extensions</b> in Chrome and switch on <b>Developer mode</b> (top right).</li>
+      <li>Click <b>Load unpacked</b> and choose the <b>chrome-extension</b> folder inside Jobber.</li>
+      <li>Come back here and refresh. This box disappears once it's connected.</li></ol>
+    <div class="acts"><a class="btn sm" href="/copilot#setup">Step-by-step help</a></div></div></div>
+  <div class="notice" id="alert" hidden></div>
+
   <div class="layout">
     <section>
-      <h2>1 · Pick jobs</h2>
+      <div class="colh"><h2>Pick jobs</h2><span class="sub">Best fit first</span></div>
       <div class="bar">
-        <button class="chip on" data-f="fast">Quick forms</button>
+        <button class="chip on" data-f="fast">Quick forms</button><button class="tipbtn" data-term="quick"></button>
         <button class="chip" data-f="maybe">Company sites</button>
         <button class="chip" data-f="redirect">LinkedIn/Indeed</button>
-        <button class="chip" data-f="slow">Workday</button>
+        <button class="chip" data-f="slow">Workday</button><button class="tipbtn" data-term="workday"></button>
         <span class="grow"></span>
-        <button class="btn sm" id="top">Select top 50 by fit</button>
-        <button class="btn sm" id="none">Clear</button>
+        <button class="btn sm" id="top">Select top 50</button>
+        <button class="btn sm ghost" id="none">Clear</button>
       </div>
-      <div class="tablewrap"><table><thead><tr><th style="width:32px"><input type="checkbox" id="all"></th><th>Job</th><th>Fit</th><th>Portal</th><th>Posted</th></tr></thead>
+      <div class="tablewrap"><table><thead><tr><th style="width:44px"><input type="checkbox" id="all" aria-label="Select all shown"></th><th>Job</th><th>Fit <button class="tipbtn" data-term="fit"></button></th><th>Portal <button class="tipbtn" data-term="ats"></button></th><th>Posted</th></tr></thead>
       <tbody id="rows"></tbody></table></div>
     </section>
-    <aside>
-      <h2>2 · Prefill &amp; submit</h2>
+    <aside class="side">
       <div class="card">
-        <div class="bar"><span class="big" id="nsel">0</span><span class="sub">selected</span><span class="grow"></span>
-          <label class="sub">Tabs at a time <input id="bs" type="number" min="1" max="15" value="5" ></label></div>
-        <button class="btn primary" id="go" style="width:100%;justify-content:center">Open &amp; prefill</button>
-        <p class="sub" style="margin:8px 0 0">Jobs open as background tabs in this Chrome window. The Jobber extension fills each form and attaches your CV. In each tab: check the orange fields, press the site's <b>Submit</b>. The extension logs it as applied and the next job opens. Lever and SmartRecruiters are paced (3 per 30 min) so they don't block you.</p>
+        <div class="selbox"><span class="big" id="nsel">0</span><span class="sub">jobs selected</span><span class="grow"></span>
+          <label class="sub">Tabs at a time <input id="bs" type="number" min="1" max="15" value="5"></label></div>
+        <button class="btn primary lg" id="go" style="width:100%">Open &amp; prefill</button>
+        <p class="sub" style="margin:12px 0 0">Jobs open as tabs in this Chrome window, filled in with your details and CV. In each tab, check the orange fields and press the site's own <b>Submit</b>. The next job then opens. Some portals are paced so they don't block you. <button class="tipbtn" data-term="pacing"></button></p>
       </div>
-      <h2>Queue <span class="sub" id="qsum"></span></h2>
-      <div class="card" id="queue"><span class="sub">Nothing queued yet.</span></div>
-      <h2>Your answers</h2>
+      <h3>Queue <span class="sub" id="qsum"></span></h3>
+      <div class="card" id="queue"></div>
+      <h3>Your answers <button class="tipbtn" data-tip="What Jobber types into forms. Edit them in Setup → Your details, or here."></button></h3>
       <div class="card">
-        <details id="prof"><summary>Profile used on every form</summary><div class="form" id="form" style="margin-top:10px"></div>
-          <h2>Learned answers</h2><div id="learned" class="sub"></div>
-          <button class="btn primary sm" id="save" style="margin-top:10px">Save answers</button></details>
+        <details id="prof"><summary>Details used on every form</summary><div class="form" id="form" style="margin-top:14px"></div>
+          <h3>Learned answers</h3><div id="learned" class="sub"></div>
+          <button class="btn primary sm" id="save" style="margin-top:12px">Save answers</button></details>
       </div>
     </aside>
   </div>
 </main>
 <script>
 const $=id=>document.getElementById(id);
-const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const {esc,ICONS,empty,toast}=Jobber;
+$("shieldIcon").outerHTML=ICONS.shield;$("plugIcon").innerHTML=ICONS.plug;
 let JOBS=[],SEL=new Set(),SHOW=new Set(["fast"]),PROF=null;
 const LBL={first_name:"First name",last_name:"Last name",full_name:"Full name",email:"Email",phone:"Phone",linkedin:"LinkedIn URL",github:"GitHub",website:"Website",
 location:"Current city",country:"Country",current_company:"Current/last company",current_title:"Current/last title",years_experience:"Years of experience",
@@ -95,14 +138,19 @@ async function loadJobs(){const r=await fetch("/api/apply/candidates").then(r=>r
 function visible(){return JOBS.filter(j=>SHOW.has(j.ease))}
 function renderJobs(){
   const v=visible();
-  $("rows").innerHTML=v.length?v.map(j=>`<tr><td><input type="checkbox" data-id="${j.id}" ${SEL.has(j.id)?"checked":""}></td>
+  $("rows").innerHTML=v.length?v.map(j=>`<tr class="${SEL.has(j.id)?"on":""}"><td><input type="checkbox" data-id="${j.id}" ${SEL.has(j.id)?"checked":""} aria-label="Select ${esc(j.title)} at ${esc(j.company)}"></td>
    <td class="t"><b>${esc(j.title)}</b><span>${esc(j.company)} · ${esc(j.location||"")}${j.salary_text?" · "+esc(j.salary_text):""}</span></td>
-   <td class="fitc">${j.fit??""}%</td><td><span class="pill ${j.ease}">${esc(PORT[j.ats]||j.ats)}</span></td>
+   <td class="fitc ${j.fit>=70?"hi":j.fit>=50?"mid":"lo"}">${j.fit??""}%</td><td><span class="pill ${j.ease}">${esc(PORT[j.ats]||j.ats)}</span></td>
    <td class="sub">${j.age_days==null?"":j.age_days===0?"today":j.age_days+"d"}</td></tr>`).join("")
-   :`<tr><td colspan="5" class="sub">No jobs in this group. Fetch new jobs on the dashboard, or pick another group above.</td></tr>`;
-  $("nsel").textContent=SEL.size;$("go").disabled=!SEL.size;
+   :`<tr><td colspan="5" class="empty-cell">${JOBS.length?empty({icon:"search",title:"No jobs in this group",body:"Turn on another group above, like Company sites or LinkedIn/Indeed."})
+     :empty({icon:"jobs",title:"No jobs ready to apply to yet",body:"Jobs show up here after a search on the Jobs page. Jobs you've already applied to are left out.",actions:`<a class="btn primary" href="/">Go to Jobs</a>`})}</td></tr>`;
+  $("nsel").textContent=SEL.size;$("go").disabled=!SEL.size;flow();
 }
-document.addEventListener("change",e=>{const id=e.target.dataset.id;if(id){e.target.checked?SEL.add(id):SEL.delete(id);$("nsel").textContent=SEL.size;$("go").disabled=!SEL.size}});
+function flow(){const it=(window._items||[]);const li=[...document.querySelectorAll("#flowSteps li")];
+  const stage=it.some(x=>x.state==="open")?2:it.some(x=>x.state==="waiting")?1:0;
+  li.forEach((l,i)=>{l.className=i<stage||(i===0&&SEL.size&&stage===0)?"done":i===stage?"now":""});}
+document.addEventListener("change",e=>{const id=e.target.dataset.id;if(id){e.target.checked?SEL.add(id):SEL.delete(id);e.target.closest("tr").classList.toggle("on",e.target.checked);$("nsel").textContent=SEL.size;$("go").disabled=!SEL.size;flow()}});
+document.addEventListener("click",e=>{const tr=e.target.closest("#rows tr");if(!tr||e.target.closest("input,button,a"))return;const cb=tr.querySelector("input[data-id]");if(cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event("change",{bubbles:true}))}});
 $("all").onchange=e=>{visible().forEach(j=>e.target.checked?SEL.add(j.id):SEL.delete(j.id));renderJobs()};
 $("top").onclick=()=>{SEL=new Set(visible().slice(0,50).map(j=>j.id));renderJobs()};
 $("none").onclick=()=>{SEL.clear();renderJobs()};
@@ -116,9 +164,9 @@ $("go").onclick=async()=>{
 const ST={waiting:"Waiting",open:"Open in browser",applied:"Applied ✓",skipped:"Skipped"};
 async function poll(){
   const s=await fetch("/api/apply/state").then(r=>r.json()).catch(()=>null);if(!s)return;
-  $("bstat").textContent=EXT?"Chrome extension connected":"";
+  $("bstat").textContent=EXT?"✓ Extension connected":"Extension not connected";$("bstat").className="pill "+(EXT?"good":"warn");
+  $("extGuide").hidden=EXT;window._items=s.items||[];flow();
   const a=$("alert");const msgs=[];
-  if(!EXT&&(s.items||[]).length)msgs.push(`Chrome extension not detected. Open this page in Chrome with the Jobber Autofill extension loaded (see README), then refresh.`);
   for(const m of Object.values(s.paused||{}))msgs.push("⏸ "+esc(m));
   if(s.missing&&s.missing.length)msgs.push(`Fill in once: <b>${s.missing.map(k=>LBL[k]).join(", ")}</b> <button class="btn sm" onclick="$('prof').open=true;$('prof').scrollIntoView()">Add answers</button>`);
   a.hidden=!msgs.length;a.innerHTML=msgs.join("<br>");
@@ -130,7 +178,7 @@ async function poll(){
     ${x.state==="open"?`<br><button class="btn sm" onclick="act('applied','${x.id}')">I submitted it</button> <button class="btn sm" onclick="act('skip','${x.id}')">Skip</button>`:""}
     ${x.state==="waiting"?`<br><button class="btn sm" onclick="act('skip','${x.id}')">Remove</button>`:""}</small></div>`).join("")
     +`<div class="bar" style="margin-top:8px"><button class="btn sm" onclick="post('clear')">Clear finished</button>${n("waiting")?`<button class="btn sm" onclick="post('stop')">Stop queue</button>`:""}</div>`
-    :`<span class="sub">Nothing queued yet.</span>`;
+    :`<div class="qempty"><b>Nothing queued yet</b>Tick some jobs on the left, then press Open &amp; prefill.</div>`;
   if(n("applied")!==poll.applied){poll.applied=n("applied");loadJobs()}
   if(EXT&&n("waiting")){const r=await fetch("/api/apply/next",{method:"POST",body:"{}"}).then(r=>r.json()).catch(()=>({open:[]}));
     r.open.forEach((o,i)=>setTimeout(()=>window.postMessage({jh:"open",id:o.id,url:o.url},"*"),i*1500));if(r.open.length)setTimeout(poll,500)}
@@ -151,7 +199,7 @@ $("save").onclick=async()=>{
   const fields={};document.querySelectorAll("[data-k]").forEach(i=>fields[i.dataset.k]=i.value.trim());
   const answers={};document.querySelectorAll("[data-q]").forEach(i=>{const a=i.nextElementSibling.value.trim();if(i.value.trim()&&a)answers[i.value.toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim()]=a});
   await fetch("/api/apply/profile",{method:"POST",body:JSON.stringify({fields,answers,batch_size:+$("bs").value||5})});
-  await loadProfile();poll();$("save").textContent="Saved ✓";setTimeout(()=>$("save").textContent="Save answers",1500);
+  await loadProfile();poll();toast("Answers saved");
 };
 window.postMessage({jh:"ping"},"*");loadJobs();loadProfile();poll();setInterval(poll,3000);
 </script>

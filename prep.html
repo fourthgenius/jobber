@@ -6,53 +6,62 @@
 <title>Interview Prep</title>
 <link rel="stylesheet" href="/theme.css">
 <style>
-main{padding:20px 0 60px}
-h1{font:600 34px/1.1 var(--f-display);letter-spacing:-.02em;margin:0 0 4px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0}
-.sec{padding:16px}.sec h3{margin:0 0 10px;font:600 18px/1.2 var(--f-display)}
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
-input.in,select.in,textarea.in{border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;padding:8px 10px;width:100%}
-textarea.in{min-height:90px;resize:vertical}
-.md h1{font-size:24px;margin:0 0 4px}.md h2{font-size:17px;margin:18px 0 6px;padding-top:10px;border-top:1px solid var(--line)}
-.md ul{margin:4px 0;padding-left:20px}.md li{margin:3px 0}.md p{margin:4px 0}
+main{padding-bottom:64px}
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:22px 0 18px}
+.tab{display:flex;gap:12px;align-items:flex-start;text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:var(--r-lg);padding:14px;cursor:pointer;transition:border-color .15s}
+.tab:hover{border-color:var(--fg)}
+.tab .ti{flex:none;width:36px;height:36px;border-radius:11px;background:var(--sunken);color:var(--mute);display:grid;place-items:center}
+.tab .ti svg{width:19px;height:19px}
+.tab b{display:block;font-size:15px}.tab span{font-size:13px;color:var(--faint);line-height:1.35;display:block;margin-top:1px}
+.tab.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent-soft) 50%,var(--surface))}
+.tab.on .ti{background:var(--accent);color:#fff}
+.tab .num{font-weight:700;color:var(--accent-ink)}
+.sec{padding:20px}.sec h3{margin:0 0 12px;font-size:17px;display:flex;align-items:center;gap:6px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:14px;align-items:start}
+textarea.in{min-height:96px}
+.md h1{font-size:22px;margin:0 0 6px}.md h2{font-size:16px;margin:20px 0 6px;padding-top:12px;border-top:1px solid var(--line)}
+.md ul{margin:4px 0;padding-left:20px}.md li{margin:4px 0}.md p{margin:6px 0}
 .links{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}
-.q{padding:12px 4px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start}
-.q b{font:600 15.5px/1.35 var(--f-display)}
-.q .tip{font-size:12.5px;color:var(--mute);margin-top:3px}
-.list{border-top:1px solid var(--fg)}
-.story{padding:12px 4px;border-bottom:1px solid var(--line)}
-.story b{font:600 16px/1.3 var(--f-display)}
-.star{display:grid;grid-template-columns:90px 1fr;gap:4px 10px;font-size:13px;margin-top:6px}
-.star span{color:var(--faint);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding-top:2px}
+.qlist{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.q{padding:16px 18px;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+.q:first-child{border-top:0}
+.q b{font-size:15.5px;line-height:1.4}
+.q .qtip{font-size:13.5px;color:var(--mute);margin-top:4px}
+.story{padding:16px 18px;border-top:1px solid var(--line)}
+.story:first-child{border-top:0}
+.story b{font-size:16px}
+.star{display:grid;grid-template-columns:90px 1fr;gap:6px 12px;font-size:14px;margin-top:10px}
+.star span{color:var(--accent-ink);font-weight:700;font-size:13px}
 .cov{display:flex;flex-wrap:wrap;gap:6px}
-.big-q{font:600 24px/1.3 var(--f-display);margin:8px 0 6px;text-wrap:balance}
-.timer{font:500 28px/1 var(--f-mono)}
+.big-q{font-size:24px;line-height:1.3;font-weight:700;margin:10px 0 6px;letter-spacing:-.015em;text-wrap:balance}
+.timer{font:800 32px/1 var(--f-display);font-variant-numeric:tabular-nums;min-width:86px}
 .timer.over{color:var(--bad)}
-.rub label{display:flex;gap:8px;align-items:center;font-size:13px;margin:4px 0}
-.note{background:var(--warn-bg);color:var(--warn);border-radius:var(--r);padding:10px 12px;font-size:13px;margin-bottom:12px}
-.fb{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-top:10px;font-size:13.5px}
-.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:var(--r);font-size:13px;display:none;z-index:60}
-@media (max-width:640px){.q{grid-template-columns:1fr}.star{grid-template-columns:1fr}}
+.rub{display:grid;gap:2px}
+.rub label{display:flex;gap:10px;align-items:center;font-size:14px;padding:6px 0;cursor:pointer}
+.fb{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-top:12px;font-size:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.steps-ol{margin:0;padding-left:20px;font-size:14px;color:var(--mute)}.steps-ol li{margin:6px 0}
+@media (max-width:980px){.tabs{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.tabs{gap:8px}.tab{padding:10px}.tab span{display:none}.tab .ti{width:30px;height:30px}.q{grid-template-columns:1fr}.star{grid-template-columns:1fr}.big-q{font-size:20px}}
 </style>
 </head>
 <body>
-<header class="appbar"><div class="wrap">
-  <a class="brand" href="/">Job<i>ber</i></a>
-  <nav class="nav"><a href="/">Jobs</a><a href="/apply">Batch apply</a><a href="/copilot">Copilot</a><a class="on" href="/prep">Interview prep</a><a href="/setup">Setup</a></nav>
+<header class="appbar" data-page="prep"><div class="wrap">
   <span class="grow"></span><span class="pill" id="aiPill"></span>
 </div></header>
+<script src="/ui.js"></script>
 <main class="wrap">
-  <h1>Interview prep</h1>
-  <div class="muted">Got an interview? Research the company, rehearse likely questions, build your stories, then practise out loud.</div>
-  <div class="tabs" id="tabs"></div>
+  <section class="pagehead"><div class="grow">
+    <h1>Interview prep</h1>
+    <p>Got an interview? Nice work. Research the company, rehearse likely questions, build your stories, then practise out loud. Do the tabs in order the first time.</p>
+  </div></section>
+  <div class="tabs" id="tabs" role="tablist"></div>
   <div id="view"></div>
 </main>
-<div class="toast" id="toast"></div>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const toast = m => { const t = $("#toast"); t.textContent = m; t.style.display = "block"; clearTimeout(t._t); t._t = setTimeout(() => t.style.display = "none", 2400); };
+const {toast, ICONS, tip: gtip, empty} = Jobber;
 async function api(url, body) {
   const r = await fetch(url, body ? {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)} : {});
   const d = await r.json(); if (!r.ok) throw new Error(d.error || r.status); return d;
@@ -72,17 +81,17 @@ function md(s) {  // tiny markdown: headings, bullets, bold, paragraphs
 }
 
 let D = null, tab = "brief", ROLE = "general", BRIEF = null;
-const TABS = [["brief", "Company brief"], ["questions", "Question bank"], ["stories", "Story bank"], ["mock", "Mock practice"]];
+const TABS = [["brief", "Company brief", "Know who you're talking to", "book"], ["questions", "Question bank", "What they'll likely ask", "chat"], ["stories", "Story bank", "Your best examples, STAR-style", "star"], ["mock", "Mock practice", "Say it out loud, on a timer", "mic"]];
 async function load() {
   D = await api("/api/prep");
   ROLE = ROLE === "general" ? D.default_role : ROLE;
-  $("#aiPill").textContent = D.ai ? "AI on" : "Templates (no AI key)";
+  $("#aiPill").textContent = D.ai ? "AI on" : "AI off · templates";
   $("#aiPill").className = "pill " + (D.ai ? "good" : "");
   render();
 }
 function go(t) { tab = t; render(); }
 function render() {
-  $("#tabs").innerHTML = TABS.map(([k, l]) => `<button class="chip ${tab === k ? "on" : ""}" onclick="go('${k}')">${l}${k === "stories" ? ` <b class="num">${D.stories.length}</b>` : ""}</button>`).join("");
+  $("#tabs").innerHTML = TABS.map(([k, l, d, ic], i) => `<button class="tab ${tab === k ? "on" : ""}" role="tab" aria-selected="${tab === k}" onclick="go('${k}')"><span class="ti">${ICONS[ic]}</span><div><b>${i + 1}. ${l}${k === "stories" && D.stories.length ? ` <span class="num" style="display:inline">· ${D.stories.length}</span>` : ""}</b><span>${d}</span></div></button>`).join("");
   ({brief, questions, stories, mock})[tab]();
 }
 
@@ -91,16 +100,16 @@ function brief() {
   const jobId = new URLSearchParams(location.search).get("job") || "";
   const opts = D.jobs.map(j => `<option value="${j.id}" ${j.id === jobId ? "selected" : ""}>${esc(j.company)}: ${esc(j.title)} (${j.status})</option>`).join("");
   $("#view").innerHTML = `<div class="grid2">
-    <div class="panel sec"><h3>Pick the interview</h3>
+    <div class="panel sec"><h3>Pick the interview ${gtip("brief")}</h3>
       <label class="label">From your tracker</label>
       <select class="in" id="bJob"><option value="">Choose a job…</option>${opts}</select>
-      <div class="small muted" style="margin:10px 0 6px">or type it in</div>
+      <div class="small muted" style="margin:12px 0 6px">or type it in</div>
       <div style="display:grid;gap:6px"><input class="in" id="bCo" placeholder="Company name"><input class="in" id="bTitle" placeholder="Role title (optional)">
       <textarea class="in" id="bJd" placeholder="Paste the job description (optional, makes the brief much better)"></textarea></div>
       <div class="row" style="margin-top:10px"><button class="btn primary" onclick="makeBrief(false)">Build brief</button>
       ${D.ai ? `<button class="btn" onclick="makeBrief(true)">Build with AI</button>` : `<span class="small muted">Add a Claude API key in Copilot → Setup for AI briefs.</span>`}</div>
     </div>
-    <div class="panel sec"><h3>How to use this</h3><ol class="small" style="padding-left:18px;margin:0">
+    <div class="panel sec"><h3>How to prepare in about an hour</h3><ol class="steps-ol">
       <li>Build the brief, open the research links and add 3-5 facts to your notes.</li>
       <li>Read "What they want" and match a story from your Story bank to each point.</li>
       <li>Practise the likely questions out loud on Mock practice (2 minutes each).</li>
@@ -119,7 +128,7 @@ async function makeBrief(ai) {
         <textarea class="in" id="bNotes" style="min-height:160px" placeholder="What they sell, to whom, recent news, interviewer names, why you want it…">${esc(BRIEF.notes)}</textarea>
         <div class="row" style="margin-top:8px"><button class="btn sm primary" onclick="saveNotes()">Save notes</button>
         <button class="btn sm" onclick="practiseThese()">Practise these questions →</button></div></div></div></div>`;
-  } catch (e) { out.innerHTML = `<div class="note">${esc(e.message)}</div>`; }
+  } catch (e) { out.innerHTML = `<div class="notice">${esc(e.message)}</div>`; }
 }
 async function saveNotes() { await api("/api/prep/notes", {company: BRIEF.company, notes: $("#bNotes").value}); toast("Notes saved"); }
 function practiseThese() { MOCKQ = BRIEF.questions.map(q => q.q); MI = 0; go("mock"); }
@@ -128,8 +137,8 @@ function practiseThese() { MOCKQ = BRIEF.questions.map(q => q.q); MI = 0; go("mo
 function questions() {
   const r = D.roles[ROLE] || D.roles.general;
   $("#view").innerHTML = `<div class="row" style="margin-bottom:10px">${Object.entries(D.roles).map(([k, v]) => `<button class="chip ${ROLE === k ? "on" : ""}" onclick="ROLE='${k}';render()">${esc(v.label)}</button>`).join("")}</div>
-    <div class="small muted" style="margin-bottom:8px">${r.questions.length} questions. Tick one off each time you practise it out loud. Add your own in questions.json.</div>
-    <div class="list">${r.questions.map((q, i) => `<div class="q"><div><b>${esc(q.q)}</b><div class="tip"><span class="pill">${esc(q.type)}</span> ${esc(q.tip)}</div></div>
+    <div class="small muted" style="margin-bottom:10px">${r.questions.length} questions people really get asked. Press Practised each time you answer one out loud. Add your own in questions.json.</div>
+    <div class="qlist">${r.questions.map((q, i) => `<div class="q"><div><b>${esc(q.q)}</b><div class="qtip"><span class="pill">${esc(q.type)}</span> ${esc(q.tip)}</div></div>
       <div class="row">${D.practiced[q.q] ? `<span class="pill good">Practised ${D.practiced[q.q]}×</span>` : ""}
       <button class="btn sm" onclick="practised(${i})">Practised</button><button class="btn sm ghost" onclick="MOCKQ=[D.roles[ROLE].questions[${i}].q];MI=0;go('mock')">Mock it →</button></div></div>`).join("")}</div>
     <div class="panel sec" style="margin-top:14px"><h3>Questions to ask them</h3><ul class="small" style="margin:0;padding-left:18px">${D.ask_them.map(q => `<li>${esc(q)}</li>`).join("")}</ul></div>`;
@@ -142,7 +151,7 @@ function stories() {
   const covered = new Set(D.stories.flatMap(s => s.tags));
   const f = EDIT || {title: "", situation: "", task: "", action: "", result: "", tags: []};
   $("#view").innerHTML = `<div class="grid2">
-    <div class="panel sec"><h3>${EDIT && EDIT.id ? "Edit story" : "Add a STAR story"}</h3>
+    <div class="panel sec"><h3>${EDIT && EDIT.id ? "Edit story" : "Add a STAR story"} ${gtip("star")}</h3>
       <div class="small muted" style="margin-bottom:8px">5-6 strong stories answer most behavioural questions. Keep each to about 2 minutes spoken. Use real numbers.</div>
       <div style="display:grid;gap:6px">
       <input class="in" id="sTitle" placeholder="Short title, e.g. 'Cut onboarding drop-off 30%'" value="${esc(f.title)}">
@@ -153,13 +162,13 @@ function stories() {
       <div class="label" style="margin-top:4px">Shows these competencies</div>
       <div class="cov" id="sTags">${D.competencies.map(c => `<button class="chip ${f.tags.includes(c) ? "on" : ""}" onclick="this.classList.toggle('on')">${esc(c)}</button>`).join("")}</div></div>
       <div class="row" style="margin-top:10px"><button class="btn primary" onclick="saveStory()">Save story</button>${EDIT ? `<button class="btn ghost" onclick="EDIT=null;render()">Cancel</button>` : ""}</div></div>
-    <div class="panel sec"><h3>Coverage</h3><div class="small muted" style="margin-bottom:8px">Aim for at least one story per competency.</div>
+    <div class="panel sec"><h3>Coverage ${gtip("competency")}</h3><div class="small muted" style="margin-bottom:10px">Aim for at least one story per competency. Green means covered.</div>
       <div class="cov">${D.competencies.map(c => `<span class="pill ${covered.has(c) ? "good" : "warn"}">${covered.has(c) ? "✓" : "○"} ${esc(c)}</span>`).join("")}</div></div>
   </div>
-  <div class="list" style="margin-top:14px">${D.stories.map((s, i) => `<div class="story"><div class="row" style="justify-content:space-between"><b>${esc(s.title)}</b>
+  <div style="margin-top:14px">${D.stories.length ? `<div class="qlist">` : ""}${D.stories.map((s, i) => `<div class="story"><div class="row" style="justify-content:space-between"><b>${esc(s.title)}</b>
      <div class="row"><button class="btn sm" onclick="EDIT=D.stories[${i}];render();scrollTo(0,0)">Edit</button><button class="btn sm ghost" onclick="delStory(${s.id})">Delete</button></div></div>
      <div class="row" style="margin-top:4px">${s.tags.map(t => `<span class="pill">${esc(t)}</span>`).join("")}</div>
-     <div class="star"><span>Situation</span><div>${esc(s.situation)}</div><span>Task</span><div>${esc(s.task)}</div><span>Action</span><div>${esc(s.action)}</div><span>Result</span><div>${esc(s.result)}</div></div></div>`).join("") || `<div class="muted small" style="padding:12px 4px">No stories yet.</div>`}</div>`;
+     <div class="star"><span>Situation</span><div>${esc(s.situation)}</div><span>Task</span><div>${esc(s.task)}</div><span>Action</span><div>${esc(s.action)}</div><span>Result</span><div>${esc(s.result)}</div></div></div>`).join("")}${D.stories.length ? "</div>" : empty({icon: "star", title: "No stories yet", body: "Write your first one with the form above. Think of a time you fixed a problem, led something, or changed someone's mind. Real numbers make it memorable."})}</div>`;
 }
 async function saveStory() {
   const tags = [...document.querySelectorAll("#sTags .chip.on")].map(b => b.textContent);
@@ -178,23 +187,23 @@ function mock() {
   const q = MOCKQ[MI % MOCKQ.length];
   const tip = Object.values(D.roles).flatMap(r => r.questions).find(x => x.q === q);
   $("#view").innerHTML = `<div class="grid2"><div class="panel sec">
-      <div class="row" style="justify-content:space-between"><span class="label">Question ${MI % MOCKQ.length + 1} of ${MOCKQ.length}</span>
+      <div class="row" style="justify-content:space-between"><span class="label">Question ${MI % MOCKQ.length + 1} of ${MOCKQ.length} ${gtip("mock")}</span>
       <select class="in" style="width:auto" onchange="ROLE=this.value;MOCKQ=pickQs();MI=0;render()">${Object.entries(D.roles).map(([k, v]) => `<option value="${k}" ${k === ROLE ? "selected" : ""}>${esc(v.label)}</option>`).join("")}</select></div>
       <div class="big-q">${esc(q)}</div>${tip ? `<div class="small muted">${esc(tip.tip)}</div>` : ""}
       <div class="row" style="margin:14px 0 8px"><span class="timer" id="timer">2:00</span>
         <button class="btn" id="tBtn" onclick="timer()">Start 2-min timer</button>
         <select class="in" style="width:auto" onchange="LIMIT=+this.value;$('#timer').textContent=fmt(LIMIT)"><option value="60">1 min</option><option value="120" selected>2 min</option><option value="180">3 min</option></select></div>
       <textarea class="in" id="ans" style="min-height:160px" placeholder="Answer out loud first. Then jot your answer here (bullet points are fine) to review it."></textarea>
-      <div class="label" style="margin-top:10px">Check your answer</div>
+      <div class="label" style="margin:14px 0 4px;color:var(--fg)">Check your answer: did you…</div>
       <div class="rub">${["Clear structure (STAR or a framework)", "Specific example, not hypothetical", "Numbers or concrete result", "Clear about MY role ('I', not 'we')", "Under the time limit", "Ended with what I learned or why it matters"].map(r => `<label><input type="checkbox" class="rb"> ${r}</label>`).join("")}</div>
       <div class="row" style="margin-top:12px"><button class="btn primary" onclick="saveMock(false)">Save & next</button>
         ${D.ai ? `<button class="btn" onclick="saveMock(true)">Get AI feedback</button>` : ""}
         <button class="btn ghost" onclick="MI++;render()">Skip</button><button class="btn ghost" onclick="MOCKQ=pickQs();MI=0;render()">New set</button></div>
       <div id="fb"></div></div>
-    <div class="panel sec"><h3>Recent practice</h3>${D.mocks.length ? `<div class="list">${D.mocks.slice(0, 12).map(m => {
+    <div class="panel sec"><h3>Recent practice</h3>${D.mocks.length ? `<div>${D.mocks.slice(0, 12).map(m => {
         const f = m.feedback ? JSON.parse(m.feedback) : null;
         return `<div class="story"><b style="font-size:14px">${esc(m.question)}</b><div class="small muted">${m.created.slice(0, 10)} · self-score ${m.rating}/6${f ? ` · AI ${f.score}/5` : ""}${m.seconds ? ` · ${fmt(m.seconds)}` : ""}</div></div>`; }).join("")}</div>`
-      : `<div class="muted small">Your practice history shows here.</div>`}</div></div>`;
+      : empty({icon: "mic", title: "No practice yet", body: "Start the timer, answer out loud as if you're in the room, then tick the checklist. Your history builds up here."})}</div></div>`;
 }
 const fmt = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 function timer() {
@@ -217,9 +226,9 @@ async function saveMock(ai) {
         <div class="label">Improve</div><ul>${f.improve.map(x => `<li>${esc(x)}</li>`).join("")}</ul><div class="label">A tighter version</div><p>${esc(f.better_answer)}</p>
         <button class="btn sm primary" onclick="MI++;render()">Next question →</button></div>`;
     } else { toast(`Saved: ${rating}/6 on the checklist`); MI++; render(); }
-  } catch (e) { $("#fb").innerHTML = `<div class="note" style="margin-top:10px">${esc(e.message)}</div>`; }
+  } catch (e) { $("#fb").innerHTML = `<div class="notice" style="margin-top:10px">${esc(e.message)}</div>`; }
 }
-load().catch(e => $("#view").innerHTML = `<div class="note">${esc(e.message)}</div>`);
+load().catch(e => $("#view").innerHTML = `<div class="notice">${esc(e.message)}</div>`);
 </script>
 </body>
 </html>
