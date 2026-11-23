@@ -15,7 +15,7 @@ Works for any field: product, engineering, data, design, marketing, sales, opera
 | **Batch apply** (`/apply`) | Queue jobs and open them a few at a time in Chrome. The included Chrome extension fills the form, attaches your CV and writes a cover letter. You press Submit. Per-site pacing avoids hammering one portal. |
 | **Copilot** (`/copilot`) | Apply-today queue, follow-up reminders, outreach drafts and a contact tracker, cover letter templates, tailored CVs (printable to PDF), keyword gap vs your CV, funnel insights, company watchlist, funding news radar, optional Telegram daily digest. |
 | **Referrals** (`/network`) | Every job gets a "Get a referral" box: one-click LinkedIn people searches for that company (your 1st/2nd-degree connections, alumni, ex-colleagues, recruiters) and a drafted referral message to copy. Jobs where you know someone rank higher. Also: jobs from LinkedIn hiring posts, found automatically by web search or pasted / saved from a post you're reading. |
-| **Interview prep** (`/prep`) | Company brief built from the job post plus research links and your notes; question bank by role type (80+ questions with tips); STAR story bank with competency coverage; timed mock practice with a self-check rubric and history. |
+| **Interview prep** (`/prep`) | Prep tailored to one job: a company brief (what they do, Wikipedia summary, recent news, peers, likely interview rounds, your fit vs the JD), the questions that job will likely ask (from the JD's requirements, your CV gaps and the role) with suggested answers drafted from your own CV and STAR stories, and a mock interview that asks one question at a time, takes typed or spoken answers, scores structure, specifics, ownership, relevance and length, rewrites a stronger answer and asks a follow-up. Works with no API key; a Claude key makes every part smarter. |
 
 **AI is optional.** Everything above works with templates and rules. Add a [Claude API key](https://console.anthropic.com) (Copilot → Setup) to also get AI fit scores, written cover notes, rewritten CVs, screening answers, richer interview briefs, job-specific questions and feedback on your mock answers.
 
@@ -115,7 +115,8 @@ filters.py, fit.py  relevance filters, salary parsing, CV fit score
 store.py            SQLite storage, de-duplication, status tracking
 copilot.py, llm.py, alerts.py             Copilot, optional AI, Telegram
 autofill.py         Batch apply + Chrome extension API
-prep.py             Interview prep
+prep.py             Interview prep (routes, cache, story bank)
+coach.py            Interview coach: JD parsing, question + answer drafting, answer scoring (no AI key needed)
 network.py          Referrals (find referrers, boost) and jobs from LinkedIn hiring posts
 *.html, theme.css   the pages
 chrome-extension/   the autofill extension

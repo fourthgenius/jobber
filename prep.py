@@ -1,8 +1,9 @@
-"""Interview prep: company briefs, a question bank by role type, a STAR story bank and mock practice.
+"""Interview prep, tailored to one job: company brief, questions from the JD and your CV gaps, suggested
+answers built from your own CV and stories, and a mock interview that scores each answer and follows up.
 
-Works fully without an AI key (templates, JD parsing, keyword gaps). With a Claude API key in
-secrets.json it also writes richer briefs, job-specific questions and feedback on mock answers.
-Page: /prep. Routes: GET /api/prep, POST /api/prep/{brief,notes,story,mock,practiced,jobq}.
+Works fully without an AI key (coach.py: JD parsing, free company sources, a scoring rubric). With a Claude
+API key in secrets.json the brief, questions and feedback are written by Claude instead (llm.py).
+Page: /prep (?job=<id>). Routes: GET /api/prep, POST /api/prep/{job,answer,notes,story,brief,mock,practiced,jobq}.
 """
 from __future__ import annotations
 
@@ -13,6 +14,7 @@ from datetime import datetime
 from pathlib import Path
 from urllib.parse import parse_qs, quote_plus, urlparse
 
+import coach
 import fetch
 import llm
 import store
@@ -29,12 +31,17 @@ CREATE TABLE IF NOT EXISTS mock (id INTEGER PRIMARY KEY AUTOINCREMENT, role TEXT
                                  rating INTEGER, seconds INTEGER, feedback TEXT, created TEXT);
 CREATE TABLE IF NOT EXISTS practiced (question TEXT PRIMARY KEY, n INTEGER DEFAULT 0, last TEXT);
 CREATE TABLE IF NOT EXISTS prep_notes (company TEXT PRIMARY KEY, notes TEXT, updated TEXT);
+CREATE TABLE IF NOT EXISTS prep_cache (job_id TEXT PRIMARY KEY, data TEXT, ai INTEGER DEFAULT 0, updated TEXT);
 """
 
 
 def conn():
     c = store.conn()
     c.executescript(SCHEMA)
+    cols = {r[1] for r in c.execute("PRAGMA table_info(mock)")}
+    for col in ("job_id", "scores"):
+        if col not in cols:
+            c.execute(f"ALTER TABLE mock ADD COLUMN {col} TEXT")
     return c
 
 
@@ -217,13 +224,105 @@ def brief(c, cfg, b: dict) -> dict:
     return out
 
 
+
+# ---------------------------------------------------------------- prep for one job (coach.py / llm.py)
+def _custom_job(b: dict) -> dict:
+    co = (b.get("company") or "").strip()
+    title = (b.get("title") or "").strip()
+    if not co and not title:
+        raise ValueError("Pick a job, or type a company and role.")
+    return {"id": "custom:" + store._norm(co + " " + title)[:80], "company": co or "the company",
+            "title": title or "this role", "description": b.get("jd") or "", "location": "", "status": "custom"}
+
+
+def build_brief(c, j: dict, cfg: dict, ai: bool = False) -> dict:
+    co = j.get("company") or ""
+    info = _company_info(co)
+    g = _gap(j) if j.get("description") else {"matched": [], "missing": []}
+    role = role_of(j.get("title") or "", cfg)
+    wiki = coach.wikipedia(co) if co and co != "the company" else None
+    news = coach.news(co) if co and co != "the company" else []
+    b = {"what_they_do": coach.what_they_do(j), "wiki": wiki, "products": coach.products(j), "news": news,
+         "peers": coach.peers(co, info), "sector": (info or {}).get("sector", ""),
+         "category": str((info or {}).get("category", "")).replace("_", " "),
+         "rounds": coach.rounds(role, info), "fit": g, "links": research_links(co), "role": role,
+         "role_label": bank()["roles"].get(role, {}).get("label", "General"), "ai": False, "takeaways": []}
+    if wiki and not b["what_they_do"]:
+        b["what_they_do"] = coach.sentences(wiki["summary"])[:2]
+    if ai and llm.enabled():
+        b.update(llm.prep_brief(j, {k: b[k] for k in ("what_they_do", "products", "news", "peers", "sector")},
+                                wiki["summary"] if wiki else ""))
+        b["ai"] = True
+    return b
+
+
+def build_questions(c, j: dict, cfg: dict, brief_d: dict, ai: bool = False) -> list[dict]:
+    if ai and llm.enabled():
+        return llm.prep_questions(j, brief_d, stories(c))
+    role = brief_d.get("role") or role_of(j.get("title") or "", cfg)
+    return coach.question_set(j, llm.cv_text(), stories(c), brief_d.get("fit") or {},
+                              bank()["roles"].get(role, {}).get("questions", []), brief_d.get("role_label", "General"),
+                              brief_d)
+
+
+def job_prep(c, cfg, b: dict) -> dict:
+    """Everything for one interview. Cached per job; pass refresh to rebuild, ai to use Claude."""
+    j = _job(c, cfg, b["job_id"]) if b.get("job_id") and not str(b["job_id"]).startswith("custom:") else None
+    if not j:
+        j = _custom_job(b)
+    ai = bool(b.get("ai")) and llm.enabled()
+    row = c.execute("SELECT data, ai FROM prep_cache WHERE job_id=?", (j["id"],)).fetchone()
+    if row and not b.get("refresh") and (not ai or row[1]):
+        data = json.loads(row[0])
+    else:
+        br = build_brief(c, j, cfg, ai)
+        data = {"brief": br, "questions": build_questions(c, j, cfg, br, ai), "ai": ai, "built": _now()}
+        c.execute("INSERT OR REPLACE INTO prep_cache VALUES (?,?,?,?)", (j["id"], json.dumps(data), int(ai), _now()))
+        c.commit()
+    notes = c.execute("SELECT notes FROM prep_notes WHERE company=?", (j["company"],)).fetchone()
+    hist = [dict(r) for r in c.execute("SELECT question, answer, scores, created FROM mock WHERE job_id=? "
+                                       "ORDER BY created DESC LIMIT 60", (j["id"],))]
+    for h in hist:
+        h["scores"] = json.loads(h["scores"]) if h.get("scores") else None
+    job = {k: j.get(k) for k in ("id", "title", "company", "location", "status", "url", "salary_text")}
+    job["has_jd"] = bool((j.get("description") or "").strip())
+    return {**data, "job": job, "notes": notes[0] if notes else "", "history": hist, "ai_available": llm.enabled()}
+
+
+def answer(c, cfg, b: dict) -> dict:
+    """Score one mock answer (rubric, or Claude with a key), save it, return feedback + a follow-up."""
+    q = b.get("q") or {}
+    if not q.get("q"):
+        raise ValueError("question missing")
+    j = _job(c, cfg, b.get("job_id", "")) if not str(b.get("job_id", "")).startswith("custom:") else None
+    if b.get("ai") and llm.enabled():
+        fb = llm.coach_answer(j or {"company": b.get("company"), "title": b.get("title")}, q, b.get("answer", ""),
+                              b.get("history") or [], int(b.get("seconds") or 0))
+        fb["ai"] = True
+    else:
+        fb = coach.score_answer(b.get("answer", ""), q, int(b.get("seconds") or 0), llm.cv_text(), stories(c))
+        fb["ai"] = False
+    if b.get("is_follow_up"):
+        fb["follow_up"] = ""
+    c.execute("INSERT INTO mock (role, question, answer, rating, seconds, feedback, created, job_id, scores) "
+              "VALUES (?,?,?,?,?,?,?,?,?)", (q.get("kind", ""), q["q"][:500], str(b.get("answer", ""))[:6000],
+                                              round(fb["score"]), int(b.get("seconds") or 0), json.dumps(fb), _now(),
+                                              b.get("job_id", ""), json.dumps(fb.get("dims", {}))))
+    c.execute("INSERT INTO practiced VALUES (?,1,?) ON CONFLICT(question) DO UPDATE SET n=n+1, last=?",
+              (q["q"][:500], _now(), _now()))
+    c.commit()
+    return fb
+
+
 # ---------------------------------------------------------------- HTTP
 def overview(c, cfg) -> dict:
     b = bank()
-    jobs = [{k: j.get(k) for k in ("id", "title", "company", "status", "location")}
-            for j in store.all_jobs(c, cfg) if j["status"] in ("interviewing", "offer", "applied", "saved")]
+    allj = [j for j in store.all_jobs(c, cfg) if j["status"] not in ("hidden", "rejected")]
     rank = {"interviewing": 0, "offer": 1, "applied": 2, "saved": 3}
-    jobs.sort(key=lambda j: rank.get(j["status"], 9))
+    allj.sort(key=lambda j: (rank.get(j["status"], 9), -(j.get("fit") or 0)))
+    prepped = {r[0] for r in c.execute("SELECT job_id FROM prep_cache")}
+    jobs = [{**{k: j.get(k) for k in ("id", "title", "company", "status", "location", "fit")},
+             "prepped": j["id"] in prepped} for j in allj[:300]]
     return {"roles": {k: {"label": r["label"], "questions": r["questions"]} for k, r in b["roles"].items()},
             "ask_them": b.get("ask_them", []), "competencies": b.get("competencies", []),
             "default_role": role_of("", cfg), "jobs": jobs, "stories": stories(c),
@@ -248,6 +347,10 @@ def handle(h, method, body=None):
                     return h._send(200, random.choice(qs) if qs else {})
                 return h._send(404, {"error": "not found"})
             body = body or {}
+            if path == "/api/prep/job":
+                return h._send(200, job_prep(c, cfg, body))
+            if path == "/api/prep/answer":
+                return h._send(200, answer(c, cfg, body))
             if path == "/api/prep/brief":
                 return h._send(200, brief(c, cfg, body))
             if path == "/api/prep/notes":

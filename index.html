@@ -398,8 +398,8 @@ function detail(j){
 }
 const NEXT={new:()=>"Like it? Save it for later, or press Apply. Jobber will ask if you applied so it can track it.",
   saved:()=>"On your shortlist. When you're ready, apply here or queue several in Batch apply.",
-  applied:()=>`Nice work. If you don't hear back in about a week, send a short follow-up: <a href="/copilot#follow">Copilot reminds you</a>.`,
-  interviewing:j=>`Congratulations! <a href="/prep?job=${esc(j.id)}">Prepare for this interview</a>: a company brief, likely questions and mock practice.`,
+  applied:j=>`Nice work. If you don't hear back in about a week, send a short follow-up: <a href="/copilot#follow">Copilot reminds you</a>. Got a call? <a href="/prep?job=${esc(j.id)}">Prep for this interview</a>.`,
+  interviewing:j=>`Congratulations! <a href="/prep?job=${esc(j.id)}">Prep for this interview</a>: a brief on the company, the questions this job will likely ask with answers from your CV, and a mock interview with feedback.`,
   offer:()=>"Well done! Compare it against your pay floor and don't be shy to negotiate.",
   rejected:()=>"It happens to everyone. Note anything you learned; it makes the next one better.",
   hidden:()=>"Hidden from your list. Press New to bring it back."};

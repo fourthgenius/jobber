@@ -220,3 +220,82 @@ def job_questions(j: dict) -> list[str]:
     return _ask(_sys(), f"{_job_block(j)}\n\nList 10 interview questions this company is likely to ask for this "
                 "role, specific to the JD: mix skills, scenario, behavioural and one take-home or case style.",
                 QS_SCHEMA, "low", 2000)["questions"]
+
+
+# ---------------------------------------------------------------- Interview prep per job (prep.py job_prep)
+_STR = {"type": "string"}
+_ARR = {"type": "array", "items": _STR}
+BRIEF_SCHEMA = {"type": "object", "additionalProperties": False,
+                "required": ["what_they_do", "products", "takeaways", "peers", "rounds"],
+                "properties": {"what_they_do": _ARR, "products": _ARR, "takeaways": _ARR, "peers": _ARR,
+                               "rounds": {"type": "array", "items": {
+                                   "type": "object", "additionalProperties": False, "required": ["name", "what", "prep"],
+                                   "properties": {"name": _STR, "what": _STR, "prep": _STR}}}}}
+
+
+def prep_brief(j: dict, research: dict, wiki: str = "") -> dict:
+    """Company brief from the JD + free research (Wikipedia, news headlines). Guesses are labelled."""
+    news = "\n".join(f"- {n['date']}: {n['title']}" for n in research.get("news", []))
+    return _ask(_sys(), f"{_job_block(j)}\n\nWIKIPEDIA:\n{wiki or '(none)'}\n\nRECENT HEADLINES:\n{news or '(none)'}\n\n"
+                f"Sector (from a list): {research.get('sector') or 'unknown'}. Peers in that list: "
+                f"{', '.join(research.get('peers', [])) or 'none'}\n\n"
+                "Write an interview brief for this candidate. what_they_do: 3 bullets (business, customers, how they "
+                "make money). products: up to 4 main products. takeaways: 3 things from the headlines worth "
+                "mentioning in the interview (empty if no headlines). peers: up to 5 real competitors. rounds: the "
+                "4-6 interview rounds most likely for THIS role at THIS company, each with what it tests and how to "
+                "prep. Anything not in the sources above: add ' (verify)'.", BRIEF_SCHEMA, "medium", 4000)
+
+
+PREPQ_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["questions"],
+                "properties": {"questions": {"type": "array", "items": {
+                    "type": "object", "additionalProperties": False,
+                    "required": ["q", "kind", "why", "look_for", "req", "source", "outline", "text"],
+                    "properties": {"q": _STR, "kind": _STR, "why": _STR, "look_for": _ARR, "req": _STR, "source": _STR,
+                                   "outline": {"type": "array", "items": {"type": "array", "items": _STR}},
+                                   "text": _STR}}}}}
+
+
+def prep_questions(j: dict, brief: dict, stories: list[dict]) -> list[dict]:
+    st = "\n".join(f"- {s['title']}: {s['situation']} | {s['action']} | {s['result']}" for s in stories[:12])
+    r = _ask(_sys(), f"CV:\n{cv_text()}\n\nSTORY BANK:\n{st or '(empty)'}\n\n{_job_block(j)}\n\n"
+             f"Company notes: {'; '.join(brief.get('what_they_do', [])[:3])}\n\n"
+             "Write the 10 questions this candidate is most likely to get for THIS job, in interview order: an "
+             "opener, why this company, 4-5 from the JD's must-haves, 1-2 probing the biggest gaps between the JD "
+             "and the CV, one role-typical case, one behavioural. For each: kind (Opener, Motivation, a competency "
+             "name, Gap, Case or Behavioural), why (which JD line or gap triggers it), look_for (3-4 things a great "
+             "answer shows), req (the JD requirement it tests, quoted, or ''), source (which CV role or story the "
+             "answer uses), outline (4 [label, text] pairs, STAR or a case framework), text (a first-person spoken "
+             "answer of 120-200 words using ONLY CV/story facts; put anything unknown in [brackets]).",
+             PREPQ_SCHEMA, "medium", 12000)
+    out = []
+    for i, q in enumerate(r["questions"]):
+        out.append({"id": f"q{i + 1}", "q": q["q"], "kind": q["kind"], "why": q["why"], "look_for": q["look_for"],
+                    "comp": None, "req": q["req"], "also": [],
+                    "answer": {"source": q["source"], "outline": [p[:2] for p in q["outline"] if len(p) >= 2],
+                               "text": q["text"], "gap": "[" in q["text"] and len(q["text"]) < 160}})
+    return out
+
+
+COACH_SCHEMA = {"type": "object", "additionalProperties": False,
+                "required": ["score", "dims", "strengths", "improve", "better_answer", "follow_up"],
+                "properties": {"score": {"type": "number"},
+                               "dims": {"type": "object", "additionalProperties": False,
+                                        "required": ["Structure", "Specifics", "Ownership", "Relevance", "Length"],
+                                        "properties": {k: {"type": "integer"} for k in
+                                                       ("Structure", "Specifics", "Ownership", "Relevance", "Length")}},
+                               "strengths": _ARR, "improve": _ARR, "better_answer": _STR, "follow_up": _STR}}
+
+
+def coach_answer(j: dict, q: dict, answer: str, history: list, seconds: int = 0) -> dict:
+    convo = "\n".join(f"Q: {h.get('q')}\nA: {h.get('a')}" for h in history[-4:])
+    return _ask(_sys(), f"CV:\n{cv_text()}\n\n{_job_block(j)}\n\nEarlier in this mock interview:\n{convo or '(start)'}\n\n"
+                f"QUESTION ({q.get('kind')}): {q.get('q')}\nIt tests: {q.get('req') or q.get('why')}\n"
+                f"A great answer shows: {'; '.join(q.get('look_for', []))}\n\nCANDIDATE ANSWER"
+                f"{f' (spoken, {seconds}s)' if seconds else ''}:\n{answer[:5000]}\n\n"
+                "You are the interviewer for this job. dims: score 1-5 each (Structure, Specifics = numbers and "
+                "concrete detail, Ownership = their own actions, Relevance to the question and JD, Length = right "
+                "size for 1-2 minutes spoken). score: the mean, one decimal. strengths: up to 3, quote their words. "
+                "improve: up to 4 specific fixes, each naming what to add or cut. better_answer: a stronger version "
+                "under 200 words using only facts from their answer and CV, [brackets] for missing facts. "
+                "follow_up: the single probing follow-up question a real interviewer would ask next.",
+                COACH_SCHEMA, "medium", 4000)
