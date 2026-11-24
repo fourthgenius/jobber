@@ -64,6 +64,8 @@ details summary{cursor:pointer;font-weight:700}
   td.empty-cell{display:block;grid-column:1/-1}
   .form{grid-template-columns:1fr}
 }
+.qviz{padding:4px 0 14px;margin-bottom:10px;border-bottom:1px solid var(--line)}
+.qviz .jb-bar{--bl:96px}
 </style>
 </head>
 <body>
@@ -171,13 +173,13 @@ async function poll(){
   a.hidden=!msgs.length;a.innerHTML=msgs.join("<br>");
   const it=s.items||[];const n=k=>it.filter(x=>x.state===k).length;
   $("qsum").textContent=it.length?`· ${n("applied")} applied · ${n("open")} open · ${n("waiting")} waiting`:"";
-  $("queue").innerHTML=it.length?it.slice().reverse().map(x=>`<div class="q"><div><b>${esc(x.title)}</b> <span class="sub">${esc(x.company)}</span></div>
+  $("queue").innerHTML=(it.length?`<div class="qviz">${Jobber.bars([["Submitted","applied"],["Open in tabs","open"],["Waiting","waiting"]].map(([l,k])=>({label:l,value:n(k),tip:`${l}: ${n(k)} of ${it.length}`})),{max:it.length})}</div>`:"")+(it.length?it.slice().reverse().map(x=>`<div class="q"><div><b>${esc(x.title)}</b> <span class="sub">${esc(x.company)}</span></div>
     <span class="pill ${x.state}">${ST[x.state]}</span>
     <small>${esc(PORT[x.ats]||x.ats)}${x.info?" · "+esc(x.info):""}
     ${x.state==="open"?`<br><button class="btn sm" onclick="act('applied','${x.id}')">I submitted it</button> <button class="btn sm" onclick="act('skip','${x.id}')">Skip</button>`:""}
     ${x.state==="waiting"?`<br><button class="btn sm" onclick="act('skip','${x.id}')">Remove</button>`:""}</small></div>`).join("")
     +`<div class="bar" style="margin-top:8px"><button class="btn sm" onclick="post('clear')">Clear finished</button>${n("waiting")?`<button class="btn sm" onclick="post('stop')">Stop queue</button>`:""}</div>`
-    :`<div class="qempty"><b>Nothing queued yet</b>Tick some jobs on the left, then press Open &amp; prefill.</div>`;
+    :`<div class="qempty"><b>Nothing queued yet</b>Tick some jobs on the left, then press Open &amp; prefill.</div>`);
   if(n("applied")!==poll.applied){poll.applied=n("applied");loadJobs()}
   if(EXT&&n("waiting")){const r=await fetch("/api/apply/next",{method:"POST",body:"{}"}).then(r=>r.json()).catch(()=>({open:[]}));
     r.open.forEach((o,i)=>setTimeout(()=>window.postMessage({jh:"open",id:o.id,url:o.url},"*"),i*1500));if(r.open.length)setTimeout(poll,500)}

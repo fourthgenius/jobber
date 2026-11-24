@@ -38,9 +38,6 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;p
 th{color:var(--mute);font-weight:600;font-size:13px}
 tr:last-child td{border-bottom:0}
 td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
-.bars{display:flex;gap:6px;align-items:flex-end;height:140px;padding:8px 0}
-.bars div{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
-.bars i{display:block;width:100%;max-width:38px;background:var(--accent);border-radius:6px 6px 0 0;min-height:2px}
 .bars span{font-size:12px;color:var(--faint)}
 .sec{padding:20px;overflow-x:auto}.sec h3{margin:0 0 12px;font-size:17px;display:flex;align-items:center;gap:6px}
 .co-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:10px}
@@ -51,6 +48,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 .drawer{position:fixed;inset:0;background:rgba(2,4,8,.7);display:none;z-index:80}
 .drawer.on{display:block}
 .drawer .box{position:absolute;right:0;top:0;bottom:0;width:min(740px,100%);background:var(--surface);overflow:auto;padding:24px;box-shadow:var(--shadow-pop)}
+.out.md-out{white-space:normal}
 .out{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:14px;font-size:14px}
 .dtabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
 .kw{display:flex;flex-wrap:wrap;gap:6px}
@@ -130,8 +128,10 @@ function render() {
     `<details class="mnu left"><summary class="chip ${inMore ? "on" : ""}" aria-label="More Copilot tools">${inMore ? ICONS[inMore[3]] + inMore[1] : "More tools"} ${ICONS.chev}</summary><div class="mnu-list" role="menu">` +
     MORE.map(([k, label, , ic]) => `<button type="button" class="${tab === k ? "on" : ""}" onclick="go('${k}')">${ICONS[ic]}<span>${label}<small>${MORE_HINT[k]}</small></span></button>`).join("") + `</div></details>`;
   ({today, follow, outreach, interviews, letters, insights, radar, setup})[tab]();
+  if (inMore) $("#view").insertAdjacentHTML("afterbegin", `<button class="backlink" style="border:0;background:none;cursor:pointer;font:inherit;font-size:13.5px" onclick="go(LAST_MAIN)">${ICONS.back}Back to ${MAIN.find(t => t[0] === LAST_MAIN)[1]}</button>`);
 }
-function go(t) { tab = t; try { localStorage.setItem("cp_tab", t); } catch (e) {} history.replaceState(null, "", "#" + t); render(); }
+let LAST_MAIN = "today";
+function go(t) { if (TABS.slice(0, 4).some(x => x[0] === tab)) LAST_MAIN = tab; tab = t; try { localStorage.setItem("cp_tab", t); } catch (e) {} history.replaceState(null, "", "#" + t); render(); }
 
 function today() {
   const q = D.queue;
@@ -168,21 +168,25 @@ function interviews() {
     : empty({icon: "calendar", title: "No interviews yet, but they're coming", body: "When someone invites you, open the job on the Jobs page and set its status to Interviewing. It shows up here with a prep pack.", actions: `<a class="btn" href="/prep">Practise anyway</a>`})}</div>`;
 }
 function ftable(title, rows) {
-  return `<div class="panel sec"><h3>${title}</h3>${rows.length ? `<table><tr><th>${""}</th><th class="n">Apps</th><th class="n">Replies</th><th class="n">Intv</th><th class="n">Rate</th></tr>
-   ${rows.map(r => `<tr><td>${esc(r.name)}</td><td class="n">${r.applied}</td><td class="n">${r.replied}</td><td class="n">${r.interview}</td><td class="n">${r.rate}%</td></tr>`).join("")}</table>`
-   : `<div class="muted small">Shows up once you've applied to a few jobs.</div>`}</div>`;
+  if (!rows.length) return `<div class="panel sec"><h3>${title}</h3><div class="muted small">Shows up once you've applied to a few jobs.</div></div>`;
+  const bars = Jobber.bars(rows.map(r => ({label: r.name, value: r.applied, display: `${r.applied} · ${r.rate}%`, tip: `${r.name}: ${r.applied} applied, ${r.replied} replied, ${r.interview} interviews (${r.rate}% interview rate)`})));
+  return `<div class="panel sec"><h3>${title}</h3><p class="small muted" style="margin:0 0 12px">Bar = applications. Number after the dot = interview rate.</p>${bars}
+   <details class="sect" style="margin-top:12px"><summary>See the table</summary><div class="sect-body"><table><tr><th></th><th class="n">Apps</th><th class="n">Replies</th><th class="n">Intv</th><th class="n">Rate</th></tr>
+   ${rows.map(r => `<tr><td>${esc(r.name)}</td><td class="n">${r.applied}</td><td class="n">${r.replied}</td><td class="n">${r.interview}</td><td class="n">${r.rate}%</td></tr>`).join("")}</table></div></details></div>`;
 }
+
 function insights() {
-  const a = D.analytics, t = a.total, max = Math.max(1, ...a.weeks.map(w => w.applied));
-  const p = a.pipeline;
+  const a = D.analytics, t = a.total, p = a.pipeline;
+  const funnel = [["Applied", t.applied], ["Got a reply", t.replied], ["Interview", t.interview], ["Offer", t.offer]]
+    .map(([l, v]) => ({label: l, value: v, display: v, tip: `${l}: ${v}${t.applied ? ` (${Math.round(100 * v / t.applied)}% of applications)` : ""}`}));
   $("#view").innerHTML = intro("chart", "Insights", `What's working in your search. ${t.applied < 5 ? "These fill in as you apply; aim for 15-20 well-matched applications a week." : "Double down on the sources and role types with the best reply rate."}`) + `<div class="kpis">
     ${[["Applied", t.applied], ["Replies", t.replied], ["Interviews", t.interview], ["Interview rate", t.rate + "%", "interview_rate"], ["Offers", t.offer], ["In queue", D.queue.length, "queue"]]
       .map(([k, v, g]) => `<div class="panel kpi"><div class="label">${k}${g ? " " + tip(g) : ""}</div><div class="v">${v}</div></div>`).join("")}</div>
     <div class="grid2">
-      <div class="panel sec"><h3>Applications per week</h3><div class="bars">${a.weeks.map(w =>
-        `<div title="${w.applied} applications"><span class="num">${w.applied || ""}</span><i style="height:${100 * w.applied / max}%"></i><span>${w.week}</span></div>`).join("")}</div>
-        <div class="small muted">Target: 15-20 well-matched applications a week.</div></div>
-      <div class="panel sec"><h3>Pipeline</h3><table>${Object.entries(p).map(([k, v]) => `<tr><td>${k}</td><td class="n">${v}</td></tr>`).join("")}</table></div>
+      <div class="panel sec"><h3>Applications per week</h3><p class="small muted" style="margin:0 0 12px">Each bar is one week, labelled by its start date. Target: 15-20 a week.</p>
+        ${Jobber.columns(a.weeks.map((w, i) => ({label: i === 0 || w.week.slice(3) !== a.weeks[i - 1].week.slice(3) ? w.week : w.week.slice(0, 2), value: w.applied, on: w.applied >= 15, tip: `Week of ${w.week}: ${w.applied} applications`})))}</div>
+      <div class="panel sec"><h3>Funnel</h3><p class="small muted" style="margin:0 0 12px">How far your applications get.</p>${Jobber.bars(funnel, {max: Math.max(1, t.applied)})}
+        <h3 style="margin-top:20px">Where jobs sit now</h3>${Jobber.bars(Object.entries(p).map(([k, v]) => ({label: k[0].toUpperCase() + k.slice(1), value: v})))}</div>
       ${ftable("By role type", a.by_role)}${ftable("By source", a.by_source)}${ftable("By career portal", a.by_portal)}${ftable("By CV version", a.by_cv)}
     </div>`;
 }
@@ -315,9 +319,9 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") closeK(); })
 const KT = [["cover","Cover note"],["cv","Tailored CV"],["outreach","Outreach"],["gap","Keyword gap"],["answers","Screening answers"],["followup","Follow-up"],["prep","Prep pack"]];
 function drawK() {
   const j = K.job;
-  $("#dbox").innerHTML = `<div style="display:flex;gap:10px;align-items:flex-start"><div class="grow"><div class="label">${esc(j.company)}</div>
+  $("#dbox").innerHTML = `<button class="backlink" style="border:0;background:none;cursor:pointer;font:inherit;font-size:13.5px" onclick="closeK()">${ICONS.back}Back</button><div style="display:flex;gap:10px;align-items:flex-start"><div class="grow"><div class="label">${esc(j.company)}</div>
     <h2 style="margin:2px 0;font:700 20px/1.2 var(--f-display)">${esc(j.title)}</h2><div class="meta">${pills(j)}</div></div>
-    <button class="btn sm ghost" onclick="closeK()" aria-label="Close">${ICONS.x}</button></div>
+    </div>
     ${j.ai ? `<div class="out" style="margin-top:12px"><b>${j.ai.score}% · ${esc(j.ai.verdict)}</b>\n✓ ${j.ai.reasons.map(esc).join("\n✓ ")}${j.ai.gaps.length ? "\n△ " + j.ai.gaps.map(esc).join("\n△ ") : ""}</div>` :
       (j.fit_pros || []).length ? `<div class="small muted" style="margin-top:8px">✓ ${j.fit_pros.map(esc).join(" · ")}${(j.fit_gaps || []).length ? " · △ " + j.fit_gaps.map(esc).join(" · ") : ""}</div>` : ""}
     <div class="dtabs">${KT.map(([k, l]) => `<button class="chip ${K.tab === k ? "on" : ""}" onclick="K.tab='${k}';drawK()">${l}</button>`).join("")}</div>
@@ -365,7 +369,7 @@ async function loadK(force) {
     if (t === "cv") {
       el.innerHTML = `${r.ai ? "" : `<div class="notice">AI is off: your CV was re-ordered for this job (most relevant bullets first, role-specific summary). Nothing new was added.</div>`}
         <div style="display:flex;gap:6px;margin-bottom:8px"><a class="btn sm primary" target="_blank" href="/copilot/cv/${j.id}">Open printable CV → Save as PDF</a>${redo}</div>
-        <div class="out" id="ko">${esc(d)}</div>`;
+        <div class="out md-out" id="ko">${Jobber.md(d)}</div>`;
     } else if (t === "outreach") {
       el.innerHTML = `${tag}<div class="label">1. Find people (opens LinkedIn search in your own browser)</div>
         <div class="kw" style="margin:6px 0 12px">${Object.entries(d.links).map(([k, u]) => `<a class="btn sm" target="_blank" rel="noopener" href="${esc(u)}">${esc(k)}</a>`).join("")}</div>
@@ -376,7 +380,7 @@ async function loadK(force) {
         <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin-top:6px"><input class="in" id="oP" placeholder="Name"><input class="in" id="oR" placeholder="Their role">
         <button class="btn sm primary" onclick="addOut()">Add</button></div>`;
     } else {
-      el.innerHTML = `${tag}<div class="out" id="ko">${esc(d)}</div><div style="display:flex;gap:6px;margin-top:8px">${copyBtn("ko")}${r.ai || t === "prep" ? redo : ""}</div>`;
+      el.innerHTML = `${tag}<div class="out ${t === "prep" ? "md-out" : ""}" id="ko">${t === "prep" ? Jobber.md(d) : esc(d)}</div><div style="display:flex;gap:6px;margin-top:8px">${copyBtn("ko")}${r.ai || t === "prep" ? redo : ""}</div>`;
     }
   } catch (e) {
     el.innerHTML = `<div class="notice">${esc(e.message)}${e.need_key ? ` <a href="#" onclick="closeK();go('setup');return false">Open Setup</a>` : ""}</div>`;

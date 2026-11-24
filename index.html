@@ -9,12 +9,12 @@
 /* Jobs dashboard: welcome band (greeting, next step, numbers), getting-started list, toolbar, list + detail. */
 .band{margin-top:28px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);color:var(--fg);padding:28px;position:relative;overflow:hidden}
 .band::before{content:"";position:absolute;left:0;top:0;width:120px;height:2px;background:var(--accent);box-shadow:0 0 14px var(--accent)}
-.band::after{content:"";position:absolute;right:-80px;top:-120px;width:340px;height:340px;border-radius:50%;background:radial-gradient(closest-side,rgba(46,230,255,.10),transparent);pointer-events:none}
+.band::after{content:"";position:absolute;right:-80px;top:-120px;width:340px;height:340px;border-radius:50%;background:radial-gradient(closest-side,var(--accent-soft),transparent);pointer-events:none}
 .band h1{font-size:30px;line-height:1.15;margin:0;color:var(--fg);letter-spacing:-.035em;max-width:30ch}
 .band .sub{margin:8px 0 0;color:var(--mute);font-size:15.5px;max-width:62ch}
-.band .nextstep{display:inline-flex;align-items:center;gap:10px;margin-top:16px;background:var(--bg);border:1px solid var(--line-strong);border-radius:var(--r);padding:6px 6px 6px 14px;font-size:14px;color:#fff;font-weight:600;max-width:100%}
+.band .nextstep{display:inline-flex;align-items:center;gap:10px;margin-top:16px;background:var(--bg);border:1px solid var(--line-strong);border-radius:var(--r);padding:6px 6px 6px 14px;font-size:14px;color:var(--fg);font-weight:600;max-width:100%}
 .band .nextstep .btn{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
-.band .nextstep .btn:hover{background:var(--accent-hover);border-color:var(--accent-hover);box-shadow:0 0 18px rgba(46,230,255,.4)}
+.band .nextstep .btn:hover{background:var(--accent-hover);border-color:var(--accent-hover);box-shadow:0 0 18px var(--glow-c)}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:22px;position:relative;z-index:1}
 .stat{display:flex;flex-direction:column;gap:4px;text-align:left;cursor:pointer;padding:14px 16px;border-radius:var(--r);border:1px solid var(--line);background:var(--bg);color:var(--fg);transition:border-color .15s,background .15s}
 .stat:hover{border-color:var(--mute)}
@@ -74,11 +74,11 @@ select.chip{appearance:none;padding-right:32px;background-image:linear-gradient(
 .job{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:16px;align-items:center;padding:16px 18px;cursor:pointer;border-top:1px solid var(--line);position:relative;transition:background .12s}
 .job:first-child{border-top:0}
 .job:hover{background:var(--raise)}
-.job.sel{background:linear-gradient(90deg,rgba(46,230,255,.08),transparent 70%)}
+.job.sel{background:linear-gradient(90deg,var(--accent-soft),transparent 70%)}
 .job.sel::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0;background:var(--accent);box-shadow:0 0 12px var(--accent)}
 .ring{--p:0;--c:var(--mute);width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--sunken) 0);flex:none}
 .ring b{width:38px;height:38px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font:600 13px/1 var(--f-code);color:var(--c);font-variant-numeric:tabular-nums}
-.job.sel .ring b{background:#0e171d}
+.job.sel .ring b{background:var(--sel-bg)}
 .ring.hi{--c:var(--good)}.ring.mid{--c:var(--warn)}.ring.lo{--c:var(--faint)}
 .ring.lo b{color:var(--mute)}
 .t{font-weight:700;font-size:15.5px;line-height:1.3;display:flex;align-items:center;gap:8px;min-width:0}
@@ -129,7 +129,12 @@ textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(
 .pill svg{width:13px;height:13px;flex:none}
 .postlead{border:1px solid var(--line);border-radius:var(--r);padding:12px;display:grid;gap:8px;background:var(--sunken)}
 .desc{white-space:pre-wrap;font-size:14px;line-height:1.7;color:var(--fg);border-top:1px solid var(--line);margin-top:20px;padding-top:16px;max-width:68ch}
-.close{display:none}
+.close{display:none}.backlink.close{border:0;background:none;cursor:pointer;font:inherit;font-size:13.5px}
+.bandviz{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;margin-top:22px;padding-top:20px;border-top:1px dashed var(--line);position:relative;z-index:1}
+.bandviz h3{margin:0 0 2px;font:600 11px var(--f-code);letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.bandviz .sub2{margin:0 0 12px;font-size:12.5px;color:var(--mute)}
+.bandviz .jb-cols{height:96px}
+body.nojobs .bandviz{display:none}
 .fbtn{min-height:46px;border-radius:12px}
 .fbtn .badge{margin-left:2px}
 #active .chip{min-height:30px;padding:3px 8px 3px 12px;font-size:13px;background:var(--accent-soft);border-color:transparent;color:var(--accent-ink)}
@@ -165,6 +170,7 @@ body.nojobs .layout{grid-template-columns:1fr;padding-top:20px}
   .band h1{font-size:23px}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}
   .stat{padding:10px 12px}.stat b{font-size:22px}
+  .bandviz{grid-template-columns:1fr;gap:22px}
   .checks{grid-template-columns:1fr}
   .job{grid-template-columns:44px minmax(0,1fr);padding:14px;gap:12px}
   .acts{grid-column:1/-1;justify-content:flex-end}
@@ -198,6 +204,7 @@ body.nojobs .layout{grid-template-columns:1fr;padding-top:20px}
     <p class="sub" id="sub">Newest first, ranked by how well each role fits your CV.</p>
     <div id="nextstep"></div>
     <div class="stats" id="stats"></div>
+    <div class="bandviz" id="bandviz"></div>
   </section>
   <div class="panel running" id="progress" role="status" aria-live="polite"><span class="spin"></span><div style="min-width:0"><b>Searching job sites for you…</b><div class="small muted" id="progressTxt">Starting…</div></div><span class="grow"></span><span class="small muted" id="progressEta" style="white-space:nowrap">Takes a few minutes · you can keep browsing</span></div>
   <div id="signin" class="notice">LinkedIn is limiting visits from your internet connection right now. Other sites still updated. Try again in an hour or two.</div>
@@ -314,7 +321,7 @@ function render(){
   else if(applied)ns=[`Applied somewhere a week ago? A short follow-up helps.`,`<a class="btn sm" href="/copilot#follow">See follow-ups</a>`];
   else ns=[`Star the jobs you like, then apply to a few at once.`,`<a class="btn sm" href="/apply">Try Batch apply</a>`];
   $("nextstep").innerHTML=`<div class="nextstep"><span>${ns[0]}</span>${ns[1]}</div>`;
-  renderStart();
+  renderStart();renderViz(active);
   $("stats").innerHTML=stats.map(([k,l,n,lead])=>`<button class="stat ${lead?"lead":""} ${stat===k||(k==="great"&&great&&!stat)||(view===k&&k!=="discover")?"on":""}" data-s="${k}"><b>${n}</b><span>${l}</span></button>`).join("");
   const tabs=[["discover","Discover",active.length],["saved","Saved",stats[2][2]],["pipeline","Applications",stats[3][2]],["hidden","Hidden",JOBS.filter(j=>j.status==="hidden").length]];
   $("tabs").innerHTML=tabs.map(([k,l,n])=>`<button class="${view===k?"on":""}" data-v="${k}" role="tab">${l}<span class="c">${n}</span></button>`).join("");
@@ -419,11 +426,21 @@ async function loadRef(j){
     <textarea class="in" id="refAsk">${esc(r.ask)}</textarea>
     <div class="row"><button class="btn sm primary" data-copy="refAsk">Copy message</button><button class="btn sm" id="trackRef">Track in Outreach</button><span class="small muted">You send it yourself. Nothing is sent for you.</span></div>`;
 }
+/* Band charts: where your matches sit on the fit scale, and how far your applications have got. */
+function renderViz(active){
+  const bins=[[0,40,"<40"],[40,50,"40s"],[50,60,"50s"],[60,70,"60s"],[70,80,"70s"],[80,90,"80s"],[90,101,"90+"]];
+  const cols=bins.map(([a,b,l])=>{const n=active.filter(j=>j.fit>=a&&j.fit<b).length;return{label:l,value:n,on:a>=70,tip:`${n} ${n===1?"job":"jobs"} with fit ${l==="<40"?"under 40":l==="90+"?"90 or more":l.replace("s","–")+(+l.slice(0,2)+9)}`}});
+  const st=k=>JOBS.filter(j=>j.status===k).length;
+  const iv=st("interviewing"),of=st("offer"),ap=st("applied")+iv+of+st("rejected"),sv=st("saved")+ap;
+  const funnel=[{label:"Saved or applied",value:sv,tip:`${sv} jobs you starred or applied to`},{label:"Applied",value:ap,tip:`${ap} applications sent`},{label:"Interviewing",value:iv+of,tip:`${iv+of} reached interviews`},{label:"Offer",value:of,tip:`${of} ${of===1?"offer":"offers"}`}];
+  $("bandviz").innerHTML=`<div><h3>Fit spread</h3><p class="sub2">Open jobs by CV fit score. Highlighted bars are 70% and up.</p>${Jobber.columns(cols)}</div>
+    <div><h3>Your pipeline</h3><p class="sub2">${ap?`${Math.round((iv+of)/ap*100)}% of applications reached an interview.`:"Apply to a few jobs and your progress shows here."}</p>${Jobber.bars(funnel,{max:Math.max(sv,1)})}</div>`;
+}
 function detail(j){
   if(!j){$("detail").innerHTML=empty({icon:"jobs",title:"Pick a job to see the details",body:"Click any job on the left. You'll see its pay, the experience it asks for, why it fits you, and the full description."});return}
   const s=sal(j),e=exp(j);
-  $("detail").innerHTML=`<div class="dtop">${ring(j.fit)}<div class="grow"><div class="label">CV fit ${tip("fit")}</div><div class="small muted">${j.fit>=70?"Strong match":j.fit>=50?"Partial match":"Long shot"}</div></div>
-    <button class="btn sm close" data-x>Close</button><a class="btn primary" data-act="apply" href="${esc(j.apply_url)}" target="_blank" rel="noopener">Apply ${ICON.out}</a></div>
+  $("detail").innerHTML=`<button class="backlink close" data-x>${ICONS.back}Back to jobs</button><div class="dtop">${ring(j.fit)}<div class="grow"><div class="label">CV fit ${tip("fit")}</div><div class="small muted">${j.fit>=70?"Strong match":j.fit>=50?"Partial match":"Long shot"}</div></div>
+    <a class="btn primary" data-act="apply" href="${esc(j.apply_url)}" target="_blank" rel="noopener">Apply ${ICON.out}</a></div>
   <h3>${esc(j.title)}</h3><div class="co">${esc(j.company)} · ${esc(j.location)}</div>
   <div class="facts">
     <div class="fact"><span class="label">Salary</span><b class="${s?"num":""}">${s||"Not shown"}</b></div>

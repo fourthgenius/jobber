@@ -174,14 +174,13 @@ async function openJob(id, opts = {}) {
 const STEPS = [["brief", "Company brief"], ["questions", "Questions & answers"], ["mock", "Mock interview"]];
 function shell() {
   const j = P && P.job;
-  const head = j ? `<div class="panel jobhead"><div class="grow"><div class="label">Preparing for</div><h2>${esc(j.title)}</h2>
+  const head = j ? `<button class="backlink" style="border:0;background:none;cursor:pointer;font:inherit;font-size:13.5px" onclick="picker()">${Jobber.ICONS.back}All interviews</button><div class="panel jobhead"><div class="grow"><div class="label">Preparing for</div><h2>${esc(j.title)}</h2>
       <div class="c">${esc(j.company)}${j.location ? " · " + esc(j.location) : ""}${j.status && j.status !== "custom" ? ` · <span class="pill">${esc(j.status)}</span>` : ""}</div></div>
       <div class="row">${P.ai_available ? (P.ai ? `<span class="pill good">Written by Claude</span>` : `<button class="btn sm primary" onclick="openJob(JOB,{ai:true,refresh:true})" title="Uses your Claude API key">Rewrite with Claude</button>`)
         : `<span class="small muted" style="max-width:240px">Rule-based prep. Add a Claude API key in Setup for written briefs and smarter feedback.</span>`}
-        <button class="btn sm" onclick="openJob(JOB,{refresh:true,ai:P.ai})" title="Re-read the job post, your CV and the news">Rebuild</button>
-        <button class="btn sm ghost" onclick="picker()">Change job</button></div></div>
+        <button class="btn sm" onclick="openJob(JOB,{refresh:true,ai:P.ai})" title="Re-read the job post, your CV and the news">Rebuild</button></div></div>
       ${!j.has_jd && j.status !== "custom" ? `<div class="notice" style="margin-bottom:14px">This job has no description saved, so questions are based on the role only. Open the listing, copy the description, and use "Not in your list?" on the previous screen for sharper prep.</div>` : ""}` :
-    `<section class="pagehead"><div class="grow"><h1>Story bank</h1><p>Your best work examples, STAR-style. Suggested answers and mock feedback draw on them.</p></div><button class="btn ghost" onclick="picker()">← Pick an interview</button></section>`;
+    `<section class="pagehead"><div class="grow"><h1>Story bank</h1><p>Your best work examples, STAR-style. Suggested answers and mock feedback draw on them.</p></div><button class="btn ghost" onclick="picker()">${Jobber.ICONS.back}Pick an interview</button></section>`;
   const practised = j ? new Set(P.history.map(h => h.question)).size : 0;
   const nav = j ? `<nav class="steps-nav" role="tablist">${STEPS.map(([k, l], i) => `<button role="tab" aria-selected="${step === k}" class="${step === k ? "on" : ""}" onclick="go('${k}')"><span class="n">${i + 1}</span><span class="lg">${l}</span><span class="sh">${["Brief", "Q&A", "Mock"][i]}</span>${k === "mock" && practised ? ` <span class="pill">${practised}/${P.questions.length}</span>` : ""}</button>`).join("")}
       <span class="sp"></span><button class="${step === "stories" ? "on" : ""}" onclick="go('stories')">${ICONS.star} My stories <span class="pill">${D.stories.length}</span></button></nav>` : "";

@@ -2,6 +2,14 @@
    Served by app.py at /ui.js. Include it right after <header class="appbar" data-page="..."> on every page. */
 (function () {
   "use strict";
+  /* Theme: light by default, dark if the person picked it (remembered per browser). */
+  let THEME = "light"; try { THEME = localStorage.getItem("jb_theme") === "dark" ? "dark" : "light"; } catch (e) {}
+  document.documentElement.dataset.theme = THEME;
+  function setTheme(t) {
+    THEME = t; document.documentElement.dataset.theme = t; try { localStorage.setItem("jb_theme", t); } catch (e) {}
+    document.querySelectorAll("[data-theme-toggle]").forEach(b => { b.setAttribute("aria-pressed", String(t === "dark")); b.setAttribute("aria-label", t === "dark" ? "Switch to light theme" : "Switch to dark theme"); const l = b.querySelector("span"); if (l) l.textContent = t === "dark" ? "Light theme" : "Dark theme"; b.querySelector("svg") && (b.querySelector("svg").outerHTML = t === "dark" ? ICONS.sun : ICONS.moon); });
+  }
+  document.addEventListener("click", e => { if (e.target.closest && e.target.closest("[data-theme-toggle]")) setTheme(THEME === "dark" ? "light" : "dark"); });
   const svg = (p, extra = "") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ${extra}>${p}</svg>`;
   const ICONS = {
     jobs: svg('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>'),
@@ -31,6 +39,9 @@
     x: svg('<path d="M6 6l12 12M18 6 6 18"/>'),
     network: svg('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9.5" r="2.5"/><path d="M16 14.6a5 5 0 0 1 6 4.9"/>'),
     collapse: svg('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15.5 10l-2 2 2 2"/>'),
+    sun: svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+    moon: svg('<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>'),
+    back: svg('<path d="M19 12H5M11 6l-6 6 6 6"/>'),
     gear: svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
     more: svg('<circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/>'),
     filter: svg('<path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/>'),
@@ -98,6 +109,7 @@
       <div class="side-foot">
         <a href="/setup"${cur("setup")} data-tip-side="Settings">${ICONS.gear}<span>Settings</span></a>
         <button type="button" id="jb-help" data-tip-side="Help">${ICONS.help}<span>Help &amp; glossary</span></button>
+        <button type="button" data-theme-toggle data-tip-side="Theme" aria-pressed="${THEME === "dark"}">${THEME === "dark" ? ICONS.sun : ICONS.moon}<span>${THEME === "dark" ? "Light theme" : "Dark theme"}</span></button>
         <div class="side-note"><span class="dot"></span><span>Runs on this computer</span></div>
       </div>`;
     const setCollapsed = v => {
@@ -117,7 +129,7 @@
     document.body ? mount() : document.addEventListener("DOMContentLoaded", mount);
     /* phone top bar: brand + settings + help (the sidebar is hidden there) */
     w.insertAdjacentHTML("afterbegin", `<a class="brand mbrand" href="/" aria-label="Jobber home"><span class="mark">${MARK}</span></a>`);
-    w.insertAdjacentHTML("beforeend", `<a class="helpbtn mbtn${page === "setup" ? " on" : ""}" href="/setup" aria-label="Settings">${ICONS.gear}</a><button type="button" class="helpbtn mbtn" data-help aria-label="Help and glossary">${ICONS.help}</button>`);
+    w.insertAdjacentHTML("beforeend", `<a class="helpbtn mbtn${page === "setup" ? " on" : ""}" href="/setup" aria-label="Settings">${ICONS.gear}</a><button type="button" class="helpbtn mbtn" data-theme-toggle aria-label="${THEME === "dark" ? "Switch to light theme" : "Switch to dark theme"}">${THEME === "dark" ? ICONS.sun : ICONS.moon}</button><button type="button" class="helpbtn mbtn" data-help aria-label="Help and glossary">${ICONS.help}</button>`);
     /* collapsed sidebar: show the label as a tooltip */
     document.addEventListener("pointerover", e => { const a = e.target.closest && e.target.closest(".side-min .sidenav [data-tip-side]"); if (a && a !== tipFor) { a.dataset.tip = a.dataset.tipSide; showTip(a); } });
   }
@@ -224,5 +236,36 @@
   }
   const tip = term => `<button type="button" class="tipbtn" data-term="${term}" aria-label="What is &quot;${esc((GLOSS[term] || [term])[0])}&quot;?" aria-expanded="false">${ICONS.info}</button>`;
 
-  window.Jobber = {menu, ICONS, GLOSS, tip, toast, empty, esc, openHelp};
+  /* Tiny Markdown for drafts Jobber writes (## headings, - bullets, **bold**). Escapes first. */
+  function md(src) {
+    const inline = t => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+    let html = "", inList = false;
+    for (const raw of String(src || "").split("\n")) {
+      const l = raw.trimEnd(), m = l.match(/^(#{1,3})\s+(.*)/), li = l.match(/^\s*[-*•]\s+(.*)/);
+      if (!li && inList) { html += "</ul>"; inList = false; }
+      if (m) html += `<h${m[1].length + 2}>${inline(m[2])}</h${m[1].length + 2}>`;
+      else if (li) { if (!inList) { html += "<ul>"; inList = true; } html += `<li>${inline(li[1])}</li>`; }
+      else if (l.trim()) html += `<p>${inline(l)}</p>`;
+    }
+    return `<div class="md">${html}${inList ? "</ul>" : ""}</div>`;
+  }
+
+  /* Charts. One hue (the accent) for magnitude; labels and values stay in text colours; every
+     mark has a hover/focus tooltip through data-tip. rows = [{label, value, tip?, note?, key?}] */
+  function bars(rows, o = {}) {
+    const max = o.max || Math.max(1, ...rows.map(r => r.value));
+    return `<div class="jb-bars ${o.cls || ""}" role="list">${rows.map(r => `<div class="jb-bar" role="listitem" tabindex="0" data-tip="${esc(r.tip || `${r.label}: ${r.value}${o.unit || ""}`)}" ${r.key ? `data-key="${esc(r.key)}"` : ""}>
+      <span class="bl">${esc(r.label)}</span><span class="bt"><i style="width:${r.value ? Math.max(2, 100 * r.value / max) : 0}%"></i></span><span class="bv num">${esc(r.display ?? r.value)}${o.unit || ""}</span></div>`).join("")}</div>`;
+  }
+  function columns(rows, o = {}) {
+    const max = Math.max(1, ...rows.map(r => r.value));
+    return `<div class="jb-cols" role="list" style="--n:${rows.length}">${rows.map(r => `<div class="jb-col ${r.on ? "on" : ""} ${r.value ? "" : "zero"}" role="listitem" tabindex="0" data-tip="${esc(r.tip || `${r.label}: ${r.value}`)}" ${r.key ? `data-key="${esc(r.key)}"` : ""}>
+      <span class="cv num">${r.value}</span><span class="ct"><i style="height:${r.value ? Math.max(4, 100 * r.value / max) : 0}%"></i></span><span class="cl">${esc(r.label)}</span></div>`).join("")}</div>`;
+  }
+  /* Back link: to where you came from inside Jobber, else to a sensible parent. */
+  function back(fallbackHref, label) {
+    return `<a class="backlink" href="${esc(fallbackHref)}" onclick="if(document.referrer.startsWith(location.origin)&&history.length>1){history.back();return false}">${ICONS.back}<span>${esc(label)}</span></a>`;
+  }
+
+  window.Jobber = {menu, md, bars, columns, back, setTheme, ICONS, GLOSS, tip, toast, empty, esc, openHelp};
 })();

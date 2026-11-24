@@ -168,7 +168,7 @@ NOT_WORK = re.compile(r"percentile|%ile|\bcgpa\b|\bgpa\b|\bjee\b|\bcat 20|\bgmat
 
 
 def _role(head: str) -> dict:
-    """'Product Manager — INDmoney, Gurugram | Apr 2025 – Oct 2026' -> title, company, dates."""
+    """'Product Manager — Acme Corp, Pune | Jan 2022 – Mar 2024' -> title, company, dates."""
     h = re.sub(r"[*_`]+", "", head).strip()
     m = DATES.search(h)
     dates = m.group(0) if m else ""
