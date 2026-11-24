@@ -48,7 +48,6 @@
     chev: svg('<path d="m6 9 6 6 6-6"/>'),
     arrow: svg('<path d="M5 12h14M13 6l6 6-6 6"/>'),
   };
-  const MARK = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.5 4v9.5a4.5 4.5 0 0 1-8.6 1.9" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/><rect x="16.5" y="4.5" width="4" height="4" fill="var(--accent)"/></svg>`;
   const NAV = [["jobs", "/", "Jobs"], ["apply", "/apply", "Batch apply"], ["copilot", "/copilot", "Copilot"], ["prep", "/prep", "Interview prep"], ["network", "/network", "Referrals"]];
   const SHORT = {apply: "Apply", prep: "Prep", network: "Referrals"};
 
@@ -102,7 +101,7 @@
     let collapsed = false; try { collapsed = localStorage.getItem("jb_side") === "min"; } catch (e) {}
     const side = document.createElement("aside");
     side.className = "sidenav"; side.setAttribute("aria-label", "Jobber");
-    side.innerHTML = `<div class="side-top"><a class="brand" href="/" aria-label="Jobber home"><span class="mark">${MARK}</span><span class="word">job<i>ber</i></span></a>
+    side.innerHTML = `<div class="side-top"><a class="brand" href="/" aria-label="Jobber home"><span class="word">Jobber</span><span class="word-min" aria-hidden="true">J</span></a>
       <button type="button" class="side-toggle" id="jb-collapse" aria-label="Collapse sidebar" aria-expanded="true">${ICONS.collapse}</button></div>
       <div class="side-label">Workspace</div>
       <nav class="side-links" aria-label="Main">${links()}</nav>
@@ -128,7 +127,7 @@
     };
     document.body ? mount() : document.addEventListener("DOMContentLoaded", mount);
     /* phone top bar: brand + settings + help (the sidebar is hidden there) */
-    w.insertAdjacentHTML("afterbegin", `<a class="brand mbrand" href="/" aria-label="Jobber home"><span class="mark">${MARK}</span></a>`);
+    w.insertAdjacentHTML("afterbegin", `<a class="brand mbrand" href="/" aria-label="Jobber home">Jobber</a>`);
     w.insertAdjacentHTML("beforeend", `<a class="helpbtn mbtn${page === "setup" ? " on" : ""}" href="/setup" aria-label="Settings">${ICONS.gear}</a><button type="button" class="helpbtn mbtn" data-theme-toggle aria-label="${THEME === "dark" ? "Switch to light theme" : "Switch to dark theme"}">${THEME === "dark" ? ICONS.sun : ICONS.moon}</button><button type="button" class="helpbtn mbtn" data-help aria-label="Help and glossary">${ICONS.help}</button>`);
     /* collapsed sidebar: show the label as a tooltip */
     document.addEventListener("pointerover", e => { const a = e.target.closest && e.target.closest(".side-min .sidenav [data-tip-side]"); if (a && a !== tipFor) { a.dataset.tip = a.dataset.tipSide; showTip(a); } });

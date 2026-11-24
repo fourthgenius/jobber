@@ -92,10 +92,12 @@ html.has-side.side-min{--side:72px}
 .side-foot{margin-top:auto;border-top:1px solid var(--line);padding-top:12px}
 .side-note{display:flex;align-items:center;gap:10px;padding:10px 12px 0;font:500 10.5px var(--f-code);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);white-space:nowrap}
 .side-note .dot{width:7px;height:7px;flex:none;background:var(--good);box-shadow:0 0 8px var(--good);border-radius:50%}
-.side-min .sidenav .word,.side-min .sidenav span:not(.mark):not(.dot),.side-min .side-label{opacity:0;pointer-events:none}
+.side-min .sidenav .word,.side-min .sidenav span:not(.mark):not(.dot):not(.word-min),.side-min .side-label{opacity:0;pointer-events:none}
 .side-min .side-top{flex-direction:column;gap:10px;padding-bottom:10px}
 .side-min .side-top .brand{flex:none}
 .side-min .sidenav .word{display:none}
+.brand .word-min{display:none}
+.side-min .sidenav .brand .word-min{display:inline;opacity:1;pointer-events:auto;width:32px;text-align:center}
 .side-min .side-label{height:0;padding:0}
 .side-min .side-note{padding-left:20px}
 
@@ -103,7 +105,7 @@ html.has-side.side-min{--side:72px}
 .appbar{position:sticky;top:0;z-index:40;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .appbar .wrap{display:flex;align-items:center;gap:16px;min-height:60px}
 html.has-side .appbar.bare{display:none}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:600 19px/1 var(--f-display);letter-spacing:-.04em;color:var(--fg);flex:none}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:700 20px/1 var(--f-display);letter-spacing:-.045em;color:var(--fg);flex:none}
 .brand i{font-style:normal;color:var(--accent)}
 .brand .mark{width:32px;height:32px;border-radius:var(--r);background:var(--sunken);border:1px solid var(--line-strong);color:var(--fg);display:grid;place-items:center;flex:none}
 .brand .mark svg{width:20px;height:20px}
@@ -228,7 +230,8 @@ input[type=file]::file-selector-button{font:inherit;background:var(--sunken);col
   html.has-side body{padding-left:0}
   .sidenav{display:none}
   html.has-side .appbar.bare{display:block}
-  .mbrand{display:flex!important}.mbtn{display:inline-grid!important;width:36px;height:36px}
+  .mbrand{display:flex!important;font-size:17px}
+  .appbar .wrap{min-width:0}.appbar .pill{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:1}.mbtn{display:inline-grid!important;width:36px;height:36px}
   .appbar .wrap{gap:8px;min-height:56px}
   .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:45;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
   .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;text-decoration:none;color:var(--faint);font-size:11px;font-weight:500;border-radius:var(--r);min-height:48px;justify-content:center}

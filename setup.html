@@ -314,7 +314,7 @@ const ONB = document.body.classList.contains("onboarding");
 if (ONB) {
   document.querySelector(".pagehead h1").textContent = "Welcome to Jobber";
   document.querySelector(".pagehead p").textContent = "A few quick questions so Jobber knows what to look for. About 10 minutes. Your answers and CV stay on this computer.";
-  document.querySelector("main").insertAdjacentHTML("beforebegin", `<div class="obar wrap"><span class="brand"><span class="mark">${document.querySelector(".mbrand .mark")?.innerHTML || ""}</span><span>job<i>ber</i></span></span><span class="grow"></span><span class="pill">Setup · nothing is uploaded</span></div>`);
+  document.querySelector("main").insertAdjacentHTML("beforebegin", `<div class="obar wrap"><span class="brand">Jobber</span><span class="grow"></span><span class="pill">Setup · nothing is uploaded</span></div>`);
 } else {
   document.title = "Settings · Jobber";
   document.querySelector(".pagehead h1").textContent = "Settings";
